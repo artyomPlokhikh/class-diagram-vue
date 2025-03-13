@@ -1,0 +1,28 @@
+.canvas-area {
+  flex: 1;
+  position: relative;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+.entity {
+  position: absolute;
+  background: white;
+  border: 2px solid #2196F3;
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 220px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: grab;
+}
+
+.entity.selected {
+  border-color: #FF4081;
+  box-shadow: 0 4px 12px rgba(255,64,129,0.2);
+}
+
+.relationship {
+  stroke: #607D8B;
+  stroke-width: 2;
+  marker-end: url(#arrow);
+}
