@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia'
 import Entity from '@/models/Entity'
 import Attribute from '@/models/Attribute'
+import Relationship from '@/models/Relationship'
 
 export const useDiagramStore = defineStore('diagram', {
     state: () => ({
+        selected: null,
         entities: [],
-        selectedEntity: null,
-        draggingEntity: null,
-        dragStartPos: { x: 0, y: 0 }
+        relationships: [],
     }),
     actions: {
+        setSelected(item) {
+            this.selected = item
+        },
+
         addEntity(position) {
             const entity = new Entity(
                 Date.now(),
@@ -18,57 +22,42 @@ export const useDiagramStore = defineStore('diagram', {
                 position.y
             )
             this.entities.push(entity)
-            this.setSelectedEntity(entity)
+            this.setSelected(entity)
             this.saveState()
         },
-
         deleteEntity(id) {
             this.entities = this.entities.filter(e => e.id !== id)
-            this.saveState()
-        },
-
-        startDrag(entityId, startX, startY) {
-            const entity = this.entities.find(e => e.id === entityId)
-            if (entity) {
-                this.draggingEntity = entity
-                this.dragStartPos = { x: startX, y: startY }
+            if (this.selected && this.selected.id === id) {
+                this.selected = null
             }
-        },
-
-        updateDragPosition(currentX, currentY) {
-            if (!this.draggingEntity) return
-
-            const dx = currentX - this.dragStartPos.x
-            const dy = currentY - this.dragStartPos.y
-
-            this.draggingEntity.x += dx
-            this.draggingEntity.y += dy
-
-            this.dragStartPos = { x: currentX, y: currentY }
-        },
-
-        stopDrag() {
-            this.draggingEntity = null
             this.saveState()
         },
 
-        setSelectedEntity(entity) {
-            this.selectedEntity = entity
+        addRelationship(newRel) {
+            this.relationships.push(newRel)
+            this.setSelected(newRel)
+            this.saveState()
+        },
+        deleteRelationship(id) {
+            this.relationships = this.relationships.filter(r => r.id !== id)
+            if (this.selected && this.selected.id === id) {
+                this.selected = null
+            }
+            this.saveState()
         },
 
         saveState() {
             const state = {
                 entities: this.entities.map(e => e.toJSON()),
+                relationships: this.relationships.map(r => r.toJSON())
             }
             localStorage.setItem('erDiagram', JSON.stringify(state))
         },
-
         loadState() {
             const saved = localStorage.getItem('erDiagram')
             if (saved) {
                 try {
                     const state = JSON.parse(saved)
-
                     this.entities = state.entities.map(e => {
                         const entity = new Entity(e.id, e.name, e.x, e.y)
                         entity.attributes = e.attributes.map(a =>
@@ -76,10 +65,11 @@ export const useDiagramStore = defineStore('diagram', {
                         )
                         return entity
                     })
-
+                    this.relationships = state.relationships.map(r => new Relationship(r.id, r.from, r.to, r.type))
                 } catch (error) {
                     console.error('Failed to load state:', error)
                     this.entities = []
+                    this.relationships = []
                 }
             }
         },
@@ -87,7 +77,6 @@ export const useDiagramStore = defineStore('diagram', {
         undo() {
             // TODO: Implement undo functionality
         },
-
         redo() {
             // TODO: Implement redo functionality
         },

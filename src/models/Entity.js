@@ -9,12 +9,12 @@ export default class Entity {
         this.attributes = []
     }
 
-    addAttribute(attr) {
+    addAttribute(attr = {}) {
         this.attributes.push(new Attribute(
             Date.now(),
-            attr.name,
-            attr.type,
-            attr.isPrimaryKey || false
+            attr.name || 'New Attribute',
+            attr.type || 'VARCHAR',
+            attr.isPrimaryKey || false,
         ))
     }
 

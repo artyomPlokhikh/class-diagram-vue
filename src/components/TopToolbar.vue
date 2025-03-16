@@ -17,13 +17,3 @@ const undo = () => store.undo()
 const redo = () => store.redo()
 const exportDiagram = () => store.exportDiagram()
 </script>
-
-<style scoped>
-.toolbar {
-    padding: 10px;
-    background: #f0f0f0;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    gap: 10px;
-}
-</style>

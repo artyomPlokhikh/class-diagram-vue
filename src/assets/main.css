@@ -5,24 +5,279 @@
   overflow: hidden;
 }
 
-.entity {
-  position: absolute;
-  background: white;
-  border: 2px solid #2196F3;
-  border-radius: 8px;
-  padding: 16px;
-  min-width: 220px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  cursor: grab;
-}
-
-.entity.selected {
-  border-color: #FF4081;
-  box-shadow: 0 4px 12px rgba(255,64,129,0.2);
-}
-
 .relationship {
   stroke: #607D8B;
   stroke-width: 2;
   marker-end: url(#arrow);
+}
+
+.entity {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #2196f3;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 220px;
+  max-width: 220px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  z-index: 10;
+}
+
+.entity.selected {
+  border-color: #ff4081;
+  box-shadow: 0 4px 16px rgba(255, 64, 129, 0.2);
+  z-index: 10;
+}
+
+.entity.dragging {
+  cursor: grabbing;
+}
+
+.entity:active {
+  cursor: grabbing;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.entity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.entity-name {
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  width: 80%;
+  outline: none;
+  cursor: default;
+}
+
+.btn-danger {
+  border: none;
+  background: none;
+  color: #ff1744;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.btn-danger:hover {
+  background: #ffebee;
+}
+
+.attributes-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.attribute-name {
+  color: #333;
+}
+
+.attribute-type {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.properties-panel {
+  padding: 16px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #666;
+}
+.entity-name-input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.attribute-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+.attribute-item input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.attribute-item select {
+  width: 100px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  padding: 0 8px;
+}
+.add-attribute-btn {
+  width: 100%;
+  padding: 8px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-size: 14px;
+}
+.add-attribute-btn:hover {
+  background: #e9ecef;
+}
+ .properties-panel {
+   padding: 16px;
+ }
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.canvas-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.entities,
+.relationship-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.relationship-svg {
+  position: relative;
+  z-index: 5; /* Ensure SVG overlay is below the entities */
+}
+
+/*LeftPanel*/
+ .left-panel-content {
+   padding: 16px;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+ }
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.panel-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.add-button {
+  padding: 6px 12px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-button:hover {
+  background: #1e88e5;
+}
+
+.entities-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-right: -16px;
+  padding-right: 16px;
+}
+
+.entity-item {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.entity-item:hover {
+  background: #e9ecef;
+}
+
+.entity-item.selected {
+  background: #e3f2fd;
+  font-weight: 500;
+}
+
+.empty-state {
+  padding: 16px;
+  color: #666;
+  text-align: center;
+  font-size: 14px;
+}
+/*RightPanel*/
+.right-panel-content {
+  padding: 16px;
+  height: 100%;
+}
+
+.empty-properties {
+  padding: 16px;
+  color: #666;
+  text-align: center;
+  font-size: 14px;
+}
+
+/*Toolbar*/
+.toolbar {
+  padding: 10px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  gap: 10px;
 }

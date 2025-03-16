@@ -5,7 +5,7 @@ export default class Relationship {
         MANY_TO_MANY: 'M:N'
     }
 
-    constructor(id, from, to, type = '1:M') {
+    constructor(id, from, to, type = this.type.ONE_TO_MANY) {
         this.id = id || Date.now()
         this.from = from
         this.to = to
