@@ -1,6 +1,6 @@
-import {ref, onMounted, onUnmounted, isRef, nextTick} from 'vue'
+import {ref, onMounted, onUnmounted, isRef, nextTick, inject} from 'vue'
 
-export function useEntity(entity, zoom) {
+export function useEntity(entity) {
     const editing = ref(false)
     const entityInput = ref(null)
     const enableEditing = () => {
@@ -16,7 +16,7 @@ export function useEntity(entity, zoom) {
         editing.value = false
     }
 
-    const zoomRef = isRef(zoom) ? zoom : ref(zoom)
+    const zoom = inject('zoom')
     const isDragging = ref(false)
     const startPos = ref({x: 0, y: 0})
     const initialPos = ref({x: entity.x, y: entity.y})
@@ -25,15 +25,14 @@ export function useEntity(entity, zoom) {
         isDragging.value = true
         startPos.value = {x: event.clientX, y: event.clientY}
         initialPos.value = {x: entity.x, y: entity.y}
-        event.preventDefault()
     }
     const onMouseMove = (event) => {
         if (!isDragging.value) return
         const dx = event.clientX - startPos.value.x
         const dy = event.clientY - startPos.value.y
 
-        entity.x = initialPos.value.x + dx / zoomRef.value
-        entity.y = initialPos.value.y + dy / zoomRef.value
+        entity.x = initialPos.value.x + dx / zoom.value
+        entity.y = initialPos.value.y + dy / zoom.value
     }
     const onMouseUp = () => {
         if (isDragging.value) {

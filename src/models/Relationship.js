@@ -5,13 +5,15 @@ export default class Relationship {
         MANY_TO_MANY: 'M:N'
     }
 
-    constructor(id, from, to, type = this.type.ONE_TO_MANY) {
-        this.id = id || Date.now()
+    /**
+     * @param {{from}} from - Entity id
+     */
+    constructor(from) {
+        this.id = Date.now()
         this.from = from
-        this.to = to
-        this.type = type
+        this.to = null
+        this.type = Relationship.TYPES.ONE_TO_ONE
         this.points = []
-        this.selected = false
     }
 
     toJSON() {

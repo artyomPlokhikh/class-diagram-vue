@@ -3,16 +3,16 @@
         class="entity"
         :style="positionStyle"
         @mousedown.left="onMouseDown"
+        @mousedown.right="onRightClick"
+        @click.stop
     >
         <div class="entity-header">
             <input
-                ref="entityInput"
                 v-model="entity.name"
                 class="entity-name"
-                :readonly="!editing"
-                @dblclick.stop="enableEditing"
-                @blur="disableEditing"
-                @click.stop
+                :readonly="!composable.editing"
+                @dblclick.stop="composable.enableEditing"
+                @blur="composable.disableEditing"
             />
             <button class="btn-danger" @click.stop="onEntityDelete">×</button>
         </div>
@@ -26,36 +26,31 @@
 </template>
 
 <script setup>
-import {computed, toRef} from 'vue'
+import {computed} from 'vue'
 import {useEntity} from '@/composables/useEntity.js'
 
 const props = defineProps({
     entity: Object,
-    zoom: Number,
 })
-const emit = defineEmits(['entity-select', 'entity-delete'])
+const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-create'])
 
-const {
-    editing,
-    entityInput,
-    enableEditing,
-    disableEditing,
-    isDragging,
-    startDragging
-} = useEntity(props.entity, toRef(props, 'zoom'))
-
-const positionStyle = computed(() => ({
-    transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
-    transition: isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-}))
+const composable = useEntity(props.entity)
 
 const onMouseDown = (e) => {
     emit('entity-select')
-    startDragging(e)
+    composable.startDragging(e)
 }
 const onEntityDelete = () => {
     if (confirm(`Delete entity "${props.entity.name}"?`)) {
         emit('entity-delete')
     }
 }
+const onRightClick = () => {
+    emit('relationship-create')
+}
+
+const positionStyle = computed(() => ({
+    transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
+    transition: composable.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+}))
 </script>

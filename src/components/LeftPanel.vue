@@ -31,7 +31,7 @@ const store = useDiagramStore()
 const entities = computed(() =>
     store.entities.filter(e => e?.id && e?.name)
 )
-const selectedEntity = computed(() => store.selectedEntity)
+const selectedEntity = computed(() => store.selected)
 
 const addEntity = () => {
     store.addEntity({
@@ -43,6 +43,6 @@ const addEntity = () => {
 }
 
 const selectEntity = (entity) => {
-    store.setSelectedEntity(entity)
+    store.setSelected(entity)
 }
 </script>

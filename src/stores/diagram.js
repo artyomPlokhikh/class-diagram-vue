@@ -33,10 +33,23 @@ export const useDiagramStore = defineStore('diagram', {
             this.saveState()
         },
 
-        addRelationship(newRel) {
-            this.relationships.push(newRel)
-            this.setSelected(newRel)
-            this.saveState()
+        addRelationship(entityId) {
+            const unfinishedRel = this.relationships.find(r => r.to === null || r.from === null)
+            if (!unfinishedRel) {
+                const newRel = new Relationship({
+                    from: entityId,
+                })
+                this.relationships.push(newRel)
+                this.setSelected(newRel)
+            } else {
+                if (unfinishedRel.from === null) {
+                    unfinishedRel.from = entityId
+                } else {
+                    unfinishedRel.to = entityId
+                }
+                this.setSelected(unfinishedRel)
+                this.saveState()
+            }
         },
         deleteRelationship(id) {
             this.relationships = this.relationships.filter(r => r.id !== id)

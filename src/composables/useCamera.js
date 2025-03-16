@@ -1,6 +1,6 @@
-import {ref, computed} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 
-export function usePanZoom(canvas) {
+export function useCamera(canvas) {
     const pan = ref({x: 0, y: 0})
     const zoom = ref(1)
     const isCanvasPanning = ref(false)
@@ -12,13 +12,9 @@ export function usePanZoom(canvas) {
     }))
 
     const handleCanvasMouseDown = (event) => {
-        if (event.button === 1) {
-            isCanvasPanning.value = true
-            canvasPanStart.value = {x: event.clientX, y: event.clientY}
-            event.preventDefault()
-        }
+        isCanvasPanning.value = true
+        canvasPanStart.value = {x: event.clientX, y: event.clientY}
     }
-
     const handlePanMouseMove = (event) => {
         if (isCanvasPanning.value) {
             const dx = event.clientX - canvasPanStart.value.x
@@ -26,6 +22,11 @@ export function usePanZoom(canvas) {
             pan.value.x += dx
             pan.value.y += dy
             canvasPanStart.value = {x: event.clientX, y: event.clientY}
+        }
+    }
+    const onMouseUp = () => {
+        if (isCanvasPanning.value) {
+            isCanvasPanning.value = false
         }
     }
 
@@ -49,5 +50,14 @@ export function usePanZoom(canvas) {
         zoom.value = newZoom
     }
 
-    return {pan, zoom, canvasStyle, handleCanvasMouseDown, handlePanMouseMove, handleWheel, isCanvasPanning}
+    onMounted(() => {
+        document.addEventListener('mousemove', handlePanMouseMove)
+        document.addEventListener('mouseup', onMouseUp)
+    })
+    onUnmounted(() => {
+        document.removeEventListener('mousemove', handlePanMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+    })
+
+    return {pan, zoom, canvasStyle, handleCanvasMouseDown, handleWheel, isCanvasPanning}
 }
