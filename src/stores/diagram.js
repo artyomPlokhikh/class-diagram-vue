@@ -34,18 +34,18 @@ export const useDiagramStore = defineStore('diagram', {
         },
 
         connectRelationship(entityId) {
-            const unconnectedRel = this.relationships.find(r => r.sourceId === null || r.targetId === null)
+            const unconnectedRel = this.relationships.find(r => r.source.id === null || r.target.id === null)
             if (!unconnectedRel) {
                 const newRel = new Relationship({
-                    sourceId: entityId,
+                    source: {id: entityId, port: null},
                 })
                 this.relationships.push(newRel)
                 this.setSelected(newRel)
             } else {
-                if (unconnectedRel.sourceId === null) {
-                    unconnectedRel.sourceId = entityId
+                if (unconnectedRel.source.id === null) {
+                    unconnectedRel.source.id = entityId
                 } else {
-                    unconnectedRel.targetId = entityId
+                    unconnectedRel.target.id = entityId
                 }
                 this.setSelected(unconnectedRel)
                 this.saveState()
