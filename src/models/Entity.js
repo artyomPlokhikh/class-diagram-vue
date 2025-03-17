@@ -1,12 +1,16 @@
-import Attribute from "@/models/Attribute.js";
+import Attribute from "@/models/Attribute.js"
 
 export default class Entity {
-    constructor(id, name, x = 0, y = 0) {
+    constructor(id, name, x = 0, y = 0, width = 275, height = 120) {
         this.id = id || Date.now()
         this.name = name || 'New Entity'
         this.x = x
         this.y = y
+        this.width = width
+        this.height = height
         this.attributes = []
+
+        this.addAttribute()
     }
 
     addAttribute(attr = {}) {
@@ -24,6 +28,8 @@ export default class Entity {
             name: this.name,
             x: this.x,
             y: this.y,
+            width: this.width,
+            height: this.height,
             attributes: this.attributes.map(a => a?.toJSON ? a.toJSON() : a)
         }
     }

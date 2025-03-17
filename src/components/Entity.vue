@@ -1,7 +1,8 @@
 <template>
     <div
+        ref="entityRef"
         class="entity"
-        :style="positionStyle"
+        :style="[positionStyle, sizeStyle]"
         @mousedown.left="onMouseDown"
         @mousedown.right="onRightClick"
         @click.stop
@@ -17,24 +18,34 @@
             <button class="btn-danger" @click.stop="onEntityDelete">×</button>
         </div>
         <ul class="attributes-list">
-            <li v-for="(attr, index) in entity.attributes" :key="index" class="attribute-item">
+            <li
+                v-for="(attr, index) in entity.attributes"
+                :key="index"
+                class="attribute-item"
+            >
                 <span class="attribute-name">{{ attr.name }}</span>
                 <span class="attribute-type">{{ attr.type }}</span>
             </li>
         </ul>
+        <div
+            class="resize-handle"
+            @mousedown.left.stop.prevent="composable.startResizing($event)"
+            @dblclick.stop.prevent="composable.resetSize($event)"
+        ></div>
     </div>
 </template>
 
 <script setup>
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import {useEntity} from '@/composables/useEntity.js'
 
 const props = defineProps({
-    entity: Object,
+    entity: Object
 })
-const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-create'])
+const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-connect'])
 
-const composable = useEntity(props.entity)
+const entityRef = ref(null)
+const composable = useEntity(props.entity, entityRef)
 
 const onMouseDown = (e) => {
     emit('entity-select')
@@ -46,11 +57,27 @@ const onEntityDelete = () => {
     }
 }
 const onRightClick = () => {
-    emit('relationship-create')
+    emit('relationship-connect')
 }
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
-    transition: composable.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: composable.isDragging.value
+        ? 'none'
+        : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 }))
+
+const sizeStyle = computed(() => {
+    if (composable.isResizing.value || composable.isManuallyResized.value) {
+        return {
+            width: props.entity.width + 'px',
+            height: props.entity.height + 'px'
+        }
+    } else {
+        return {
+            minWidth: props.entity.width + 'px',
+            minHeight: props.entity.height + 'px'
+        }
+    }
+})
 </script>

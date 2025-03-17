@@ -14,7 +14,7 @@
                         :entity="entity"
                         @entity-select="store.setSelected(entity)"
                         @entity-delete="store.deleteEntity(entity.id)"
-                        @relationship-create="store.addRelationship(entity.id)"
+                        @relationship-connect="store.connectRelationship(entity.id)"
                 />
             </div>
             <!-- SVG overlay for relationships -->

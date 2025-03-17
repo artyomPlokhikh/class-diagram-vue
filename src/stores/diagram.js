@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import Entity from '@/models/Entity'
 import Attribute from '@/models/Attribute'
 import Relationship from '@/models/Relationship'
@@ -33,21 +33,21 @@ export const useDiagramStore = defineStore('diagram', {
             this.saveState()
         },
 
-        addRelationship(entityId) {
-            const unfinishedRel = this.relationships.find(r => r.to === null || r.from === null)
-            if (!unfinishedRel) {
+        connectRelationship(entityId) {
+            const unconnectedRel = this.relationships.find(r => r.sourceId === null || r.targetId === null)
+            if (!unconnectedRel) {
                 const newRel = new Relationship({
-                    from: entityId,
+                    sourceId: entityId,
                 })
                 this.relationships.push(newRel)
                 this.setSelected(newRel)
             } else {
-                if (unfinishedRel.from === null) {
-                    unfinishedRel.from = entityId
+                if (unconnectedRel.sourceId === null) {
+                    unconnectedRel.sourceId = entityId
                 } else {
-                    unfinishedRel.to = entityId
+                    unconnectedRel.targetId = entityId
                 }
-                this.setSelected(unfinishedRel)
+                this.setSelected(unconnectedRel)
                 this.saveState()
             }
         },
@@ -78,7 +78,7 @@ export const useDiagramStore = defineStore('diagram', {
                         )
                         return entity
                     })
-                    this.relationships = state.relationships.map(r => new Relationship(r.id, r.from, r.to, r.type))
+                    this.relationships = state.relationships.map(r => new Relationship(r))
                 } catch (error) {
                     console.error('Failed to load state:', error)
                     this.entities = []
@@ -96,6 +96,13 @@ export const useDiagramStore = defineStore('diagram', {
 
         exportDiagram() {
             // TODO: Implement export functionality
+        },
+
+        clear() {
+            this.entities = []
+            this.relationships = []
+            this.selected = null
+            this.saveState()
         }
     }
 })

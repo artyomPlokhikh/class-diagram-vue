@@ -5,22 +5,22 @@ export default class Relationship {
         MANY_TO_MANY: 'M:N'
     }
 
-    /**
-     * @param {{from}} from - Entity id
-     */
-    constructor(from) {
-        this.id = Date.now()
-        this.from = from
-        this.to = null
-        this.type = Relationship.TYPES.ONE_TO_ONE
-        this.points = []
+    constructor(options) {
+        if (typeof options !== 'object' || options === null) {
+            throw new Error('Options object is required')
+        }
+        this.id = options.id || Date.now();
+        this.sourceId = options.sourceId || null
+        this.targetId = options.targetId || null
+        this.type = options.type || null
+        this.points = options.points || []
     }
 
     toJSON() {
         return {
             id: this.id,
-            from: this.from,
-            to: this.to,
+            sourceId: this.sourceId,
+            targetId: this.targetId,
             type: this.type,
             points: this.points
         }
