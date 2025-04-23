@@ -40,9 +40,16 @@
 
 <script setup>
 import { useRelationship } from '@/composables/useRelationship'
+import Relationship from "@/models/Relationship.js";
 
 const props = defineProps({
-    relationship: Object,
+    relationship: {
+        type: Object,
+        required: true,
+        validator(value) {
+            return value instanceof Relationship;
+        }
+    },
 })
 const emit = defineEmits(['relationship-select', 'relationship-delete']);
 

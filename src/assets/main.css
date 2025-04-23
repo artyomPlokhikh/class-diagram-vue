@@ -82,21 +82,23 @@
 }
 
 
-.attributes-list {
+.attributes-list,
+.methods-list {
     list-style: none;
     padding: 0;
     margin: 8px 0 0;
 }
 
-.attribute-name {
+.attribute-name,
+.method-name {
     color: #333;
 }
 
-.attribute-type {
+.attribute-type,
+.method-type {
     color: #666;
     font-size: 0.9em;
 }
-
 
 .canvas {
     position: absolute;
@@ -250,7 +252,8 @@
     border-radius: 4px;
 }
 
-.attribute-item {
+.attribute-item,
+.method-item {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
@@ -260,14 +263,16 @@
     border-bottom: 1px solid #eee;
 }
 
-.attribute-item input {
+.attribute-item input,
+.method-item input {
     flex: 1;
     padding: 6px;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
 
-.attribute-item select {
+.attribute-item select,
+.method-item select {
     width: 100px;
     padding: 6px;
     border: 1px solid #ddd;
@@ -282,7 +287,8 @@
     padding: 0 8px;
 }
 
-.add-attribute-btn {
+.add-attribute-btn,
+.add-method-btn {
     width: 100%;
     padding: 8px;
     background: #f8f9fa;
@@ -293,7 +299,8 @@
     font-size: 14px;
 }
 
-.add-attribute-btn:hover {
+.add-attribute-btn:hover,
+.add-method-btn:hover {
     background: #e9ecef;
 }
 
@@ -310,4 +317,25 @@
     margin-bottom: 4px;
     font-size: 14px;
     color: #666;
+}
+
+.properties-panel select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+}
+
+.attribute-name-input,
+.method-name-input {
+    width: 80px;
+}
+
+.attribute-select,
+.method-select {
+    width: 120px;
 }

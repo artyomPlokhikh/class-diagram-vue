@@ -25,21 +25,21 @@
             >
                 <span class="attribute-visibility">{{ attr.visibility.literal }}</span>
                 <span class="attribute-name">{{ attr.name }}</span>
-                <span class="attribute-type">{{ attr.type }}</span>
+                <span class="attribute-type">{{ attr.type.name }}</span>
             </li>
         </ul>
-<!--        <hr>-->
-<!--        <ul class="methods-list">-->
-<!--            <li-->
-<!--                v-for="(method, index) in entity.methods"-->
-<!--                :key="index"-->
-<!--                class="method-item"-->
-<!--            >-->
-<!--                <span class="method-visibility">{{ method.visibility }}</span>-->
-<!--                <span class="method-name">{{ method.name }} (): </span>-->
-<!--                <span class="method-return-type">{{ method.returnType }}</span>-->
-<!--            </li>-->
-<!--        </ul>-->
+        <hr>
+        <ul class="methods-list">
+            <li
+                v-for="(method, index) in entity.methods"
+                :key="index"
+                class="method-item"
+            >
+                <span class="method-visibility">{{ method.visibility.literal }}</span>
+                <span class="method-name">{{ method.name }}(): </span>
+                <span class="method-type">{{ method.type.name }}</span>
+            </li>
+        </ul>
         <div
             class="resize-handle"
             @mousedown.left.stop.prevent="composable.startResizing($event)"
@@ -51,9 +51,16 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useEntity } from '@/composables/useEntity.js';
+import Entity from "@/models/Entity.js";
 
 const props = defineProps({
-    entity: Object
+    entity: {
+        type: Object,
+        required: true,
+        validator(value) {
+            return value instanceof Entity;
+        }
+    }
 });
 const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-connect']);
 

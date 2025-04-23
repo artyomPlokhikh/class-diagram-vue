@@ -1,4 +1,5 @@
 import Attribute from "@/models/Attribute.js"
+import Method from "@/models/Method.js";
 
 export default class Entity {
     constructor(options = {}) {
@@ -8,14 +9,26 @@ export default class Entity {
         this.y = options.y || 0;
         this.width = options.width || 275;
         this.height = options.height || 120;
-        this.attributes = options.attributes || [];
 
-        if (!this.attributes.length) this.addAttribute();
+        this.attributes = options.attributes ? options.attributes.map(a => new Attribute(a)) : [];
+        this.methods = options.methods ? options.methods.map(a => new Method(a)) : [];
     }
 
     addAttribute() {
         this.attributes.push(new Attribute());
     };
+
+    removeAttribute(id) {
+        this.attributes = this.attributes.filter(a => a.id !== id);
+    };
+
+    addMethod() {
+        this.methods.push(new Method());
+    };
+
+    removeMethod(id) {
+        this.methods = this.methods.filter(m => m.id !== id);
+    }
 
     toJSON() {
         return {
@@ -25,7 +38,8 @@ export default class Entity {
             y: this.y,
             width: this.width,
             height: this.height,
-            attributes: this.attributes.map(a => a.toJSON())
+            attributes: this.attributes.map(a => a.toJSON()),
+            methods: this.methods.map(m => m.toJSON())
         };
     };
 }

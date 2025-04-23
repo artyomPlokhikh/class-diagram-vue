@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import Entity from '@/models/Entity';
 import Attribute from '@/models/Attribute';
 import Relationship from '@/models/Relationship';
+import Method from "@/models/Method.js";
 
 export const useDiagramStore = defineStore('diagram', {
     state: () => ({
@@ -81,6 +82,7 @@ export const useDiagramStore = defineStore('diagram', {
                 this.entities = state.entities.map(e => new Entity(e));
                 this.entities.forEach(entity => {
                     entity.attributes = entity.attributes.map(a => new Attribute(a));
+                    entity.methods = entity.methods.map(m => new Method(m));
                 });
                 this.relationships = state.relationships.map(r => new Relationship(r));
             } catch (error) {
