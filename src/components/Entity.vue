@@ -12,8 +12,8 @@
         </div>
         <ul class="attributes-list">
             <li
-                v-for="(attr, index) in entity.attributes"
-                :key="index"
+                v-for="attr in entity.attributes"
+                :key="attr.id"
                 class="attribute-item"
             >
                 <span class="attribute-visibility">{{ attr.visibility.literal }}</span>
@@ -24,8 +24,8 @@
         <hr>
         <ul class="methods-list">
             <li
-                v-for="(method, index) in entity.methods"
-                :key="index"
+                v-for="method in entity.methods"
+                :key="method.id"
                 class="method-item"
             >
                 <span class="method-visibility">{{ method.visibility.literal }}</span>
@@ -61,7 +61,7 @@ const composable = useEntity(props.entity, entityRef);
 const onMouseDown = (e) => {
     emit('entity-select');
     composable.startDragging(e);
-}
+};
 
 const onRightClick = () => {
     emit('relationship-connect');
@@ -69,9 +69,7 @@ const onRightClick = () => {
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
-    transition: composable.isDragging.value
-        ? 'none'
-        : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: composable.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 }));
 
 const sizeStyle = computed(() => {
@@ -86,5 +84,5 @@ const sizeStyle = computed(() => {
             minHeight: props.entity.height + 'px'
         };
     }
-})
+});
 </script>

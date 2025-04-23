@@ -1,3 +1,4 @@
+/* Canvas Area & Layout */
 .canvas-area {
     flex: 1;
     position: relative;
@@ -5,6 +6,42 @@
     overflow: hidden;
 }
 
+.canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.canvas-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+    transform-origin: 0 0;
+}
+
+.entities,
+.relationship-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: auto;
+}
+
+.relationship-svg {
+    z-index: 5;
+}
+
+/* Relationship Styles */
 .relationship {
     stroke: #607D8B;
     stroke-width: 2;
@@ -16,6 +53,7 @@
     stroke: none;
 }
 
+/* Entity Styles */
 .entity {
     position: absolute;
     background: #ffffff;
@@ -39,13 +77,9 @@
     z-index: 10;
 }
 
-.entity.dragging {
-    cursor: grabbing;
-}
-
+.entity.dragging,
 .entity:active {
     cursor: grabbing;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .entity-header {
@@ -65,32 +99,23 @@
     cursor: default;
 }
 
-.resize-handle {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 12px;
-    height: 12px;
-    background: #2196f3;
-    cursor: nwse-resize;
-    border-radius: 2px;
-}
-
-.btn-danger {
-    border: none;
-    background: none;
-    color: #ff1744;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 0 6px;
-}
-
-
+/* Lists & Items */
 .attributes-list,
 .methods-list {
     list-style: none;
     padding: 0;
     margin: 8px 0 0;
+}
+
+.attribute-item,
+.method-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
 }
 
 .attribute-name,
@@ -104,44 +129,32 @@
     font-size: 0.9em;
 }
 
-.canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    background: #fafafa;
-}
-
-.canvas-inner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.entities,
-.relationship-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: auto;
-}
-
-.relationship-svg {
-    z-index: 5;
+/* Buttons & Controls */
+.btn-danger {
+    border: none;
+    background: none;
+    color: #ff1744;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 6px;
 }
 
 .btn-danger:hover {
     background: #ffebee;
 }
 
-/*LeftPanel*/
+.resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: #2196f3;
+    cursor: nwse-resize;
+    border-radius: 2px;
+}
+
+/* Left Panel */
 .left-panel-content {
     padding: 16px;
     height: 100%;
@@ -210,7 +223,7 @@
     font-size: 14px;
 }
 
-/*RightPanel*/
+/* Right Panel */
 .right-panel-content {
     padding: 16px;
     height: 100%;
@@ -223,7 +236,7 @@
     font-size: 14px;
 }
 
-/*Toolbar*/
+/* Toolbar */
 .toolbar {
     padding: 10px;
     background: #f0f0f0;
@@ -232,7 +245,7 @@
     gap: 10px;
 }
 
-/*Editors*/
+/* Form & Editor Styles */
 .properties-panel {
     padding: 16px;
 }
@@ -256,41 +269,6 @@
     border-radius: 4px;
 }
 
-.attribute-item,
-.method-item {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.attribute-item input,
-.method-item input {
-    flex: 1;
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.attribute-item select,
-.method-item select {
-    width: 100px;
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.remove-btn {
-    background: none;
-    border: none;
-    color: #ff4444;
-    cursor: pointer;
-    padding: 0 8px;
-}
-
 .add-attribute-btn,
 .add-method-btn {
     width: 100%;
@@ -306,21 +284,6 @@
 .add-attribute-btn:hover,
 .add-method-btn:hover {
     background: #e9ecef;
-}
-
-.properties-panel {
-    padding: 16px;
-}
-
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 14px;
-    color: #666;
 }
 
 .properties-panel select {
