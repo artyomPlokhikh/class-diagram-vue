@@ -9,14 +9,14 @@
 </template>
 
 <script setup>
-import {computed} from 'vue'
-import {useDiagramStore} from '@/stores/diagram'
-import EntityEditor from '@/components/editor/EntityEditor.vue'
-import RelationshipEditor from '@/components/editor/RelationshipEditor.vue'
+import {computed} from 'vue';
+import {useDiagramStore} from '@/stores/diagram';
+import EntityEditor from '@/components/editor/EntityEditor.vue';
+import RelationshipEditor from '@/components/editor/RelationshipEditor.vue';
 import Entity from "@/models/Entity.js";
 import Relationship from "@/models/Relationship.js";
 
-const store = useDiagramStore()
-const selected = computed(() => store.selected)
+const store = useDiagramStore();
+const selected = computed(() => store.selected);
 
 </script>

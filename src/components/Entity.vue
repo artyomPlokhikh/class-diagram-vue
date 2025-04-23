@@ -23,10 +23,23 @@
                 :key="index"
                 class="attribute-item"
             >
+                <span class="attribute-visibility">{{ attr.visibility.literal }}</span>
                 <span class="attribute-name">{{ attr.name }}</span>
                 <span class="attribute-type">{{ attr.type }}</span>
             </li>
         </ul>
+<!--        <hr>-->
+<!--        <ul class="methods-list">-->
+<!--            <li-->
+<!--                v-for="(method, index) in entity.methods"-->
+<!--                :key="index"-->
+<!--                class="method-item"-->
+<!--            >-->
+<!--                <span class="method-visibility">{{ method.visibility }}</span>-->
+<!--                <span class="method-name">{{ method.name }} (): </span>-->
+<!--                <span class="method-return-type">{{ method.returnType }}</span>-->
+<!--            </li>-->
+<!--        </ul>-->
         <div
             class="resize-handle"
             @mousedown.left.stop.prevent="composable.startResizing($event)"
@@ -36,48 +49,48 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
-import {useEntity} from '@/composables/useEntity.js'
+import { computed, ref } from 'vue';
+import { useEntity } from '@/composables/useEntity.js';
 
 const props = defineProps({
     entity: Object
-})
-const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-connect'])
+});
+const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-connect']);
 
-const entityRef = ref(null)
-const composable = useEntity(props.entity, entityRef)
+const entityRef = ref(null);
+const composable = useEntity(props.entity, entityRef);
 
 const onMouseDown = (e) => {
-    emit('entity-select')
-    composable.startDragging(e)
+    emit('entity-select');
+    composable.startDragging(e);
 }
 const onEntityDelete = () => {
     if (confirm(`Delete entity "${props.entity.name}"?`)) {
-        emit('entity-delete')
+        emit('entity-delete');
     }
-}
+};
 const onRightClick = () => {
-    emit('relationship-connect')
-}
+    emit('relationship-connect');
+};
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
     transition: composable.isDragging.value
         ? 'none'
         : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-}))
+}));
 
 const sizeStyle = computed(() => {
     if (composable.isResizing.value || composable.isManuallyResized.value) {
         return {
             width: props.entity.width + 'px',
             height: props.entity.height + 'px'
-        }
+        };
     } else {
         return {
             minWidth: props.entity.width + 'px',
             minHeight: props.entity.height + 'px'
-        }
+        };
     }
 })
 </script>

@@ -1,17 +1,36 @@
 export default class Attribute {
-    constructor(id, name, type, isPrimaryKey = false) {
-        this.id = id
-        this.name = name
-        this.type = type
-        this.isPrimaryKey = isPrimaryKey
-    }
+    static VISIBILITY = {
+        PUBLIC: {
+            name: 'public',
+            literal: '+'
+        },
+        PACKAGE: {
+            name: 'package',
+            literal: '~'
+        },
+        PROTECTED: {
+            name: 'protected',
+            literal: '#'
+        },
+        PRIVATE: {
+            name: 'private',
+            literal: '-'
+        }
+    };
+
+    constructor(options = {}) {
+        this.id = options.id || Date.now();
+        this.name = options.name || 'New Attribute';
+        this.type = options.type || 'VARCHAR';
+        this.visibility = Attribute.VISIBILITY.PUBLIC;
+    };
 
     toJSON() {
         return {
             id: this.id,
             name: this.name,
             type: this.type,
-            isPrimaryKey: this.isPrimaryKey
-        }
-    }
+            visibility: this.visibility,
+        };
+    };
 }

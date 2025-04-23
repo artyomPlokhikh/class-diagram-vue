@@ -1,5 +1,13 @@
 <template>
-    <g>
+    <g @click.stop="emit('relationship-select')" class="relationship">
+        <!-- Invisible polyline for increased click area -->
+        <polyline
+            :points="composable.path.value"
+            stroke="transparent"
+            fill="none"
+            stroke-width="25"
+        />
+        <!-- Visible relationship drawing -->
         <polyline
             :points="composable.path.value"
             stroke="black"
@@ -36,6 +44,8 @@ import { useRelationship } from '@/composables/useRelationship'
 const props = defineProps({
     relationship: Object,
 })
+const emit = defineEmits(['relationship-select', 'relationship-delete']);
+
 const composable = useRelationship(props.relationship)
 </script>
 

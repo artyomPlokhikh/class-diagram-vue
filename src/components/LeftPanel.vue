@@ -2,7 +2,7 @@
     <div class="left-panel-content">
         <div class="panel-header">
             <h3>Entities</h3>
-            <button @click="addEntity" class="add-button">
+            <button @click="store.addEntity" class="add-button">
                 + Add Entity
             </button>
         </div>
@@ -11,7 +11,7 @@
             <div v-for="entity in entities"
                  :key="entity.id"
                  class="entity-item"
-                 @click="selectEntity(entity)"
+                 @click="store.setSelected(entity)"
                  :class="{ selected: selectedEntity?.id === entity.id }">
                 {{ entity.name }}
             </div>
@@ -24,25 +24,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useDiagramStore } from '../stores/diagram'
+import { computed } from 'vue';
+import { useDiagramStore } from '../stores/diagram';
 
-const store = useDiagramStore()
-const entities = computed(() =>
-    store.entities.filter(e => e?.id && e?.name)
-)
-const selectedEntity = computed(() => store.selected)
+const store = useDiagramStore();
+const entities = computed(() => store.entities.filter(e => e?.id && e?.name));
+const selectedEntity = computed(() => store.selected);
 
-const addEntity = () => {
-    store.addEntity({
-        name: 'New Entity',
-        x: 100,
-        y: 100,
-        attributes: []
-    })
-}
-
-const selectEntity = (entity) => {
-    store.setSelected(entity)
-}
 </script>

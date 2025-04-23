@@ -1,26 +1,21 @@
 import Attribute from "@/models/Attribute.js"
 
 export default class Entity {
-    constructor(id, name, x = 0, y = 0, width = 275, height = 120) {
-        this.id = id || Date.now()
-        this.name = name || 'New Entity'
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.attributes = []
+    constructor(options = {}) {
+        this.id = options.id || Date.now();
+        this.name = options.name || 'New Entity';
+        this.x = options.x || 0;
+        this.y = options.y || 0;
+        this.width = options.width || 275;
+        this.height = options.height || 120;
+        this.attributes = options.attributes || [];
 
-        this.addAttribute()
+        if (!this.attributes.length) this.addAttribute();
     }
 
-    addAttribute(attr = {}) {
-        this.attributes.push(new Attribute(
-            Date.now(),
-            attr.name || 'New Attribute',
-            attr.type || 'VARCHAR',
-            attr.isPrimaryKey || false,
-        ))
-    }
+    addAttribute() {
+        this.attributes.push(new Attribute());
+    };
 
     toJSON() {
         return {
@@ -30,7 +25,7 @@ export default class Entity {
             y: this.y,
             width: this.width,
             height: this.height,
-            attributes: this.attributes.map(a => a?.toJSON ? a.toJSON() : a)
-        }
-    }
+            attributes: this.attributes.map(a => a.toJSON())
+        };
+    };
 }
