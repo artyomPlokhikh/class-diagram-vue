@@ -1,25 +1,9 @@
-import { ref, nextTick, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { measureIntrinsicSize } from '@/utils/domHelpers.js'
 
 export function useEntity(entity, elementRef) {
-    const editing = ref(false);
-    const entityInput = ref(null);
-
-    const enableEditing = () => {
-        editing.value = true;
-        nextTick(() => {
-            if (entityInput.value) {
-                entityInput.value.focus()
-                entityInput.value.select()
-            }
-        });
-    }
-    const disableEditing = () => {
-        editing.value = false;
-    };
 
     const zoom = inject('zoom', { value: 1 });
-
     const isDragging = ref(false);
     const startPos = ref({ x: 0, y: 0 });
     const initialPos = ref({ x: entity.x, y: entity.y });
@@ -128,10 +112,6 @@ export function useEntity(entity, elementRef) {
     });
 
     return {
-        editing,
-        entityInput,
-        enableEditing,
-        disableEditing,
         isDragging,
         startDragging,
         isResizing,

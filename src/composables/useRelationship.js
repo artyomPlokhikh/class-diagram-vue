@@ -1,5 +1,6 @@
 import { computed, inject, ref } from 'vue'
 import { getEntityConnectionPoints, offsetPoint } from '@/utils/mathHelpers'
+import Relationship from "@/models/Relationship.js";
 
 
 export function useRelationship(relationship) {
@@ -24,7 +25,6 @@ export function useRelationship(relationship) {
             dy = centerB.y - centerA.y;
         }
         let side = Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 'R' : 'L') : (dy >= 0 ? 'B' : 'T');
-        const candidates = getEntityConnectionPoints(sourceEntity.value);
         relationship.source = { id: sourceEntity.value.id, port: { side, index: 1 } };
     }
 
@@ -58,7 +58,7 @@ export function useRelationship(relationship) {
 
     const pathPoints = computed(() => {
         if (!chosenConnection.value || !sourceEntity.value || !targetEntity.value) return [];
-        const { source, target, sourceSide, targetSide, orientation } = chosenConnection.value;
+        const { source, target, sourceSide, targetSide } = chosenConnection.value;
         const centerA = {
             x: sourceEntity.value.x + sourceEntity.value.width / 2,
             y: sourceEntity.value.y + sourceEntity.value.height / 2
@@ -86,11 +86,97 @@ export function useRelationship(relationship) {
         }
     });
 
+    const markerStart = computed(() => {
+        switch (relationship.type) {
+            case Relationship.TYPES.COMPOSITION:
+                return 'url(#filled_diamond)';
+            case Relationship.TYPES.AGGREGATION:
+                return 'url(#empty_diamond)';
+            default:
+                return null;
+        }
+    });
+
+    const markerEnd = computed(() => {
+        switch (relationship.type) {
+            case Relationship.TYPES.INHERITANCE:
+                return 'url(#triangle)';
+            case Relationship.TYPES.ASSOCIATION:
+                return 'url(#arrowhead)';
+            case Relationship.TYPES.DEPENDENCY:
+                return 'url(#arrowhead)';
+            default:
+                return null;
+        }
+    });
+
+    const strokeDasharray = computed(() =>
+        relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null
+    );
+
+    const labelPoint = computed(() => {
+        const pts = pathPoints.value
+        if (!pts || !pts.length) return { x: 0, y: 0 }
+        const midIdx = Math.floor((pts.length - 1) / 2)
+        return pts[midIdx]
+    })
+
+    const LABEL_OFFSET = 50;
+
+    const sourceMultiplicityPoint = computed(() => {
+        const pts = pathPoints.value;
+        if (pts.length < 2) return pts[0] || { x: 0, y: 0 };
+
+        const p0 = pts[0];
+        const p1 = pts[1];
+        const dx = p0.x - p1.x;
+        const dy = p0.y - p1.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        return {
+            x: p0.x + (dx / len) * LABEL_OFFSET,
+            y: p0.y + (dy / len) * LABEL_OFFSET
+        };
+    });
+
+    const targetMultiplicityPoint = computed(() => {
+        const pts = pathPoints.value;
+        const n = pts.length;
+        if (n < 2) return pts[n - 1] || { x: 0, y: 0 };
+
+        const pN = pts[n - 1];
+        const pNm1 = pts[n - 2];
+        const dx = pN.x - pNm1.x;
+        const dy = pN.y - pNm1.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        return {
+            x: pN.x + (dx / len) * LABEL_OFFSET,
+            y: pN.y + (dy / len) * LABEL_OFFSET
+        };
+    });
+
+
     const path = computed(() => pathPoints.value.map(p => `${p.x},${p.y}`).join(' '));
     const sourcePoint = computed(() => pathPoints.value[0] || { x: 0, y: 0 });
     const targetPoint = computed(() => pathPoints.value.length ? pathPoints.value[pathPoints.value.length - 1] : {
         x: 0,
         y: 0
     });
-    return { path, pathPoints, sourcePoint, targetPoint, lineOffset, chosenConnection };
+
+
+    return {
+        path,
+        pathPoints,
+        sourcePoint,
+        targetPoint,
+        lineOffset,
+        chosenConnection,
+        markerStart,
+        markerEnd,
+        strokeDasharray,
+        labelPoint,
+        sourceMultiplicityPoint,
+        targetMultiplicityPoint
+    };
 }

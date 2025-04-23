@@ -13,7 +13,9 @@
             stroke="black"
             fill="none"
             stroke-width="2"
-            marker-end="url(#arrowhead)"
+            :stroke-dasharray="composable.strokeDasharray.value"
+            :marker-start="composable.markerStart.value"
+            :marker-end="composable.markerEnd.value"
         />
         <!-- Source handle -->
         <circle
@@ -35,28 +37,60 @@
             cursor="pointer"
             @mousedown=""
         />
+        <!-- Relationship name -->
+        <text
+            :x="composable.labelPoint.value?.x"
+            :y="composable.labelPoint.value?.y - 5"
+            text-anchor="middle"
+            class="relationship-label"
+        > {{ relationship.name }}
+        </text>
+
+        <!-- Multiplicities -->
+        <text
+            :x="composable.sourceMultiplicityPoint.value.x"
+            :y="composable.sourceMultiplicityPoint.value.y"
+            text-anchor="middle"
+            class="multiplicity-label"
+        >{{ relationship.source?.multiplicity }}
+        </text>
+        <text
+            :x="composable.targetMultiplicityPoint.value.x"
+            :y="composable.targetMultiplicityPoint.value.y"
+            text-anchor="middle"
+            class="multiplicity-label"
+        >{{ relationship.target?.multiplicity }}
+        </text>
     </g>
 </template>
 
 <script setup>
-import { useRelationship } from '@/composables/useRelationship'
+import { useRelationship } from '@/composables/useRelationship';
 import Relationship from "@/models/Relationship.js";
 
 const props = defineProps({
     relationship: {
         type: Object,
         required: true,
-        validator(value) {
-            return value instanceof Relationship;
-        }
+        validator: v => v instanceof Relationship
     },
-})
-const emit = defineEmits(['relationship-select', 'relationship-delete']);
-
-const composable = useRelationship(props.relationship)
+});
+const emit = defineEmits(['relationship-select']);
+const composable = useRelationship(props.relationship);
 </script>
 
 <style scoped>
+.relationship-label {
+    font-size: 12px;
+    pointer-events: none;
+    background: white;
+}
+
+.multiplicity-label {
+    font-size: 10px;
+    pointer-events: none;
+}
+
 .relationship-handle {
     stroke: black;
     stroke-width: 2;

@@ -8,14 +8,7 @@
         @click.stop
     >
         <div class="entity-header">
-            <input
-                v-model="entity.name"
-                class="entity-name"
-                :readonly="!composable.editing"
-                @dblclick.stop="composable.enableEditing"
-                @blur="composable.disableEditing"
-            />
-            <button class="btn-danger" @click.stop="onEntityDelete">×</button>
+            <span class="entity-name">{{ entity.name }}</span>
         </div>
         <ul class="attributes-list">
             <li
@@ -57,12 +50,10 @@ const props = defineProps({
     entity: {
         type: Object,
         required: true,
-        validator(value) {
-            return value instanceof Entity;
-        }
+        validator: v => v instanceof Entity,
     }
 });
-const emit = defineEmits(['entity-select', 'entity-delete', 'relationship-connect']);
+const emit = defineEmits(['entity-select', 'relationship-connect']);
 
 const entityRef = ref(null);
 const composable = useEntity(props.entity, entityRef);
@@ -71,11 +62,7 @@ const onMouseDown = (e) => {
     emit('entity-select');
     composable.startDragging(e);
 }
-const onEntityDelete = () => {
-    if (confirm(`Delete entity "${props.entity.name}"?`)) {
-        emit('entity-delete');
-    }
-};
+
 const onRightClick = () => {
     emit('relationship-connect');
 };

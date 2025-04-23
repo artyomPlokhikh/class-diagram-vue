@@ -12,6 +12,10 @@
     cursor: pointer;
 }
 
+.relationship text {
+    stroke: none;
+}
+
 .entity {
     position: absolute;
     background: #ffffff;

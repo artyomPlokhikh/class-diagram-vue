@@ -1,8 +1,10 @@
 export default class Relationship {
     static TYPES = {
-        ONE_TO_ONE: '1:1',
-        ONE_TO_MANY: '1:M',
-        MANY_TO_MANY: 'M:N'
+        INHERITANCE:  'inheritance',
+        ASSOCIATION:  'association',
+        AGGREGATION:  'aggregation',
+        COMPOSITION:  'composition',
+        DEPENDENCY:   'dependency'
     };
 
     static CONNECTORS = {
@@ -14,25 +16,29 @@ export default class Relationship {
 
     constructor(options = {}) {
         this.id = options.id || Date.now();
-        this.type = options.type || Relationship.TYPES.ONE_TO_ONE;
-        this.points = options.points || [];
+        this.name = options.name || '';
+        this.type = options.type || Relationship.TYPES.ASSOCIATION;
         this.source = {
             id: options.source?.id || null,
-            port: options.source?.port || null
+            port: options.source?.port || null,
+            multiplicity: options.source?.multiplicity || '1',
         };
         this.target = {
             id: options.target?.id || null,
-            port: options.target?.port || null
+            port: options.target?.port || null,
+            multiplicity: options.target?.multiplicity || '1',
         };
+        this.points = options.points || [];
     };
 
     toJSON() {
         return {
             id: this.id,
+            name: this.name,
             type: this.type,
-            points: this.points,
             source: this.source,
-            target: this.target
+            target: this.target,
+            points: this.points
         };
     };
 }
