@@ -82,6 +82,7 @@ export function useRelationshipCreator(diagramStore, canvasRef) {
             pendingRelationship.value.bendPoints.splice(-removeCount, removeCount);
         }
 
+        diagramStore.setSelected(relationship);
         startFollowingCursor();
     };
 

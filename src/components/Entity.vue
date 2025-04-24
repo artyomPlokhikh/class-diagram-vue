@@ -99,7 +99,6 @@ const composable = useEntity(props.entity, entityRef);
 
 const selectedObj = inject("selectedObj", {value: null});
 const isSelected = computed(() => selectedObj.value && selectedObj.value?.id === props.entity.id);
-
 const isHovering = ref(false);
 
 const onMouseDown = (e) => {

@@ -7,6 +7,7 @@ export function useBendDragger(diagramStore, canvasRef) {
     let currentBend = null;
 
     const startBendDrag = (relationship, bendIndex) => {
+        diagramStore.setSelected(relationship);
         currentBend = { relationship, bendIndex };
 
         const handleMouseMove = (event) => {
