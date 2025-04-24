@@ -1,11 +1,14 @@
 import { inject, ref } from "vue";
-import { calculateConnectionPoint } from "@/utils/mathHelpers.js";
+import { calculateConnectionPoint, calculateDragConnectionPoints } from "@/utils/mathHelpers.js";
 import Relationship from "@/models/Relationship.js";
 
 export function useRelationshipCreator(diagramStore, canvasRef) {
     const pendingRelationship = ref(null);
     const startPoint = ref({ x: 0, y: 0 });
     const endPoint = ref({ x: 0, y: 0 });
+
+    const currentHandleType = ref(null);
+    const originalRelationship = ref(null);
     const isFollowingCursor = ref(false);
 
     const canvas = canvasRef || inject("canvas", ref(null));
@@ -16,24 +19,70 @@ export function useRelationshipCreator(diagramStore, canvasRef) {
         if (!pendingRelationship.value) {
             pendingRelationship.value = new Relationship({
                 src: {
-                    id: connectionInfo.entityId, border: connectionInfo.border, position: connectionInfo.position
+                    id: connectionInfo.entityId,
+                    border: connectionInfo.border,
+                    position: connectionInfo.position
                 }
             });
-
-            startPoint.value = calculateConnectionPoint(diagramStore.entities.find(e => e.id === connectionInfo.entityId), pendingRelationship.value.src.border, pendingRelationship.value.src.position,);
-
+            startPoint.value = calculateConnectionPoint(
+                diagramStore.entities.find(e => e.id === connectionInfo.entityId),
+                pendingRelationship.value.src.border,
+                pendingRelationship.value.src.position
+            );
             startFollowingCursor();
         } else {
-            if (pendingRelationship.value.src.id !== connectionInfo.entityId) {
-                pendingRelationship.value.trg = {
-                    id: connectionInfo.entityId, border: connectionInfo.border, position: connectionInfo.position
+            if (originalRelationship.value) {
+                const handle = currentHandleType.value;
+                originalRelationship.value[handle] = {
+                    id: connectionInfo.entityId,
+                    border: connectionInfo.border,
+                    position: connectionInfo.position,
+                    mult: originalRelationship.value[handle].mult
                 };
 
-                diagramStore.addRelationship(pendingRelationship.value);
+                if (pendingRelationship.value.bendPoints.length > 0) {
+                    originalRelationship.value.bendPoints =
+                        handle === 'src'
+                            ? pendingRelationship.value.bendPoints
+                            : [...pendingRelationship.value.bendPoints];
+                }
+
+                diagramStore.updateRelationship(originalRelationship.value);
+            } else {
+                if (pendingRelationship.value.src.id !== connectionInfo.entityId) {
+                    pendingRelationship.value.trg = {
+                        id: connectionInfo.entityId,
+                        border: connectionInfo.border,
+                        position: connectionInfo.position
+                    };
+                    diagramStore.addRelationship(pendingRelationship.value);
+                }
             }
             resetRelationship();
             stopFollowingCursor();
         }
+    };
+
+    const handleRelationshipDrag = (relationship, handleType) => {
+        originalRelationship.value = relationship;
+        currentHandleType.value = handleType;
+        pendingRelationship.value = new Relationship(relationship.toJSON());
+
+        const { fixedPoint, removeCount } = calculateDragConnectionPoints(
+            relationship,
+            diagramStore.entities,
+            handleType
+        );
+
+        startPoint.value = fixedPoint;
+
+        if (handleType === 'src') {
+            pendingRelationship.value.bendPoints.splice(0, removeCount);
+        } else {
+            pendingRelationship.value.bendPoints.splice(-removeCount, removeCount);
+        }
+
+        startFollowingCursor();
     };
 
     const startFollowingCursor = () => {
@@ -98,12 +147,18 @@ export function useRelationshipCreator(diagramStore, canvasRef) {
 
     const resetRelationship = () => {
         pendingRelationship.value = null;
+        originalRelationship.value = null;
+        currentHandleType.value = null;
         startPoint.value = { x: 0, y: 0 };
         endPoint.value = { x: 0, y: 0 };
     };
 
 
     return {
-        pendingRelationship, handleRelationshipConnect, startPoint, endPoint,
+        pendingRelationship,
+        startPoint,
+        endPoint,
+        handleRelationshipConnect,
+        handleRelationshipDrag,
     }
 }

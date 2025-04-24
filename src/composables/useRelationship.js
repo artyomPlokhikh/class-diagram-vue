@@ -1,5 +1,5 @@
 import { computed, inject } from 'vue';
-import { calculateConnectionPoint } from '@/utils/mathHelpers';
+import { calculateConnectionPoint, calculatePathCenter, offsetMultiplicity } from '@/utils/mathHelpers';
 import Relationship from '@/models/Relationship.js';
 
 export function useRelationship(relationship) {
@@ -23,6 +23,12 @@ export function useRelationship(relationship) {
         );
     });
 
+    const allPoints = computed(() => [
+        srcPoint.value,
+        ...relationship.bendPoints,
+        trgPoint.value
+    ]);
+
     const path = computed(() => {
         if (!srcPoint.value || !trgPoint.value) return '';
 
@@ -38,15 +44,9 @@ export function useRelationship(relationship) {
         return `${srcPoint.value.x},${srcPoint.value.y} ${trgPoint.value.x},${trgPoint.value.y}`;
     });
 
-    const labelPos = computed(() => {
-        return { x: 0, y: 0 }
-    });
-    const srcMultPos = computed(() => {
-        return { x: 0, y: 0 }
-    });
-    const trgMultPos = computed(() => {
-        return { x: 0, y: 0 }
-    });
+    const labelPos = computed(() => calculatePathCenter(allPoints.value));
+    const srcMultPos = computed(() => offsetMultiplicity(srcPoint.value, relationship.src.border));
+    const trgMultPos = computed(() => offsetMultiplicity(trgPoint.value, relationship.trg.border));
 
     const markerStart = computed(() => {
         switch (relationship.type) {
@@ -71,7 +71,9 @@ export function useRelationship(relationship) {
         }
     });
 
-    const strokeDasharray = computed(() => relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null);
+    const strokeDasharray = computed(() =>
+        relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null
+    );
 
     return {
         srcPoint,

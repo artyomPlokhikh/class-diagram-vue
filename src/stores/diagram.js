@@ -34,12 +34,19 @@ export const useDiagramStore = defineStore('diagram', {
         },
 
         addRelationship(relationship) {
-            if (relationship instanceof Relationship) {
-                this.relationships.push(relationship);
+            if (!relationship instanceof Relationship) return;
 
-                this.setSelected(relationship);
-                this.saveState();
-            }
+            this.relationships.push(relationship);
+            this.setSelected(relationship);
+            this.saveState();
+        },
+
+        updateRelationship(updatedRel) {
+            const index = this.relationships.findIndex(r => r.id === updatedRel.id);
+            if (index < 0) return;
+
+            this.relationships.splice(index, 1, updatedRel);
+            this.saveState();
         },
 
         deleteRelationship(id) {

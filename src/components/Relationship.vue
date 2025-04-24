@@ -5,6 +5,7 @@
             stroke="transparent"
             fill="none"
             stroke-width="25"
+            @dblclick="addBendPoint"
         />
         <polyline
             :points="path"
@@ -16,12 +17,24 @@
             :marker-end="markerEnd"
         />
         <circle
+            v-for="(point, index) in relationship.bendPoints"
+            :key="index"
+            :cx="point.x"
+            :cy="point.y"
+            r="5"
+            fill="green"
+            cursor="pointer"
+            @contextmenu.prevent="removeBendPoint(index)"
+            @mousedown.stop="startBendDrag(index)"
+        />
+        <circle
             class="relationship-handle"
             :cx="srcPoint.x"
             :cy="srcPoint.y"
             r="5"
             fill="blue"
             cursor="pointer"
+            @mousedown.stop="emit('relationship-drag', { relationship, handleType: 'src' })"
         />
         <circle
             class="relationship-handle"
@@ -30,6 +43,7 @@
             r="5"
             fill="red"
             cursor="pointer"
+            @mousedown.stop="emit('relationship-drag', { relationship, handleType: 'trg' })"
         />
         <text
             :x="labelPos.x"
@@ -59,8 +73,8 @@
 </template>
 
 <script setup>
-import { useRelationship } from '@/composables/useRelationship'
-import Relationship from '@/models/Relationship.js'
+import { useRelationship } from '@/composables/useRelationship';
+import Relationship from '@/models/Relationship.js';
 
 const props = defineProps({
     relationship: {
@@ -68,8 +82,8 @@ const props = defineProps({
         required: true,
         validator: v => v instanceof Relationship
     }
-})
-const emit = defineEmits(['relationship-select'])
+});
+const emit = defineEmits(['relationship-select', 'relationship-drag']);
 const {
     path,
     srcPoint,
@@ -80,7 +94,11 @@ const {
     markerStart,
     markerEnd,
     strokeDasharray,
-} = useRelationship(props.relationship)
+    addBendPoint,
+    removeBendPoint,
+    allPoints
+} = useRelationship(props.relationship);
+
 </script>
 
 <style scoped>

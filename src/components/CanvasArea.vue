@@ -26,7 +26,7 @@
                     :key="relationship.id"
                     :relationship="relationship"
                     @relationship-select="diagramStore.setSelected(relationship)"
-                    @relationship-delete="diagramStore.deleteRelationship(relationship.id)"
+                    @relationship-drag="(payload) => relationshipCreator.handleRelationshipDrag(payload.relationship, payload.handleType)"
                 />
 
                 <line
