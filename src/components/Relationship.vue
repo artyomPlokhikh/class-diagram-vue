@@ -1,6 +1,7 @@
 <template>
     <g @click.stop="emit('relationship-select')" class="relationship">
         <polyline
+            class="hit-area"
             :points="path"
             stroke="transparent"
             fill="none"
@@ -10,6 +11,7 @@
             @mouseleave="clearPreview"
         />
         <polyline
+            class="main-line"
             :points="path"
             stroke="black"
             fill="none"
@@ -107,7 +109,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['relationship-select', 'relationship-drag', 'bend-drag']);
 
-const selectedObj = inject("selectedObj", {value: null});
+const selectedObj = inject("selectedObj", { value: null });
 const isSelected = computed(() => selectedObj.value?.id === props.relationship.id);
 
 const {
