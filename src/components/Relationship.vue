@@ -5,7 +5,6 @@
             stroke="transparent"
             fill="none"
             stroke-width="25"
-            @dblclick="addManualPoint"
         />
         <polyline
             :points="path"
@@ -18,43 +17,43 @@
         />
         <circle
             class="relationship-handle"
-            :cx="sourcePoint.x"
-            :cy="sourcePoint.y"
+            :cx="srcPoint.x"
+            :cy="srcPoint.y"
             r="5"
             fill="blue"
             cursor="pointer"
         />
         <circle
             class="relationship-handle"
-            :cx="targetPoint.x"
-            :cy="targetPoint.y"
+            :cx="trgPoint.x"
+            :cy="trgPoint.y"
             r="5"
             fill="red"
             cursor="pointer"
         />
         <text
-            :x="labelPoint.x"
-            :y="labelPoint.y - 5"
+            :x="labelPos.x"
+            :y="labelPos.y - 5"
             text-anchor="middle"
             class="relationship-label"
         >
             {{ relationship.name }}
         </text>
         <text
-            :x="sourceMultiplicityPoint.x"
-            :y="sourceMultiplicityPoint.y"
+            :x="srcMultPos.x"
+            :y="srcMultPos.y"
             text-anchor="middle"
             class="multiplicity-label"
         >
-            {{ relationship.source?.multiplicity }}
+            {{ relationship.src?.mult }}
         </text>
         <text
-            :x="targetMultiplicityPoint.x"
-            :y="targetMultiplicityPoint.y"
+            :x="trgMultPos.x"
+            :y="trgMultPos.y"
             text-anchor="middle"
             class="multiplicity-label"
         >
-            {{ relationship.target?.multiplicity }}
+            {{ relationship.trg?.mult }}
         </text>
     </g>
 </template>
@@ -73,15 +72,14 @@ const props = defineProps({
 const emit = defineEmits(['relationship-select'])
 const {
     path,
-    sourcePoint,
-    targetPoint,
+    srcPoint,
+    trgPoint,
+    labelPos,
+    srcMultPos,
+    trgMultPos,
     markerStart,
     markerEnd,
     strokeDasharray,
-    labelPoint,
-    sourceMultiplicityPoint,
-    targetMultiplicityPoint,
-    addManualPoint
 } = useRelationship(props.relationship)
 </script>
 

@@ -92,8 +92,7 @@ export function useEntity(entity, elementRef) {
         if (elementRef?.value) {
             observer = new ResizeObserver((entries) => {
                 if (!isResizing.value && !isManuallyResized.value) {
-                    const target = entries[0].target;
-                    const naturalSize = measureIntrinsicSize(target);
+                    const naturalSize = measureIntrinsicSize(entries[0].target);
                     requestAnimationFrame(() => {
                         entity.width = Math.max(entity.width, naturalSize.width);
                         entity.height = Math.max(entity.height, naturalSize.height);

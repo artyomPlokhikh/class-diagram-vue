@@ -13,8 +13,8 @@
                     v-for="entity in entities"
                     :key="entity.id"
                     :entity="entity"
-                    @entity-select="store.setSelected(entity)"
-                    @relationship-connect="store.connectRelationship(entity.id)"
+                    @entity-select="diagramStore.setSelected(entity)"
+                    @relationship-connect="relationshipCreator.handleRelationshipConnect"
                 />
             </div>
             <!-- SVG overlay for relationships -->
@@ -25,8 +25,19 @@
                     v-for="relationship in relationships"
                     :key="relationship.id"
                     :relationship="relationship"
-                    @relationship-select="store.setSelected(relationship)"
-                    @relationship-delete="store.deleteRelationship(relationship.id)"
+                    @relationship-select="diagramStore.setSelected(relationship)"
+                    @relationship-delete="diagramStore.deleteRelationship(relationship.id)"
+                />
+
+                <line
+                    v-if="relationshipCreator.pendingRelationship"
+                    :x1="relationshipCreator.startPoint.value.x"
+                    :y1="relationshipCreator.startPoint.value.y"
+                    :x2="relationshipCreator.endPoint.value.x"
+                    :y2="relationshipCreator.endPoint.value.y"
+                    stroke="rgba(0, 0, 0, 0.5)"
+                    stroke-width="2"
+                    stroke-dasharray="5,5"
                 />
             </svg>
         </div>
@@ -37,15 +48,13 @@
 import { ref, computed, provide } from 'vue';
 import { useDiagramStore } from '@/stores/diagram';
 import { useCamera } from '@/composables/useCamera.js';
+import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
 
-const store = useDiagramStore();
-
 const canvas = ref(null);
 provide('canvas', canvas);
-
 const {
     pan,
     zoom,
@@ -56,13 +65,17 @@ const {
 provide('pan', pan);
 provide('zoom', zoom);
 
-const entities = computed(() => store.entities);
+const diagramStore = useDiagramStore();
+const relationshipCreator = useRelationshipCreator(diagramStore, canvas);
+
+const entities = computed(() => diagramStore.entities);
 provide('entities', entities);
+
 const relationships = computed(() =>
-    store.relationships.filter(rel => rel?.source?.id && rel?.target?.id)
+    diagramStore.relationships.filter(rel => rel?.src?.id && rel?.trg?.id)
 );
 
 const handleCanvasClick = () => {
-    store.setSelected(null);
+    diagramStore.setSelected(null);
 };
 </script>

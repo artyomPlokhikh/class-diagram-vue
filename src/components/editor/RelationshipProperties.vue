@@ -22,7 +22,7 @@
         <div class="form-group">
             <label>Source Multiplicity:</label>
             <input
-                v-model="relationship.source.multiplicity"
+                v-model="relationship.src.mult"
                 placeholder="1, 0..*, etc."
             />
         </div>
@@ -30,7 +30,7 @@
         <div class="form-group">
             <label>Target Multiplicity:</label>
             <input
-                v-model="relationship.target.multiplicity"
+                v-model="relationship.trg.mult"
                 placeholder="1, 0..*, etc."
             />
         </div>

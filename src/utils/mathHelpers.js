@@ -1,23 +1,32 @@
-export function getEntityConnectionPoints(entity) {
+export function calculateConnectionPoint(entity, border, position) {
+    if (!entity) return { x: 0, y: 0 };
+
     const { x, y, width, height } = entity;
-    return {
-        T: [{ x: x + width * 0.25, y: y }, { x: x + width * 0.5, y: y }, { x: x + width * 0.75, y: y }],
-        R: [{ x: x + width, y: y + height * 0.25 }, { x: x + width, y: y + height * 0.5 }, {
-            x: x + width,
-            y: y + height * 0.75
-        }],
-        B: [{ x: x + width * 0.25, y: y + height }, { x: x + width * 0.5, y: y + height }, {
-            x: x + width * 0.75,
-            y: y + height
-        }],
-        L: [{ x: x, y: y + height * 0.25 }, { x: x, y: y + height * 0.5 }, { x: x, y: y + height * 0.75 }]
-    };
+
+    switch (border) {
+        case 'top':
+            return { x: x + width * position, y };
+        case 'right':
+            return { x: x + width, y: y + height * position };
+        case 'bottom':
+            return { x: x + width * position, y: y + height };
+        case 'left':
+            return { x, y: y + height * position };
+        default:
+            return { x, y };
+    }
 }
 
-export function offsetPoint(point, side, m) {
-    if (side === 'R') return { x: point.x + m, y: point.y }
-    if (side === 'L') return { x: point.x - m, y: point.y }
-    if (side === 'T') return { x: point.x, y: point.y - m }
-    if (side === 'B') return { x: point.x, y: point.y + m }
-    return point
-}
+export function calculateBorderRelativePosition(rect, borderSide, point = { x: 0, y: 0 }) {
+    switch (borderSide) {
+        case 'top':
+        case 'bottom':
+            return Math.max(0, Math.min(1, (point.x - rect.left) / rect.width));
+        case 'left':
+        case 'right':
+            return Math.max(0, Math.min(1, (point.y - rect.top) / rect.height));
+        default:
+            return 0.5;
+    }
+};
+

@@ -27,32 +27,17 @@ export const useDiagramStore = defineStore('diagram', {
 
             this.entities = this.entities.filter(e => e.id !== id);
             this.relationships = this.relationships.filter(rel =>
-                rel.source.id !== id && rel.target.id !== id
+                rel.src.id !== id && rel.trg.id !== id
             );
 
             this.saveState();
         },
 
-        connectRelationship(entityId) {
-            const unconnectedRel = this.relationships.find(r => !r.source.id || !r.target.id);
+        addRelationship(relationship) {
+            if (relationship instanceof Relationship) {
+                this.relationships.push(relationship);
 
-            if (!unconnectedRel) {
-                const newRel = new Relationship({
-                    source: { id: entityId, port: null },
-                });
-                this.relationships.push(newRel);
-
-            } else {
-                if (unconnectedRel.source.id === entityId || unconnectedRel.target.id === entityId) {
-                    return;
-                }
-
-                if (!unconnectedRel.source.id) {
-                    unconnectedRel.source.id = entityId;
-                } else {
-                    unconnectedRel.target.id = entityId;
-                }
-                this.setSelected(unconnectedRel);
+                this.setSelected(relationship);
                 this.saveState();
             }
         },
