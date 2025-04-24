@@ -72,7 +72,7 @@
   right: 0;
   width: 14px;
   height: 14px;
-  z-index: $z-entity;
+  z-index: $z-handles + 1;
   background: $blue;
   cursor: nwse-resize;
   border-radius: 2px 0 2px 0;
