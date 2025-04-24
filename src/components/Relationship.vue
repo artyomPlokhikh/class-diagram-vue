@@ -6,6 +6,8 @@
             fill="none"
             stroke-width="25"
             @dblclick="addBendPoint"
+            @mousemove="handleRelationshipHover($event, allPoints)"
+            @mouseleave="clearPreview"
         />
         <polyline
             :points="path"
@@ -15,36 +17,11 @@
             :stroke-dasharray="strokeDasharray"
             :marker-start="markerStart"
             :marker-end="markerEnd"
+            @dblclick="addBendPoint"
+            @mousemove="handleRelationshipHover($event, allPoints)"
+            @mouseleave="clearPreview"
         />
-        <circle
-            v-for="(point, index) in relationship.bendPoints"
-            :key="index"
-            :cx="point.x"
-            :cy="point.y"
-            r="5"
-            fill="green"
-            cursor="pointer"
-            @contextmenu.prevent="removeBendPoint(index)"
-            @mousedown.stop="startBendDrag(index)"
-        />
-        <circle
-            class="relationship-handle"
-            :cx="srcPoint.x"
-            :cy="srcPoint.y"
-            r="5"
-            fill="blue"
-            cursor="pointer"
-            @mousedown.stop="emit('relationship-drag', { relationship, handleType: 'src' })"
-        />
-        <circle
-            class="relationship-handle"
-            :cx="trgPoint.x"
-            :cy="trgPoint.y"
-            r="5"
-            fill="red"
-            cursor="pointer"
-            @mousedown.stop="emit('relationship-drag', { relationship, handleType: 'trg' })"
-        />
+
         <text
             :x="labelPos.x"
             :y="labelPos.y - 5"
@@ -70,11 +47,56 @@
             {{ relationship.trg?.mult }}
         </text>
     </g>
+
+    <teleport to="#handles-svg">
+        <g v-show="isSelected">
+            <template v-for="(pt, idx) in relationship.bendPoints" :key="idx">
+                <circle
+                    class="interaction-handle"
+                    :cx="pt.x" :cy="pt.y" r="10"
+                    fill="transparent"
+                    @mousedown.stop.prevent="emit('bend-drag', { relationship, idx })"
+                />
+                <circle
+                    class="bend-handle"
+                    :cx="pt.x" :cy="pt.y" r="5"
+                    @contextmenu.prevent="removeBendPoint(idx)"
+                    @mousedown.stop.prevent="emit('bend-drag', { relationship, idx })"
+                />
+            </template>
+
+            <circle
+                class="interaction-handle"
+                :cx="srcPoint.x" :cy="srcPoint.y" r="12"
+                fill="transparent"
+                @mousedown.stop.prevent="emit('relationship-drag', { relationship, handleType:'src' })"
+            />
+            <circle
+                class="relationship-handle"
+                :cx="srcPoint.x" :cy="srcPoint.y" r="6"
+                @mousedown.stop.prevent="emit('relationship-drag', { relationship, handleType:'src' })"
+            />
+
+            <circle
+                class="interaction-handle"
+                :cx="trgPoint.x" :cy="trgPoint.y" r="12"
+                fill="transparent"
+                @mousedown.stop.prevent="emit('relationship-drag', { relationship, handleType:'trg' })"
+            />
+            <circle
+                class="relationship-handle"
+                :cx="trgPoint.x" :cy="trgPoint.y" r="6"
+                @mousedown.stop.prevent="emit('relationship-drag', { relationship, handleType:'trg' })"
+            />
+        </g>
+    </teleport>
 </template>
 
 <script setup>
 import { useRelationship } from '@/composables/useRelationship';
+import { useHoverPreview } from '@/composables/useHoverPreview.js';
 import Relationship from '@/models/Relationship.js';
+import { computed, inject } from "vue";
 
 const props = defineProps({
     relationship: {
@@ -83,11 +105,16 @@ const props = defineProps({
         validator: v => v instanceof Relationship
     }
 });
-const emit = defineEmits(['relationship-select', 'relationship-drag']);
+const emit = defineEmits(['relationship-select', 'relationship-drag', 'bend-drag']);
+
+const selectedObj = inject("selectedObj", {value: null});
+const isSelected = computed(() => selectedObj.value?.id === props.relationship.id);
+
 const {
     path,
     srcPoint,
     trgPoint,
+    allPoints,
     labelPos,
     srcMultPos,
     trgMultPos,
@@ -96,24 +123,8 @@ const {
     strokeDasharray,
     addBendPoint,
     removeBendPoint,
-    allPoints
 } = useRelationship(props.relationship);
 
+const { handleRelationshipHover, clearPreview } = useHoverPreview();
+
 </script>
-
-<style scoped>
-.relationship-label {
-    font-size: 12px;
-    pointer-events: none;
-}
-
-.multiplicity-label {
-    font-size: 10px;
-    pointer-events: none;
-}
-
-.relationship-handle {
-    stroke: black;
-    stroke-width: 2;
-}
-</style>

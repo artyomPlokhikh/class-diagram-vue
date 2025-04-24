@@ -27,6 +27,7 @@
                     :relationship="relationship"
                     @relationship-select="diagramStore.setSelected(relationship)"
                     @relationship-drag="(payload) => relationshipCreator.handleRelationshipDrag(payload.relationship, payload.handleType)"
+                    @bend-drag="bendDragger.startBendDrag"
                 />
 
                 <line
@@ -40,6 +41,18 @@
                     stroke-dasharray="5,5"
                 />
             </svg>
+
+            <svg id="handles-svg" class="handles-svg"></svg>
+            <svg class="preview-overlay">
+                <circle
+                    v-if="previewPoint"
+                    :cx="previewPoint.x"
+                    :cy="previewPoint.y"
+                    r="5"
+                    fill="rgba(0,255,0,0.3)"
+                    stroke="green"
+                />
+            </svg>
         </div>
     </div>
 </template>
@@ -49,9 +62,11 @@ import { ref, computed, provide } from 'vue';
 import { useDiagramStore } from '@/stores/diagram';
 import { useCamera } from '@/composables/useCamera.js';
 import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
+import { useBendDragger } from '@/composables/useBendDragger';
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
+import { useHoverPreview } from "@/composables/useHoverPreview.js";
 
 const canvas = ref(null);
 provide('canvas', canvas);
@@ -66,7 +81,10 @@ provide('pan', pan);
 provide('zoom', zoom);
 
 const diagramStore = useDiagramStore();
+provide('selectedObj', computed(() => diagramStore.selected));
+
 const relationshipCreator = useRelationshipCreator(diagramStore, canvas);
+const bendDragger = useBendDragger(diagramStore, canvas);
 
 const entities = computed(() => diagramStore.entities);
 provide('entities', entities);
@@ -78,4 +96,7 @@ const relationships = computed(() =>
 const handleCanvasClick = () => {
     diagramStore.setSelected(null);
 };
+
+const { previewPoint } = useHoverPreview()
+
 </script>

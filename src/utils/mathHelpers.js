@@ -130,3 +130,80 @@ export function calculateDragConnectionPoints(relationship, entities, handleType
         removeCount
     };
 }
+
+export function findClosestPointOnPath(points, target) {
+    let closest = { distance: Infinity, point: null, segmentIndex: -1 };
+
+    for (let i = 0; i < points.length - 1; i++) {
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const proj = projectPointOnSegment(target, p1, p2);
+        const dist = distance(target, proj.point);
+
+        if (dist < closest.distance) {
+            closest = {
+                distance: dist,
+                point: proj.point,
+                segmentIndex: i,
+                t: proj.t
+            };
+        }
+    }
+
+    return closest;
+}
+
+function projectPointOnSegment(point, a, b) {
+    const ax = point.x - a.x;
+    const ay = point.y - a.y;
+    const bx = b.x - a.x;
+    const by = b.y - a.y;
+    const t = (ax * bx + ay * by) / (bx * bx + by * by);
+
+    return {
+        point: {
+            x: a.x + bx * Math.max(0, Math.min(1, t)),
+            y: a.y + by * Math.max(0, Math.min(1, t))
+        },
+        t: t
+    };
+}
+
+function distance(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+export function calculateBorderPreviewPoint(rect, border, mousePos) {
+    const svg = document.querySelector('.relationship-svg');
+    const pt = svg.createSVGPoint();
+    pt.x = mousePos.x;
+    pt.y = mousePos.y;
+    const svgPos = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+    const position = calculateBorderRelativePosition(rect, border, mousePos);
+
+    let x, y;
+
+    switch (border) {
+        case 'top':
+            x = rect.left + rect.width * position;
+            y = rect.top;
+            break;
+        case 'right':
+            x = rect.right;
+            y = rect.top + rect.height * position;
+            break;
+        case 'bottom':
+            x = rect.left + rect.width * position;
+            y = rect.bottom;
+            break;
+        case 'left':
+            x = rect.left;
+            y = rect.top + rect.height * position;
+            break;
+    }
+
+    pt.x = x;
+    pt.y = y;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+}

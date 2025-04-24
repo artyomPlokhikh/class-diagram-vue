@@ -1,11 +1,12 @@
 import { computed, inject } from 'vue';
-import { calculateConnectionPoint, calculatePathCenter, offsetMultiplicity } from '@/utils/mathHelpers';
+import { calculateConnectionPoint, calculatePathCenter, findClosestPointOnPath, offsetMultiplicity } from '@/utils/mathHelpers';
 import Relationship from '@/models/Relationship.js';
 
 export function useRelationship(relationship) {
     const entities = inject('entities', { value: [] });
     const srcEntity = computed(() => entities.value.find(e => e.id === relationship.src?.id));
     const trgEntity = computed(() => entities.value.find(e => e.id === relationship.trg?.id));
+
 
     const srcPoint = computed(() => {
         return calculateConnectionPoint(
@@ -44,6 +45,23 @@ export function useRelationship(relationship) {
         return `${srcPoint.value.x},${srcPoint.value.y} ${trgPoint.value.x},${trgPoint.value.y}`;
     });
 
+
+    const addBendPoint = (event) => {
+        const svg = event.target.ownerSVGElement;
+        const pt = svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        const mousePos = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+        const closest = findClosestPointOnPath(allPoints.value, mousePos);
+        relationship.bendPoints.splice(closest.segmentIndex + 1, 0, closest.point);
+    };
+
+    const removeBendPoint = (index) => {
+        relationship.bendPoints.splice(index, 1);
+    };
+
+
     const labelPos = computed(() => calculatePathCenter(allPoints.value));
     const srcMultPos = computed(() => offsetMultiplicity(srcPoint.value, relationship.src.border));
     const trgMultPos = computed(() => offsetMultiplicity(trgPoint.value, relationship.trg.border));
@@ -75,10 +93,14 @@ export function useRelationship(relationship) {
         relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null
     );
 
+
     return {
         srcPoint,
         trgPoint,
         path,
+        allPoints,
+        addBendPoint,
+        removeBendPoint,
         labelPos,
         srcMultPos,
         trgMultPos,
