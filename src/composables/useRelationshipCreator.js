@@ -1,8 +1,8 @@
-import { inject, ref } from "vue";
-import { calculateConnectionPoint, calculateDragConnectionPoints } from "@/utils/mathHelpers.js";
+import { ref } from "vue";
+import { calculateConnectionPoint, calculateDragConnectionPoints, getCanvasCoordinates } from "@/utils/mathHelpers.js";
 import Relationship from "@/models/Relationship.js";
 
-export function useRelationshipCreator(diagramStore, canvasRef) {
+export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
     const pendingRelationship = ref(null);
     const startPoint = ref({ x: 0, y: 0 });
     const endPoint = ref({ x: 0, y: 0 });
@@ -10,10 +10,6 @@ export function useRelationshipCreator(diagramStore, canvasRef) {
     const currentHandleType = ref(null);
     const originalRelationship = ref(null);
     const isFollowingCursor = ref(false);
-
-    const canvas = canvasRef || inject("canvas", ref(null));
-    const zoom = inject("zoom", { value: 1 });
-    const pan = inject("pan", { value: { x: 0, y: 0 } });
 
     const handleRelationshipConnect = (connectionInfo) => {
         if (!pendingRelationship.value) {
@@ -103,20 +99,13 @@ export function useRelationshipCreator(diagramStore, canvasRef) {
     };
 
     const updateEndPoint = (event) => {
-        if (!canvas.value) return;
-
-        const canvasRect = canvas.value.getBoundingClientRect();
-
-        const clientX = event.clientX;
-        const clientY = event.clientY;
-
-        const canvasX = clientX - canvasRect.left;
-        const canvasY = clientY - canvasRect.top;
-
-        const diagramX = (canvasX / zoom.value) - pan.value.x;
-        const diagramY = (canvasY / zoom.value) - pan.value.y;
-
-        endPoint.value = { x: diagramX, y: diagramY };
+        if (!canvasRef.value) return;
+        endPoint.value = getCanvasCoordinates(
+            event,
+            canvasRef.value,
+            pan.value,
+            zoom.value
+        );
     };
 
     const handleCancel = (event) => {

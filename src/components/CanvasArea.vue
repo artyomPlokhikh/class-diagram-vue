@@ -83,8 +83,8 @@ provide('zoom', zoom);
 const diagramStore = useDiagramStore();
 provide('selectedObj', computed(() => diagramStore.selected));
 
-const relationshipCreator = useRelationshipCreator(diagramStore, canvas);
-const bendDragger = useBendDragger(diagramStore, canvas);
+const relationshipCreator = useRelationshipCreator(diagramStore, canvas, pan, zoom);
+const bendDragger = useBendDragger(diagramStore, canvas, pan, zoom);
 
 const entities = computed(() => diagramStore.entities);
 provide('entities', entities);

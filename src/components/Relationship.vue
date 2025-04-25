@@ -62,13 +62,12 @@
                 <circle
                     class="interaction-handle"
                     :cx="pt.x" :cy="pt.y" r="10"
-                    @mousedown.stop.prevent="emit('bend-drag',relationship, idx)"
                 />
                 <circle
                     class="bend-handle"
                     :cx="pt.x" :cy="pt.y" r="5"
                     @contextmenu.prevent="removeBendPoint(idx)"
-                    @mousedown.stop.prevent="emit('bend-drag', relationship, idx)"
+                    @mousedown.stop.prevent="e => emit('bend-drag', relationship, idx, e)"
                 />
             </template>
 

@@ -207,3 +207,13 @@ export function calculateBorderPreviewPoint(rect, border, mousePos) {
     pt.y = y;
     return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
+
+export function getCanvasCoordinates(event, canvasRef, pan, zoom) {
+    if (!canvasRef) return { x: 0, y: 0 };
+
+    const rect = canvasRef.getBoundingClientRect();
+    const x = (event.clientX - rect.left - pan.x) / zoom;
+    const y = (event.clientY - rect.top - pan.y) / zoom;
+
+    return { x, y };
+}

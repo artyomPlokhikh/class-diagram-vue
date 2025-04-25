@@ -1,8 +1,6 @@
-import { inject } from 'vue';
+import { getCanvasCoordinates } from "@/utils/mathHelpers.js";
 
-export function useBendDragger(diagramStore, canvasRef) {
-    const zoom = inject('zoom', { value: 1 });
-    const pan = inject('pan', { value: { x: 0, y: 0 } });
+export function useBendDragger(diagramStore, canvasRef, pan, zoom) {
 
     let currentBend = null;
 
@@ -13,11 +11,12 @@ export function useBendDragger(diagramStore, canvasRef) {
         const handleMouseMove = (event) => {
             if (!currentBend || !canvasRef.value) return;
 
-            const rect = canvasRef.value.getBoundingClientRect();
-            const x = (event.clientX - rect.left - pan.value.x) / zoom.value;
-            const y = (event.clientY - rect.top - pan.value.y) / zoom.value;
-
-            currentBend.relationship.bendPoints[currentBend.bendIndex] = { x, y };
+            currentBend.relationship.bendPoints[currentBend.bendIndex] = getCanvasCoordinates(
+                event,
+                canvasRef.value,
+                pan.value,
+                zoom.value
+            );
             diagramStore.updateRelationship(currentBend.relationship);
         };
 
