@@ -30,12 +30,10 @@
                     @bend-drag="bendDragger.startBendDrag"
                 />
 
-                <line
+                <polyline
                     v-if="relationshipCreator.pendingRelationship"
-                    :x1="relationshipCreator.startPoint.value.x"
-                    :y1="relationshipCreator.startPoint.value.y"
-                    :x2="relationshipCreator.endPoint.value.x"
-                    :y2="relationshipCreator.endPoint.value.y"
+                    :points="relationshipCreator.previewPath.value"
+                    fill="none"
                     stroke="rgba(0, 0, 0, 0.5)"
                     stroke-width="2"
                     stroke-dasharray="5,5"

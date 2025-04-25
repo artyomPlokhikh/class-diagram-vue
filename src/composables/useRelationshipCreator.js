@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { calculateConnectionPoint, calculateDragConnectionPoints, getCanvasCoordinates } from "@/utils/mathHelpers.js";
 import Relationship from "@/models/Relationship.js";
 
@@ -30,19 +30,19 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         } else {
             if (originalRelationship.value) {
                 const handle = currentHandleType.value;
+                const originalBends = originalRelationship.value.bendPoints;
+                const newBends = pendingRelationship.value.bendPoints;
+
+                originalRelationship.value.bendPoints = handle === 'src'
+                    ? [...newBends, ...originalBends]
+                    : [...originalBends, ...newBends];
+
                 originalRelationship.value[handle] = {
                     id: connectionInfo.entityId,
                     border: connectionInfo.border,
                     position: connectionInfo.position,
                     mult: originalRelationship.value[handle].mult
                 };
-
-                if (pendingRelationship.value.bendPoints.length > 0) {
-                    originalRelationship.value.bendPoints =
-                        handle === 'src'
-                            ? pendingRelationship.value.bendPoints
-                            : [...pendingRelationship.value.bendPoints];
-                }
 
                 diagramStore.updateRelationship(originalRelationship.value);
             } else {
@@ -65,22 +65,24 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
 
         originalRelationship.value = relationship;
         currentHandleType.value = handleType;
-        pendingRelationship.value = new Relationship(relationship.toJSON());
 
-        const { fixedPoint, removeCount } = calculateDragConnectionPoints(
-            relationship,
-            diagramStore.entities,
-            handleType
-        );
+        pendingRelationship.value = new Relationship({
+            ...relationship.toJSON(),
+            bendPoints: []
+        });
 
-        startPoint.value = fixedPoint;
-        endPoint.value = startPoint.value;
-
-        if (handleType === 'src') {
-            pendingRelationship.value.bendPoints.splice(0, removeCount);
+        if (relationship.bendPoints.length > 0) {
+            startPoint.value = handleType === 'src'
+                ? relationship.bendPoints[0]
+                : relationship.bendPoints[relationship.bendPoints.length - 1];
         } else {
-            pendingRelationship.value.bendPoints.splice(-removeCount, removeCount);
+            startPoint.value = calculateConnectionPoint(
+                diagramStore.entities.find(e => e.id === relationship[handleType].id),
+                relationship[handleType].border,
+                relationship[handleType].position
+            );
         }
+        endPoint.value = startPoint.value;
 
         diagramStore.setSelected(relationship);
         startFollowingCursor();
@@ -127,8 +129,13 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
     const handleContextMenu = (event) => {
         if (pendingRelationship.value) {
             event.preventDefault();
-            resetRelationship();
-            stopFollowingCursor();
+            const newPoint = getCanvasCoordinates(
+                event,
+                canvasRef.value,
+                pan.value,
+                zoom.value
+            );
+            pendingRelationship.value.bendPoints.push(newPoint);
         }
     };
 
@@ -147,9 +154,21 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         endPoint.value = { x: 0, y: 0 };
     };
 
+    const previewPath = computed(() => {
+        if (!pendingRelationship.value) return '';
+
+        const points = [
+            startPoint.value,
+            ...pendingRelationship.value.bendPoints,
+            endPoint.value
+        ];
+
+        return points.map(p => `${p.x},${p.y}`).join(' ');
+    });
 
     return {
         pendingRelationship,
+        previewPath,
         startPoint,
         endPoint,
         handleRelationshipConnect,

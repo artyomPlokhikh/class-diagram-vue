@@ -83,51 +83,28 @@ export function calculatePathCenter(points) {
 }
 
 export function calculateDragConnectionPoints(relationship, entities, handleType) {
-    const allPoints = [
-        calculateConnectionPoint(
-            entities.find(e => e.id === relationship.src.id),
-            relationship.src.border,
-            relationship.src.position
-        ),
-        ...relationship.bendPoints,
-        calculateConnectionPoint(
+    const bends = relationship.bendPoints;
+
+    // For source handle: use first bend if exists, otherwise target entity point
+    const srcFixedPoint = bends.length > 0
+        ? bends[0]
+        : calculateConnectionPoint(
             entities.find(e => e.id === relationship.trg.id),
             relationship.trg.border,
             relationship.trg.position
-        )
-    ];
+        );
 
-    let startIndex, endIndex;
-    if (handleType === 'src') {
-        startIndex = 0;
-        endIndex = allPoints.length - 1;
-    } else {
-        startIndex = allPoints.length - 1;
-        endIndex = 0;
-    }
-
-    let fixedPoint = allPoints[endIndex];
-    for (let i = startIndex; handleType === 'src' ? i < allPoints.length : i >= 0; handleType === 'src' ? i++ : i--) {
-        if (i !== startIndex && allPoints[i] !== undefined) {
-            fixedPoint = allPoints[i];
-            break;
-        }
-    }
-
-    const bendStartIndex = handleType === 'src' ? 0 : relationship.bendPoints.length - 1;
-    const removeDirection = handleType === 'src' ? 1 : -1;
-
-    let removeCount = 0;
-    for (let i = bendStartIndex;
-         handleType === 'src' ? i < relationship.bendPoints.length : i >= 0;
-         i += removeDirection) {
-        if (relationship.bendPoints[i] === fixedPoint) break;
-        removeCount++;
-    }
+    // For target handle: use last bend if exists, otherwise source entity point
+    const trgFixedPoint = bends.length > 0
+        ? bends[bends.length - 1]
+        : calculateConnectionPoint(
+            entities.find(e => e.id === relationship.src.id),
+            relationship.src.border,
+            relationship.src.position
+        );
 
     return {
-        fixedPoint,
-        removeCount
+        fixedPoint: handleType === 'src' ? srcFixedPoint : trgFixedPoint,
     };
 }
 
