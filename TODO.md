@@ -19,5 +19,5 @@
 - delete entity/relationship in properties panel
 
 ## Bugfixes
-- fix rel dragging
-- fix path between bend points
+- ~~fix rel dragging~~
+- ~~fix path between bend points~~

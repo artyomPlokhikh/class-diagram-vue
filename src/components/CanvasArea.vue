@@ -26,7 +26,7 @@
                     :key="relationship.id"
                     :relationship="relationship"
                     @relationship-select="diagramStore.setSelected(relationship)"
-                    @relationship-drag="(payload) => relationshipCreator.handleRelationshipDrag(payload.relationship, payload.handleType)"
+                    @relationship-drag="relationshipCreator.handleRelationshipDrag"
                     @bend-drag="bendDragger.startBendDrag"
                 />
 

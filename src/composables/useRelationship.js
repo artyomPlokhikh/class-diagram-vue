@@ -54,7 +54,7 @@ export function useRelationship(relationship) {
         const mousePos = pt.matrixTransform(svg.getScreenCTM().inverse());
 
         const closest = findClosestPointOnPath(allPoints.value, mousePos);
-        relationship.bendPoints.splice(closest.segmentIndex + 1, 0, closest.point);
+        relationship.bendPoints.splice(closest.segmentIndex, 0, closest.point);
     };
 
     const removeBendPoint = (index) => {
