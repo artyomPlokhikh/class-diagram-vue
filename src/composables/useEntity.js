@@ -1,7 +1,9 @@
 import { ref, inject, onMounted, onUnmounted } from 'vue';
 import { measureIntrinsicSize } from '@/utils/domHelpers.js';
+import { calculateOrthogonalPosition } from "@/utils/mathHelpers.js";
 
 export function useEntity(entity, elementRef) {
+    const shiftPressed = inject('shiftPressed', ref(false));
     const zoom = inject('zoom', { value: 1 });
     const isDragging = ref(false);
     const startPos = ref({ x: 0, y: 0 });
@@ -10,13 +12,20 @@ export function useEntity(entity, elementRef) {
 
     const onMouseMoveDragging = (event) => {
         if (!isDragging.value) return;
-        const dx = (event.clientX - startPos.value.x) / zoom.value;
-        const dy = (event.clientY - startPos.value.y) / zoom.value;
+
+        let rawDirection = {
+            x: (event.clientX - startPos.value.x) / zoom.value,
+            y: (event.clientY - startPos.value.y) / zoom.value,
+        }
+
+        if (shiftPressed.value) {
+            rawDirection = calculateOrthogonalPosition(rawDirection, initialPos.value);
+        }
 
         cancelAnimationFrame(rafId);
         rafId = requestAnimationFrame(() => {
-            entity.x = initialPos.value.x + dx;
-            entity.y = initialPos.value.y + dy;
+            entity.x = initialPos.value.x + rawDirection.x;
+            entity.y = initialPos.value.y + rawDirection.y;
         });
     };
 

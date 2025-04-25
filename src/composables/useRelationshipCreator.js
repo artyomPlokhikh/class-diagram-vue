@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import {
     calculateBorderRelativePosition,
     calculateConnectionPoint,
@@ -8,15 +8,14 @@ import {
 import Relationship from "@/models/Relationship.js";
 
 export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
+    const shiftPressed = inject('shiftPressed', ref(false));
     const pendingRelationship = ref(null);
     const startPoint = ref({ x: 0, y: 0 });
-    const endPoint = ref({ x: 0, y: 0 });
 
+    const endPoint = ref({ x: 0, y: 0 });
     const currentHandleType = ref(null);
     const originalRelationship = ref(null);
     const isFollowingCursor = ref(false);
-
-    const shiftPressed = ref(false);
 
     const handleRelationshipConnect = (connectionInfo) => {
         if (!pendingRelationship.value) {
@@ -112,10 +111,11 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
                 ? relationship.bendPoints[0]
                 : relationship.bendPoints[relationship.bendPoints.length - 1];
         } else {
+            const oppositeHandle = handleType === 'src' ? 'trg' : 'src';
             startPoint.value = calculateConnectionPoint(
-                diagramStore.entities.find(e => e.id === relationship[handleType].id),
-                relationship[handleType].border,
-                relationship[handleType].position
+                diagramStore.entities.find(e => e.id === relationship[oppositeHandle].id),
+                relationship[oppositeHandle].border,
+                relationship[oppositeHandle].position
             );
         }
         endPoint.value = startPoint.value;
@@ -130,7 +130,6 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         window.addEventListener('mousedown', handleCancel);
         window.addEventListener('contextmenu', handleContextMenu);
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
     };
 
     const stopFollowingCursor = () => {
@@ -139,7 +138,6 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         window.removeEventListener('mousedown', handleCancel);
         window.removeEventListener('contextmenu', handleContextMenu);
         window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
     };
 
     const updateEndPoint = (event) => {
@@ -187,14 +185,6 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         if (event.key === 'Escape' && pendingRelationship.value) {
             resetRelationship();
             stopFollowingCursor();
-        } else if (event.key === 'Shift') {
-            shiftPressed.value = true;
-        }
-    };
-
-    const handleKeyUp = (event) => {
-        if (event.key === 'Shift') {
-            shiftPressed.value = false;
         }
     };
 
@@ -204,7 +194,6 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         currentHandleType.value = null;
         startPoint.value = { x: 0, y: 0 };
         endPoint.value = { x: 0, y: 0 };
-        shiftPressed.value = false;
     };
 
     const previewPath = computed(() => {
