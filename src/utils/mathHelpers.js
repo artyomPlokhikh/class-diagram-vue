@@ -82,32 +82,6 @@ export function calculatePathCenter(points) {
     return points[Math.floor((points.length - 1) / 2)];
 }
 
-export function calculateDragConnectionPoints(relationship, entities, handleType) {
-    const bends = relationship.bendPoints;
-
-    // For source handle: use first bend if exists, otherwise target entity point
-    const srcFixedPoint = bends.length > 0
-        ? bends[0]
-        : calculateConnectionPoint(
-            entities.find(e => e.id === relationship.trg.id),
-            relationship.trg.border,
-            relationship.trg.position
-        );
-
-    // For target handle: use last bend if exists, otherwise source entity point
-    const trgFixedPoint = bends.length > 0
-        ? bends[bends.length - 1]
-        : calculateConnectionPoint(
-            entities.find(e => e.id === relationship.src.id),
-            relationship.src.border,
-            relationship.src.position
-        );
-
-    return {
-        fixedPoint: handleType === 'src' ? srcFixedPoint : trgFixedPoint,
-    };
-}
-
 export function findClosestPointOnPath(points, target) {
     let closest = { distance: Infinity, point: null, segmentIndex: -1 };
 
@@ -193,4 +167,13 @@ export function getCanvasCoordinates(event, canvasRef, pan, zoom) {
     const y = (event.clientY - rect.top - pan.y) / zoom;
 
     return { x, y };
+}
+
+export function calculateOrthogonalPosition(rawPos, fixedPoint) {
+    const deltaX = rawPos.x - fixedPoint.x;
+    const deltaY = rawPos.y - fixedPoint.y;
+
+    return Math.abs(deltaX) > Math.abs(deltaY)
+        ? { x: rawPos.x, y: fixedPoint.y }
+        : { x: fixedPoint.x, y: rawPos.y };
 }

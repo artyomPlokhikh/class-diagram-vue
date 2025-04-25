@@ -1,0 +1,15 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+}
+
+.main-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  grid-template-rows: 1fr;
+  grid-template-areas: "left canvas right";
+  height: calc(100vh - 50px);
+}

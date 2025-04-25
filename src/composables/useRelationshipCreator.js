@@ -1,5 +1,10 @@
 import { computed, ref } from "vue";
-import { calculateConnectionPoint, calculateDragConnectionPoints, getCanvasCoordinates } from "@/utils/mathHelpers.js";
+import {
+    calculateBorderRelativePosition,
+    calculateConnectionPoint,
+    calculateOrthogonalPosition,
+    getCanvasCoordinates
+} from "@/utils/mathHelpers.js";
 import Relationship from "@/models/Relationship.js";
 
 export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
@@ -10,6 +15,8 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
     const currentHandleType = ref(null);
     const originalRelationship = ref(null);
     const isFollowingCursor = ref(false);
+
+    const shiftPressed = ref(false);
 
     const handleRelationshipConnect = (connectionInfo) => {
         if (!pendingRelationship.value) {
@@ -28,14 +35,43 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
             endPoint.value = startPoint.value;
             startFollowingCursor();
         } else {
+            if (shiftPressed.value) {
+                const lastFixedPoint = pendingRelationship.value.bendPoints.length > 0
+                    ? pendingRelationship.value.bendPoints.slice(-1)[0]
+                    : startPoint.value;
+                const orthogonalEnd = endPoint.value;
+                const isHorizontal = orthogonalEnd.y === lastFixedPoint.y;
+                const targetBorder = connectionInfo.border;
+                const validHorizontal = isHorizontal && (targetBorder === 'left' || targetBorder === 'right');
+                const validVertical = !isHorizontal && (targetBorder === 'top' || targetBorder === 'bottom');
+
+                if (!validHorizontal && !validVertical) {
+                    pendingRelationship.value.bendPoints.push(orthogonalEnd);
+                    return;
+                }
+
+                const targetEntity = diagramStore.entities.find(e => e.id === connectionInfo.entityId);
+                const entityRect = {
+                    left: targetEntity.x,
+                    top: targetEntity.y,
+                    right: targetEntity.x + targetEntity.width,
+                    bottom: targetEntity.y + targetEntity.height,
+                    width: targetEntity.width,
+                    height: targetEntity.height
+                };
+
+                connectionInfo.position = calculateBorderRelativePosition(
+                    entityRect,
+                    targetBorder,
+                    { x: orthogonalEnd.x, y: orthogonalEnd.y }
+                );
+            }
+
             if (originalRelationship.value) {
                 const handle = currentHandleType.value;
-                const originalBends = originalRelationship.value.bendPoints;
-                const newBends = pendingRelationship.value.bendPoints;
-
                 originalRelationship.value.bendPoints = handle === 'src'
-                    ? [...newBends, ...originalBends]
-                    : [...originalBends, ...newBends];
+                    ? [...pendingRelationship.value.bendPoints, ...originalRelationship.value.bendPoints]
+                    : [...originalRelationship.value.bendPoints, ...pendingRelationship.value.bendPoints];
 
                 originalRelationship.value[handle] = {
                     id: connectionInfo.entityId,
@@ -94,6 +130,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         window.addEventListener('mousedown', handleCancel);
         window.addEventListener('contextmenu', handleContextMenu);
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
     };
 
     const stopFollowingCursor = () => {
@@ -102,16 +139,20 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         window.removeEventListener('mousedown', handleCancel);
         window.removeEventListener('contextmenu', handleContextMenu);
         window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
     };
 
     const updateEndPoint = (event) => {
         if (!canvasRef.value) return;
-        endPoint.value = getCanvasCoordinates(
-            event,
-            canvasRef.value,
-            pan.value,
-            zoom.value
-        );
+        const rawPos = getCanvasCoordinates(event, canvasRef.value, pan.value, zoom.value);
+
+        const lastFixedPoint = pendingRelationship.value?.bendPoints?.length > 0
+            ? pendingRelationship.value.bendPoints.slice(-1)[0]
+            : startPoint.value;
+
+        endPoint.value = shiftPressed.value
+            ? calculateOrthogonalPosition(rawPos, lastFixedPoint)
+            : rawPos;
     };
 
     const handleCancel = (event) => {
@@ -120,8 +161,11 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
             const clickedOnConnectionPoint = event.target.closest('.connection-point') !== null;
 
             if (!clickedOnEntity && !clickedOnConnectionPoint && pendingRelationship.value) {
-                resetRelationship();
-                stopFollowingCursor();
+                const newPoint = shiftPressed.value
+                    ? { ...endPoint.value }
+                    : getCanvasCoordinates(event, canvasRef.value, pan.value, zoom.value);
+
+                pendingRelationship.value.bendPoints.push(newPoint);
             }
         }
     };
@@ -129,13 +173,13 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
     const handleContextMenu = (event) => {
         if (pendingRelationship.value) {
             event.preventDefault();
-            const newPoint = getCanvasCoordinates(
-                event,
-                canvasRef.value,
-                pan.value,
-                zoom.value
-            );
-            pendingRelationship.value.bendPoints.push(newPoint);
+
+            if (pendingRelationship.value.bendPoints.length > 0) {
+                pendingRelationship.value.bendPoints.pop();
+            } else {
+                resetRelationship();
+                stopFollowingCursor();
+            }
         }
     };
 
@@ -143,6 +187,14 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         if (event.key === 'Escape' && pendingRelationship.value) {
             resetRelationship();
             stopFollowingCursor();
+        } else if (event.key === 'Shift') {
+            shiftPressed.value = true;
+        }
+    };
+
+    const handleKeyUp = (event) => {
+        if (event.key === 'Shift') {
+            shiftPressed.value = false;
         }
     };
 
@@ -152,6 +204,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoom) {
         currentHandleType.value = null;
         startPoint.value = { x: 0, y: 0 };
         endPoint.value = { x: 0, y: 0 };
+        shiftPressed.value = false;
     };
 
     const previewPath = computed(() => {

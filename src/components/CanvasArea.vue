@@ -1,7 +1,7 @@
 <template>
-    <div class="canvas"
+    <div class="canvas-area"
          @mousedown.middle="handleCanvasMouseDown"
-         @click="handleCanvasClick"
+         @click="diagramStore.setSelected(null)"
          @wheel.prevent="handleWheel"
          @contextmenu.prevent
          ref="canvas"
@@ -40,6 +40,7 @@
                 />
             </svg>
 
+            <!-- Previews -->
             <svg id="handles-svg" class="handles-svg"></svg>
             <svg class="preview-overlay">
                 <circle
@@ -66,6 +67,8 @@ import Relationship from '@/components/Relationship.vue';
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
 
+
+// Canvas and camera setup
 const canvas = ref(null);
 provide('canvas', canvas);
 const {
@@ -78,23 +81,20 @@ const {
 provide('pan', pan);
 provide('zoom', zoom);
 
+
+// Data store
 const diagramStore = useDiagramStore();
 provide('selectedObj', computed(() => diagramStore.selected));
-
-const relationshipCreator = useRelationshipCreator(diagramStore, canvas, pan, zoom);
-const bendDragger = useBendDragger(diagramStore, canvas, pan, zoom);
-
 const entities = computed(() => diagramStore.entities);
 provide('entities', entities);
-
 const relationships = computed(() =>
     diagramStore.relationships.filter(rel => rel?.src?.id && rel?.trg?.id)
 );
 
-const handleCanvasClick = () => {
-    diagramStore.setSelected(null);
-};
 
-const { previewPoint } = useHoverPreview()
+// Composables
+const relationshipCreator = useRelationshipCreator(diagramStore, canvas, pan, zoom);
+const bendDragger = useBendDragger(diagramStore, canvas, pan, zoom);
+const { previewPoint } = useHoverPreview();
 
 </script>

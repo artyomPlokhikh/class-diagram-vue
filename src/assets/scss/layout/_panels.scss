@@ -1,11 +1,24 @@
 @use '../base/variables' as *;
 
+.left-panel {
+  grid-area: left;
+  border-right: 1px solid #e0e0e0;
+  background: white;
+}
+
 .left-panel-content {
   padding: 16px;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
+
+.right-panel {
+  grid-area: right;
+  border-left: 1px solid #e0e0e0;
+  background: white;
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;

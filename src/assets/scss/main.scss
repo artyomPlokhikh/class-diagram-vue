@@ -1,9 +1,11 @@
 @use 'base/reset';
 @use 'base/variables';
 
+@use 'components/entity';
+@use 'components/handles';
+@use 'components/relationship';
+
+@use 'layout/app';
 @use 'layout/canvas';
 @use 'layout/panels';
 
-@use 'components/entity';
-@use 'components/relationship';
-@use 'components/handles';

@@ -1,9 +1,11 @@
 .canvas-area {
+  grid-area: canvas;
   flex: 1;
   position: relative;
   background: #fafafa;
   overflow: hidden;
 }
+
 .canvas {
   position: absolute;
   top: 0;
@@ -13,6 +15,7 @@
   overflow: hidden;
   background: #fafafa;
 }
+
 .canvas-inner {
   position: absolute;
   top: 0;
@@ -22,6 +25,7 @@
   will-change: transform;
   transform-origin: 0 0;
 }
+
 .entities,
 .relationship-svg {
   position: absolute;
@@ -32,6 +36,7 @@
   overflow: visible;
   pointer-events: auto;
 }
+
 .relationship-svg {
   z-index: 5;
 }
