@@ -1,5 +1,5 @@
 import { computed, inject } from 'vue';
-import { calculateConnectionPoint, calculatePathCenter, findClosestPointOnPath, offsetMultiplicity } from '@/utils/mathHelpers';
+import { calculateConnectionPoint, calculatePathCenter, findClosestPointOnPath, offsetMultiplicity } from '@/utils/mathHelpers.js';
 import Relationship from '@/models/Relationship.js';
 
 export function useRelationship(relationship) {
@@ -7,44 +7,22 @@ export function useRelationship(relationship) {
     const srcEntity = computed(() => entities.value.find(e => e.id === relationship.src?.id));
     const trgEntity = computed(() => entities.value.find(e => e.id === relationship.trg?.id));
 
-
-    const srcPoint = computed(() => {
-        return calculateConnectionPoint(
-            srcEntity.value,
-            relationship.src.border,
-            relationship.src.position
-        );
-    });
-
-    const trgPoint = computed(() => {
-        return calculateConnectionPoint(
-            trgEntity.value,
-            relationship.trg.border,
-            relationship.trg.position
-        );
-    });
-
-    const allPoints = computed(() => [
-        srcPoint.value,
-        ...relationship.bendPoints,
-        trgPoint.value
-    ]);
+    const srcPoint = computed(() => calculateConnectionPoint(srcEntity.value, relationship.src.border, relationship.src.position));
+    const trgPoint = computed(() => calculateConnectionPoint(trgEntity.value, relationship.trg.border, relationship.trg.position));
+    const allPoints = computed(() => [srcPoint.value, ...relationship.bendPoints, trgPoint.value]);
 
     const path = computed(() => {
         if (!srcPoint.value || !trgPoint.value) return '';
-
         if (relationship.bendPoints.length > 0) {
-            const points = [
+            const pts = [
                 `${srcPoint.value.x},${srcPoint.value.y}`,
                 ...relationship.bendPoints.map(p => `${p.x},${p.y}`),
                 `${trgPoint.value.x},${trgPoint.value.y}`
             ];
-            return points.join(' ');
+            return pts.join(' ');
         }
-
         return `${srcPoint.value.x},${srcPoint.value.y} ${trgPoint.value.x},${trgPoint.value.y}`;
     });
-
 
     const addBendPoint = (event) => {
         const svg = event.target.ownerSVGElement;
@@ -52,7 +30,6 @@ export function useRelationship(relationship) {
         pt.x = event.clientX;
         pt.y = event.clientY;
         const mousePos = pt.matrixTransform(svg.getScreenCTM().inverse());
-
         const closest = findClosestPointOnPath(allPoints.value, mousePos);
         relationship.bendPoints.splice(closest.segmentIndex, 0, closest.point);
     };
@@ -60,7 +37,6 @@ export function useRelationship(relationship) {
     const removeBendPoint = (index) => {
         relationship.bendPoints.splice(index, 1);
     };
-
 
     const labelPos = computed(() => calculatePathCenter(allPoints.value));
     const srcMultPos = computed(() => offsetMultiplicity(srcPoint.value, relationship.src.border));
@@ -89,10 +65,7 @@ export function useRelationship(relationship) {
         }
     });
 
-    const strokeDasharray = computed(() =>
-        relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null
-    );
-
+    const strokeDasharray = computed(() => relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null);
 
     return {
         srcPoint,
@@ -106,6 +79,6 @@ export function useRelationship(relationship) {
         trgMultPos,
         markerStart,
         markerEnd,
-        strokeDasharray,
+        strokeDasharray
     };
 }

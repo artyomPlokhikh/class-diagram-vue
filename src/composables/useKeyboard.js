@@ -1,7 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 export function useKeyboard() {
-    // Track various key states
     const keys = {
         shift: ref(false),
         // ctrl: ref(false),
