@@ -13,7 +13,7 @@
 
 ## Minor features
 - add relationship types (arrows)
-- add orthogonal lines when dragging with shift
+- ~~add orthogonal lines when dragging with shift~~
 - multiplicity as select option
 - open/close/resize panels
 - delete entity/relationship in properties panel

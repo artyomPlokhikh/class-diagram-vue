@@ -18,9 +18,10 @@ export function useEntity(entity, elementRef) {
             let dx = (e.clientX - startEvent.clientX) / zoom.value;
             let dy = (e.clientY - startEvent.clientY) / zoom.value;
             if (shiftPressed.value) {
-                const orth = calculateOrthogonalPosition({ x: dx, y: dy }, initialPos);
-                dx = orth.x;
-                dy = orth.y;
+                const proposed = { x: initialPos.x + dx, y: initialPos.y + dy };
+                const orth = calculateOrthogonalPosition(proposed, initialPos);
+                dx = orth.x - initialPos.x;
+                dy = orth.y - initialPos.y;
             }
             entity.x = initialPos.x + dx;
             entity.y = initialPos.y + dy;
