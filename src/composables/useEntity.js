@@ -10,15 +10,16 @@ export function useEntity(entity, elRef) {
     const snapping = inject('snapping');
     const isResized = ref(false);
 
+
     let initial = { x: entity.x, y: entity.y };
     const { isDragging, start: startDragging } = useDrag({
         onStart: () => {
             initial = { x: entity.x, y: entity.y };
             snapping.start({
                 left: entity.x,
-                right: entity.x + entity.width,
                 top: entity.y,
-                bottom: entity.y + entity.height
+                width: entity.width,
+                height: entity.height,
             });
         },
         onMove: (e, s) => {
@@ -45,6 +46,7 @@ export function useEntity(entity, elRef) {
         }
     });
 
+
     let sz0 = { x: 0, y: 0 };
     let initSz = { width: entity.width, height: entity.height };
     let frozen = { width: 0, height: 0 };
@@ -54,15 +56,33 @@ export function useEntity(entity, elRef) {
             sz0 = { x: e.clientX, y: e.clientY };
             initSz = { width: entity.width, height: entity.height };
             if (elRef.value) frozen = measureIntrinsicSize(elRef.value);
+            snapping.start({
+                left: entity.x,
+                top: entity.y,
+                width: entity.width,
+                height: entity.height
+            });
         },
         onMove: e => {
             const dx = (e.clientX - sz0.x) / zoom.value;
             const dy = (e.clientY - sz0.y) / zoom.value;
-            entity.width = Math.max(initSz.width + dx, frozen.width);
-            entity.height = Math.max(initSz.height + dy, frozen.height);
+
+            let newW = Math.max(initSz.width + dx, frozen.width);
+            let newH = Math.max(initSz.height + dy, frozen.height);
+
+            const rawBR = { x: entity.x + newW, y: entity.y + newH };
+            const snappedBR = snapping.snapPoint(rawBR, entity.id, 'both');
+            newW = snappedBR.x - entity.x;
+            newH = snappedBR.y - entity.y;
+
+            entity.width = newW;
+            entity.height = newH;
         },
-        onEnd: null
+        onEnd: () => {
+            snapping.stop();
+        }
     });
+
 
     const resetSize = () => {
         if (!elRef.value) return;
@@ -73,6 +93,7 @@ export function useEntity(entity, elRef) {
         isResized.value = false;
     };
 
+
     useResizeObserver(elRef, ([entry]) => {
         if (!isResizing.value && !isResized.value) {
             const nat = measureIntrinsicSize(entry.target);
@@ -82,6 +103,7 @@ export function useEntity(entity, elRef) {
             });
         }
     });
+
 
     return {
         isDragging,

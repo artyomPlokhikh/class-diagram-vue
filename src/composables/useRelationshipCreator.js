@@ -16,6 +16,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
     const originalRelationship = ref(null);
     const currentHandleType = ref(null);
 
+
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
             if (!pending.value || !canvasRef.value) return;
@@ -62,6 +63,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
             followStop();
         }
     });
+
 
     const handleRelationshipConnect = (connectionInfo) => {
         if (!pending.value) {
@@ -122,6 +124,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
         }
     };
 
+
     const handleRelationshipDrag = ({ relationship, handleType }) => {
         originalRelationship.value = relationship;
         currentHandleType.value = handleType;
@@ -140,12 +143,14 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
         followStart();
     };
 
+
     const previewPath = computed(() => {
         if (!pending.value) return '';
         return [startPoint.value, ...pending.value.bendPoints, endPoint.value]
             .map(p => `${p.x},${p.y}`)
             .join(' ');
     });
+
 
     return {
         pendingRelationship: pending,

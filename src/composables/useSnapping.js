@@ -1,12 +1,11 @@
 import { computed, reactive } from 'vue';
 
 export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
-
     const verticalData = computed(() => {
         const lines = [], sources = [];
         diagramStore.entities.forEach(e => {
-            lines.push(e.x);               sources.push(e.id);
-            lines.push(e.x + e.width);     sources.push(e.id);
+            lines.push(e.x);             sources.push(e.id);
+            lines.push(e.x + e.width);   sources.push(e.id);
         });
         diagramStore.relationships.forEach(r =>
             r.bendPoints.forEach(p => {
@@ -16,11 +15,12 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
         return { lines, sources };
     });
 
+
     const horizontalData = computed(() => {
         const lines = [], sources = [];
         diagramStore.entities.forEach(e => {
-            lines.push(e.y);               sources.push(e.id);
-            lines.push(e.y + e.height);    sources.push(e.id);
+            lines.push(e.y);              sources.push(e.id);
+            lines.push(e.y + e.height);   sources.push(e.id);
         });
         diagramStore.relationships.forEach(r =>
             r.bendPoints.forEach(p => {
@@ -30,69 +30,93 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
         return { lines, sources };
     });
 
-    const guides = reactive({ vSegments: [], hSegments: [] });
-    let active = false, bbox = null;
+
+    const guides = reactive({ segments: [] });
+    let active = false;
+    let bbox = { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 };
+
 
     function start(box) {
         active = true;
-        bbox = box;
+        bbox = {
+            left:   box.left,
+            top:    box.top,
+            width:  box.width,
+            height: box.height,
+            right:  box.left + box.width,
+            bottom: box.top  + box.height
+        };
     }
-
     function stop() {
         active = false;
-        bbox = null;
-        guides.vSegments.length = 0;
-        guides.hSegments.length = 0;
+        guides.segments.length = 0;
     }
+
 
     function snapPoint(raw, bypassId = null, axis = 'both') {
         if (!active || ctrlPressed.value) {
-            guides.vSegments.length = 0;
-            guides.hSegments.length = 0;
+            guides.segments.length = 0;
             return raw;
         }
 
-        let x = raw.x, y = raw.y;
-        guides.vSegments.length = 0;
+        const ox = raw.x;
+        const oy = raw.y;
+        let x = ox;
+        let y = oy;
+
+        guides.segments.length = 0;
+
         if (axis === 'both' || axis === 'x') {
             const { lines, sources } = verticalData.value;
-            const near = [];
+            const candidates = [];
+            const rawR = ox + bbox.width;
+
             for (let i = 0; i < lines.length; i++) {
                 if (bypassId && sources[i] === bypassId) continue;
                 const v = lines[i];
-                if (Math.abs(v - raw.x) < threshold) {
-                    near.push(v);
-                    guides.vSegments.push({ x: v, y1: bbox.top,    y2: bbox.bottom });
+                if (Math.abs(v - ox) < threshold) {
+                    guides.segments.push({ x1: v, y1: bbox.top,    x2: v, y2: bbox.bottom });
+                    candidates.push({ snapX: v, dist: Math.abs(v - ox) });
+                }
+                if (Math.abs(v - rawR) < threshold) {
+                    guides.segments.push({ x1: v, y1: bbox.top,    x2: v, y2: bbox.bottom });
+                    candidates.push({ snapX: v - bbox.width, dist: Math.abs(v - rawR) });
                 }
             }
-            if (near.length) {
-                x = near.reduce((a, b) =>
-                    Math.abs(a - raw.x) < Math.abs(b - raw.x) ? a : b
-                );
+
+            if (candidates.length) {
+                const best = candidates.reduce((a, b) => a.dist < b.dist ? a : b);
+                x = best.snapX;
             }
         }
 
-        guides.hSegments.length = 0;
         if (axis === 'both' || axis === 'y') {
             const { lines, sources } = horizontalData.value;
-            const near = [];
+            const candidates = [];
+            const rawB = oy + bbox.height;
+
             for (let i = 0; i < lines.length; i++) {
                 if (bypassId && sources[i] === bypassId) continue;
                 const h = lines[i];
-                if (Math.abs(h - raw.y) < threshold) {
-                    near.push(h);
-                    guides.hSegments.push({ y: h, x1: bbox.left, x2: bbox.right });
+                if (Math.abs(h - oy) < threshold) {
+                    guides.segments.push({ x1: bbox.left, x2: bbox.right, y1: h, y2: h });
+                    candidates.push({ snapY: h, dist: Math.abs(h - oy) });
+                }
+                if (Math.abs(h - rawB) < threshold) {
+                    guides.segments.push({ x1: bbox.left, x2: bbox.right, y1: h, y2: h });
+                    candidates.push({ snapY: h - bbox.height, dist: Math.abs(h - rawB) });
                 }
             }
-            if (near.length) {
-                y = near.reduce((a, b) =>
-                    Math.abs(a - raw.y) < Math.abs(b - raw.y) ? a : b
-                );
+
+            if (candidates.length) {
+                const best = candidates.reduce((a, b) => a.dist < b.dist ? a : b);
+                y = best.snapY;
             }
         }
 
         return { x, y };
     }
+
 
     return { start, stop, snapPoint, guides };
 }

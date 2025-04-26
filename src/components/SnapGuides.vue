@@ -1,42 +1,46 @@
 <template>
     <svg
-        v-if="hasGuides"
-        class="snap-guides"
-        width=""
-        height=""
-        pointer-events="none"
-        style="position:absolute; top:0; left:0; z-index:500"
+        v-if="snappingGuides.length"
+        class="relationship-svg"
     >
-        <line
-            v-for="(s,i) in snapping.guides.vSegments"
-            :key="'v'+i"
-            :x1="s.x" :x2="s.x"
-            :y1="s.y1" :y2="s.y2"
-            class="snap-line"
-        />
-        <line
-            v-for="(s,i) in snapping.guides.hSegments"
-            :key="'h'+i"
-            :x1="s.x1" :x2="s.x2"
-            :y1="s.y"  :y2="s.y"
-            class="snap-line"
-        />
+        <g class="relationship">
+            <line
+                v-for="(s, i) in snappingGuides"
+                :key="i"
+                :x1="s.x1" :y1="s.y1"
+                :x2="s.x2" :y2="s.y2"
+                class="snap-line"
+            />
+        </g>
     </svg>
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
+import { inject, computed } from 'vue';
 
 const snapping = inject('snapping');
-
-const hasGuides = computed(() =>
-    snapping.guides.vSegments.length > 0 || snapping.guides.hSegments.length > 0
-);
+const snappingGuides = computed(() => {
+    return snapping.guides.segments.map(s => {
+        const dx = s.x2 - s.x1;
+        const dy = s.y2 - s.y1;
+        return {
+            x1: s.x1 - dx * 100,
+            y1: s.y1 - dy * 100,
+            x2: s.x2 + dx * 100,
+            y2: s.y2 + dy * 100
+        };
+    });
+});
 </script>
 
 <style scoped>
 .snap-line {
-    stroke: rgba(50,150,250,0.5);
-    stroke-width: 1;
+    stroke: rgb(0, 120, 255);
+    stroke-width: 1.5;
+    stroke-dasharray: 4, 3;
+    filter: drop-shadow(0 0 2px rgba(0, 120, 255, 0.7));
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 </style>
