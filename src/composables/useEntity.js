@@ -1,68 +1,81 @@
 import { inject, ref } from 'vue';
-import { measureIntrinsicSize } from '@/utils/domHelpers.js';
 import { calculateOrthogonalPosition } from '@/utils/mathHelpers.js';
 import { useDrag } from '@/composables/shared/useDrag';
+import { measureIntrinsicSize } from '@/utils/domHelpers.js';
 import { useResizeObserver } from '@/composables/shared/useResizeObserver';
 
-export function useEntity(entity, elementRef) {
+export function useEntity(entity, elRef) {
     const shiftPressed = inject('shiftPressed', ref(false));
     const zoom = inject('zoom', ref(1));
-    const isManuallyResized = ref(false);
+    const snapping = inject('snapping');
+    const isResized = ref(false);
 
-    let initialPos = { x: entity.x, y: entity.y };
+    let initial = { x: entity.x, y: entity.y };
     const { isDragging, start: startDragging } = useDrag({
-        onStart: (e) => {
-            initialPos = { x: entity.x, y: entity.y };
+        onStart: () => {
+            initial = { x: entity.x, y: entity.y };
+            snapping.start({
+                left: entity.x,
+                right: entity.x + entity.width,
+                top: entity.y,
+                bottom: entity.y + entity.height
+            });
         },
-        onMove: (e, startEvent) => {
-            let dx = (e.clientX - startEvent.clientX) / zoom.value;
-            let dy = (e.clientY - startEvent.clientY) / zoom.value;
+        onMove: (e, s) => {
+            const dx = (e.clientX - s.clientX) / zoom.value;
+            const dy = (e.clientY - s.clientY) / zoom.value;
+            let raw = { x: initial.x + dx, y: initial.y + dy };
+            let axis = 'both';
+
             if (shiftPressed.value) {
-                const proposed = { x: initialPos.x + dx, y: initialPos.y + dy };
-                const orth = calculateOrthogonalPosition(proposed, initialPos);
-                dx = orth.x - initialPos.x;
-                dy = orth.y - initialPos.y;
+                raw = calculateOrthogonalPosition(raw, initial);
+                axis = raw.x === initial.x ? 'y' : 'x';
             }
-            entity.x = initialPos.x + dx;
-            entity.y = initialPos.y + dy;
+
+            const snapped = snapping.snapPoint(raw, entity.id, axis);
+
+            if (snapped.x !== raw.x) initial.x = snapped.x - dx;
+            if (snapped.y !== raw.y) initial.y = snapped.y - dy;
+
+            entity.x = snapped.x;
+            entity.y = snapped.y;
         },
-        onEnd: null
+        onEnd: () => {
+            snapping.stop();
+        }
     });
 
-    let sizeStart = { x: 0, y: 0 };
-    let initialSize = { width: entity.width, height: entity.height };
-    let frozenIntrinsicSize = { width: 0, height: 0 };
+    let sz0 = { x: 0, y: 0 };
+    let initSz = { width: entity.width, height: entity.height };
+    let frozen = { width: 0, height: 0 };
     const { isDragging: isResizing, start: startResizing } = useDrag({
-        onStart: (e) => {
-            isManuallyResized.value = true;
-            sizeStart = { x: e.clientX, y: e.clientY };
-            initialSize = { width: entity.width, height: entity.height };
-            if (elementRef.value) {
-                frozenIntrinsicSize = measureIntrinsicSize(elementRef.value);
-            }
+        onStart: e => {
+            isResized.value = true;
+            sz0 = { x: e.clientX, y: e.clientY };
+            initSz = { width: entity.width, height: entity.height };
+            if (elRef.value) frozen = measureIntrinsicSize(elRef.value);
         },
-        onMove: (e) => {
-            const dx = (e.clientX - sizeStart.x) / zoom.value;
-            const dy = (e.clientY - sizeStart.y) / zoom.value;
-            entity.width = Math.max(initialSize.width + dx, frozenIntrinsicSize.width);
-            entity.height = Math.max(initialSize.height + dy, frozenIntrinsicSize.height);
+        onMove: e => {
+            const dx = (e.clientX - sz0.x) / zoom.value;
+            const dy = (e.clientY - sz0.y) / zoom.value;
+            entity.width = Math.max(initSz.width + dx, frozen.width);
+            entity.height = Math.max(initSz.height + dy, frozen.height);
         },
         onEnd: null
     });
 
     const resetSize = () => {
-        if (elementRef.value) {
-            const nat = measureIntrinsicSize(elementRef.value);
-            entity.width = nat.width;
-            entity.height = nat.height;
-            frozenIntrinsicSize = nat;
-            isManuallyResized.value = false;
-        }
+        if (!elRef.value) return;
+        const nat = measureIntrinsicSize(elRef.value);
+        entity.width = nat.width;
+        entity.height = nat.height;
+        frozen = nat;
+        isResized.value = false;
     };
 
-    useResizeObserver(elementRef, (entries) => {
-        if (!isResizing.value && !isManuallyResized.value) {
-            const nat = measureIntrinsicSize(entries[0].target);
+    useResizeObserver(elRef, ([entry]) => {
+        if (!isResizing.value && !isResized.value) {
+            const nat = measureIntrinsicSize(entry.target);
             requestAnimationFrame(() => {
                 entity.width = Math.max(entity.width, nat.width);
                 entity.height = Math.max(entity.height, nat.height);
@@ -76,6 +89,6 @@ export function useEntity(entity, elementRef) {
         isResizing,
         startResizing,
         resetSize,
-        isManuallyResized
+        isManuallyResized: isResized
     };
 }

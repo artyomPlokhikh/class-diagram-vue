@@ -52,19 +52,22 @@
                     stroke="green"
                 />
             </svg>
+
+            <!-- overlay the guides -->
+            <SnapGuides/>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, provide } from 'vue';
-import { useDiagramStore } from '@/stores/diagram';
+import { ref, computed, provide, inject } from 'vue';
 import { useCamera } from '@/composables/useCamera.js';
 import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
 import { useBendDragger } from '@/composables/useBendDragger';
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
+import SnapGuides from '@/components/SnapGuides.vue'
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
 
 
@@ -83,7 +86,7 @@ provide('zoom', zoom);
 
 
 // Data store
-const diagramStore = useDiagramStore();
+const diagramStore = inject('diagramStore');
 provide('selectedObj', computed(() => diagramStore.selected));
 const entities = computed(() => diagramStore.entities);
 provide('entities', entities);
