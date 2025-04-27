@@ -4,7 +4,7 @@
             <path d="M0,0 L10,3.5 L0,7 Z" fill="black"/>
         </marker>
 
-        <marker id="empty_diamond" markerWidth="10" markerHeight="15" refX="" refY="5" orient="auto">
+        <marker id="empty_diamond" markerWidth="10" markerHeight="15" refX="0" refY="5" orient="auto">
             <path d="M10,5 L5,0 L0,5 L5,10 Z" fill="white" stroke="black"/>
         </marker>
 

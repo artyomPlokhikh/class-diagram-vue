@@ -2,33 +2,71 @@
     <div class="left-panel-content">
         <div class="panel-header">
             <h3>Entities</h3>
-            <button @click="store.addEntity" class="add-button">
-                + Add Entity
-            </button>
         </div>
 
-        <div v-if="entities.length" class="entities-list">
-            <div v-for="entity in entities"
-                 :key="entity.id"
-                 class="entity-item"
-                 @click="store.setSelected(entity)"
-                 :class="{ selected: selectedEntity?.id === entity.id }">
-                {{ entity.name }}
+        <div class="palette">
+            <div
+                v-for="type in entityTypes"
+                :key="type.key"
+                class="palette-item"
+                draggable="true"
+                @dragstart="onDragStart($event, type.key)"
+                @click="onClick(type.key)"
+            >
+                <div class="palette-block">
+                    {{ type.name }}
+                </div>
             </div>
-        </div>
-
-        <div v-else class="empty-state">
-            No entities created yet
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useDiagramStore } from '../stores/diagram';
+import EntityModel from '@/models/Entity.js';
+import ANNOTATION from '@/models/Annotation.js';
+import { inject } from "vue";
+import { useCameraStore } from '@/stores/camera.js';
 
-const store = useDiagramStore();
-const entities = computed(() => store.entities.filter(e => e?.id && e?.name));
-const selectedEntity = computed(() => store.selected);
+const cameraStore = useCameraStore();
+const diagramStore = inject('diagramStore');
+
+const rawTypes = [
+    { key: 'empty', name: 'Entity', annotation: '' },
+    { key: 'interface', name: 'Interface', annotation: ANNOTATION.INTERFACE.name },
+    { key: 'enum', name: 'Enum', annotation: ANNOTATION.ENUM.name },
+];
+
+const typeConfig = Object.fromEntries(
+    rawTypes.map(t => [t.key, { name: t.name, annotation: t.annotation }])
+);
+
+const entityTypes = rawTypes;
+
+const onDragStart = (evt, typeKey) => {
+    evt.dataTransfer.effectAllowed = 'copy';
+    evt.dataTransfer.setData(
+        'application/vnd.uml-diagram-entity',
+        JSON.stringify({ type: typeKey })
+    );
+    const block = evt.currentTarget.querySelector('.palette-block');
+    const ghost = block.cloneNode(true);
+    ghost.style.opacity = '0.5';
+    ghost.style.position = 'absolute';
+    ghost.style.top = '-1000px';
+    document.body.appendChild(ghost);
+    const rect = block.getBoundingClientRect();
+    evt.dataTransfer.setDragImage(ghost, rect.width / 2, rect.height / 2);
+    setTimeout(() => document.body.removeChild(ghost), 0);
+}
+
+const onClick = (typeKey) => {
+    const cfg = typeConfig[typeKey];
+    if (!cfg) return;
+
+    const {x, y} = cameraStore.getViewportCenter();
+
+    const ent = new EntityModel({ ...cfg, x, y });
+    diagramStore.addEntity(ent);
+}
 
 </script>

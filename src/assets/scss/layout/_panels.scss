@@ -7,10 +7,44 @@
 }
 
 .left-panel-content {
-  padding: 16px;
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 0.5rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.palette {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.palette-item {
+  cursor: grab;
+}
+
+.palette-block {
+  width: 80px;
+  height: 50px;
+  border: 2px solid #888;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  user-select: none;
+  font-size: 0.85rem;
+}
+
+.palette-item:active .palette-block {
+  cursor: grabbing;
+  opacity: 0.7;
 }
 
 .right-panel {

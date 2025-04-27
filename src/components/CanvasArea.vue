@@ -5,6 +5,8 @@
          @wheel.prevent="handleWheel"
          @contextmenu.prevent
          ref="canvas"
+         @dragover.prevent="onDragOver"
+         @drop="onDrop"
     >
         <div class="canvas-inner" :style="canvasStyle">
             <!-- Entities container -->
@@ -63,14 +65,17 @@
 
 <script setup>
 import { ref, provide, inject } from 'vue';
-import { useCamera } from '@/composables/useCamera.js';
-import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
-import { useBendDragger } from '@/composables/useBendDragger';
+
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
 import SnapGuides from '@/components/SnapGuides.vue'
+
+import { useCamera } from '@/composables/useCamera.js';
+import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
+import { useBendDragger } from '@/composables/useBendDragger';
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
+import { useCanvasDragDrop } from "@/composables/useCanvasDragDrop.js";
 
 
 // Canvas and camera setup
@@ -95,5 +100,5 @@ const diagramStore = inject('diagramStore');
 const relationshipCreator = useRelationshipCreator(diagramStore, canvas, pan, zoom);
 const bendDragger = useBendDragger(diagramStore, canvas, pan, zoom);
 const { previewPoint } = useHoverPreview();
-
+const { onDragOver, onDrop } = useCanvasDragDrop(diagramStore, canvas, pan, zoom);
 </script>

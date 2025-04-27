@@ -5,6 +5,7 @@ export default class Entity {
     constructor(options = {}) {
         this.id = options.id || Date.now();
         this.name = options.name || 'New Entity';
+        this.annotation = options.annotation || '';
         this.x = options.x || 0;
         this.y = options.y || 0;
         this.width = options.width || 275;
@@ -18,6 +19,7 @@ export default class Entity {
         return {
             id: this.id,
             name: this.name,
+            annotation: this.annotation,
             x: this.x,
             y: this.y,
             width: this.width,

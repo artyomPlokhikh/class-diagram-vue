@@ -1,6 +1,8 @@
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted, watch } from 'vue';
+import { useCameraStore } from "@/stores/camera.js";
 
 export function useCamera(canvas) {
+    const cam = useCameraStore();
     const pan = ref({ x: 0, y: 0 });
     const zoom = ref(1);
     const isCanvasPanning = ref(false);
@@ -65,6 +67,10 @@ export function useCamera(canvas) {
         pan.value.y = offsetY - (offsetY - pan.value.y) * (newZoom / oldZoom);
         zoom.value = newZoom;
     };
+
+    onMounted(() => cam.setContainer(canvas.value));
+    watch(pan,  p => cam.setPan(p.x, p.y), { deep: true });
+    watch(zoom, z => cam.setZoom(z));
 
     onUnmounted(() => {
         document.removeEventListener('mousemove', handlePanMouseMove);

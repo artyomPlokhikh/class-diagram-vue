@@ -7,6 +7,9 @@
         @click.stop
     >
         <div class="entity-header">
+            <span v-if="entity.annotation" class="entity-annotation">
+                «{{ entity.annotation }}»
+            </span>
             <span class="entity-name">{{ entity.name }}</span>
         </div>
         <ul class="attributes-list">
