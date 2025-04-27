@@ -31,16 +31,16 @@ export function calculateBorderRelativePosition(rect, borderSide, point = { x: 0
 }
 
 export function offsetMultiplicity(point, side) {
-    const offset = 15;
+    const offset = 20;
     switch (side) {
         case 'left':
-            return { x: point.x - offset, y: point.y };
+            return { x: point.x - offset, y: point.y + offset};
         case 'right':
-            return { x: point.x + offset, y: point.y };
+            return { x: point.x + offset, y: point.y + offset};
         case 'top':
-            return { x: point.x, y: point.y - offset };
+            return { x: point.x - offset, y: point.y - offset };
         case 'bottom':
-            return { x: point.x, y: point.y + offset };
+            return { x: point.x - offset, y: point.y + offset };
         default:
             return point;
     }

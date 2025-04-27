@@ -1,10 +1,10 @@
 export default class Relationship {
     static TYPES = {
-        INHERITANCE: 'inheritance',
         ASSOCIATION: 'association',
+        INHERITANCE: 'inheritance',
+        DEPENDENCY: 'dependency',
         AGGREGATION: 'aggregation',
-        COMPOSITION: 'composition',
-        DEPENDENCY: 'dependency'
+        COMPOSITION: 'composition'
     };
 
     constructor(options = {}) {
@@ -15,13 +15,13 @@ export default class Relationship {
             id: options.src?.id || null,
             border: options.src?.border || 'top',
             position: options.src?.position || 0.5,
-            mult: options.src?.mult || '1',
+            mult: options.src?.mult || '',
         };
         this.trg = {
             id: options.trg?.id || null,
             border: options.trg?.border || 'top',
             position: options.trg?.position || 0.5,
-            mult: options.trg?.mult || '1',
+            mult: options.trg?.mult || '',
         };
         this.bendPoints = options.bendPoints || [];
     };

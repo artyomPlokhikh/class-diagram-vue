@@ -9,14 +9,6 @@ export function useBendDragger(diagramStore, canvasRef, pan, zoomVal) {
     const initialBend = ref(null);
 
 
-    const handleMouseUp = () => {
-        currentBend.value = null;
-        initialBend.value = null;
-        snapping.stop();
-        followStop();
-    };
-
-
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
             const cb = currentBend.value;
@@ -34,10 +26,14 @@ export function useBendDragger(diagramStore, canvasRef, pan, zoomVal) {
                 cb.relationship.id,
                 axis
             );
-
-            diagramStore.updateRelationship(cb.relationship);
         },
-        onMouseUp: handleMouseUp,
+        onMouseUp: () => {
+            diagramStore.updateRelationship(currentBend.value.relationship);
+            currentBend.value = null;
+            initialBend.value = null;
+            snapping.stop();
+            followStop();
+        },
         onEscape: () => {
             const cb = currentBend.value;
             if (cb) cb.relationship.bendPoints[cb.bendIndex] = initialBend.value;

@@ -8,25 +8,33 @@
         <h4>Attributes</h4>
         <AttributeList
             :attributes="entity.attributes"
-            @add-attribute="() => entity.addAttribute()"
-            @remove-attribute="(id) => entity.removeAttribute(id)"
+            @add-attribute="() => store.addAttribute()"
+            @remove-attribute="(id) => store.removeAttribute(id)"
         />
         <h4>Methods</h4>
         <MethodList
             :methods="entity.methods"
-            @add-method="() => entity.addMethod()"
-            @remove-method="(id) => entity.removeMethod(id)"
+            @add-method="() => store.addMethod()"
+            @remove-method="(id) => store.removeMethod(id)"
         />
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useDiagramStore } from '@/stores/diagram';
+import { computed, inject, watch } from 'vue';
 import AttributeList from '@/components/editor/AttributeList.vue';
 import MethodList from '@/components/editor/MethodList.vue';
+import { debounce } from "@/utils/debounce.js";
 
-const store = useDiagramStore();
+const store = inject("diagramStore");
 const entity = computed(() => store.selected);
+
+const saveEntity = debounce(() => {
+    if (entity.value) {
+        store.save();
+    }
+}, 2000);
+
+watch(() => entity.value?.name, saveEntity);
 
 </script>

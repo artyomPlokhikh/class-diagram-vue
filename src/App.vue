@@ -23,7 +23,7 @@ import { useSnapping } from "@/composables/useSnapping.js";
 const diagramStore = useDiagramStore();
 provide('diagramStore', diagramStore);
 
-const keys = useKeyboard();
+const keys = useKeyboard(diagramStore);
 provide('shiftPressed', keys.shift);
 provide('ctrlPressed', keys.ctrl);
 
@@ -31,7 +31,7 @@ const snapping = useSnapping(diagramStore, keys.ctrl);
 provide('snapping', snapping);
 
 onMounted(() => {
-    diagramStore.loadState();
+    diagramStore.init();
 });
 
 </script>

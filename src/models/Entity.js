@@ -14,22 +14,6 @@ export default class Entity {
         this.methods = options.methods ? options.methods.map(a => new Method(a)) : [];
     }
 
-    addAttribute() {
-        this.attributes.push(new Attribute());
-    };
-
-    removeAttribute(id) {
-        this.attributes = this.attributes.filter(a => a.id !== id);
-    };
-
-    addMethod() {
-        this.methods.push(new Method());
-    };
-
-    removeMethod(id) {
-        this.methods = this.methods.filter(m => m.id !== id);
-    }
-
     toJSON() {
         return {
             id: this.id,

@@ -100,19 +100,21 @@
 import { useRelationship } from '@/composables/useRelationship';
 import { useHoverPreview } from '@/composables/useHoverPreview.js';
 import Relationship from '@/models/Relationship.js';
-import { computed, inject, ref } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
     relationship: {
         type: Object,
         required: true,
         validator: v => v instanceof Relationship
+    },
+    isSelected: {
+        type: Boolean,
+        default: false
     }
 });
 const emit = defineEmits(['relationship-select', 'relationship-drag', 'bend-drag']);
 
-const selectedObj = inject("selectedObj", { value: null });
-const isSelected = computed(() => selectedObj.value?.id === props.relationship.id);
 const isHovering = ref(false);
 
 const {

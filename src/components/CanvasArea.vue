@@ -10,9 +10,10 @@
             <!-- Entities container -->
             <div class="entities">
                 <Entity
-                    v-for="entity in entities"
+                    v-for="entity in diagramStore.entities"
                     :key="entity.id"
                     :entity="entity"
+                    :isSelected="diagramStore.selected === entity"
                     @entity-select="diagramStore.setSelected(entity)"
                     @relationship-connect="relationshipCreator.handleRelationshipConnect"
                 />
@@ -22,9 +23,10 @@
                 <RelationshipMarkers/>
 
                 <Relationship
-                    v-for="relationship in relationships"
+                    v-for="relationship in diagramStore.relationships"
                     :key="relationship.id"
                     :relationship="relationship"
+                    :isSelected="diagramStore.selected === relationship"
                     @relationship-select="diagramStore.setSelected(relationship)"
                     @relationship-drag="relationshipCreator.handleRelationshipDrag"
                     @bend-drag="bendDragger.startBendDrag"
@@ -60,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, computed, provide, inject } from 'vue';
+import { ref, provide, inject } from 'vue';
 import { useCamera } from '@/composables/useCamera.js';
 import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
 import { useBendDragger } from '@/composables/useBendDragger';
@@ -87,12 +89,6 @@ provide('zoom', zoom);
 
 // Data store
 const diagramStore = inject('diagramStore');
-provide('selectedObj', computed(() => diagramStore.selected));
-const entities = computed(() => diagramStore.entities);
-provide('entities', entities);
-const relationships = computed(() =>
-    diagramStore.relationships.filter(rel => rel?.src?.id && rel?.trg?.id)
-);
 
 
 // Composables

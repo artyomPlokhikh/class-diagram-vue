@@ -5,6 +5,7 @@ import { measureIntrinsicSize } from '@/utils/domHelpers.js';
 import { useResizeObserver } from '@/composables/shared/useResizeObserver';
 
 export function useEntity(entity, elRef) {
+    const diagramStore = inject('diagramStore');
     const shiftPressed = inject('shiftPressed', ref(false));
     const zoom = inject('zoom', ref(1));
     const snapping = inject('snapping');
@@ -43,6 +44,7 @@ export function useEntity(entity, elRef) {
         },
         onEnd: () => {
             snapping.stop();
+            diagramStore.save();
         }
     });
 
@@ -80,6 +82,7 @@ export function useEntity(entity, elRef) {
         },
         onEnd: () => {
             snapping.stop();
+            diagramStore.save();
         }
     });
 

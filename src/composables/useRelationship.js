@@ -1,11 +1,16 @@
 import { computed, inject } from 'vue';
-import { calculateConnectionPoint, calculatePathCenter, findClosestPointOnPath, offsetMultiplicity } from '@/utils/mathHelpers.js';
+import {
+    calculateConnectionPoint,
+    calculatePathCenter,
+    findClosestPointOnPath,
+    offsetMultiplicity
+} from '@/utils/mathHelpers.js';
 import Relationship from '@/models/Relationship.js';
 
 export function useRelationship(relationship) {
-    const entities = inject('entities', { value: [] });
-    const srcEntity = computed(() => entities.value.find(e => e.id === relationship.src?.id));
-    const trgEntity = computed(() => entities.value.find(e => e.id === relationship.trg?.id));
+    const diagramStore = inject('diagramStore');
+    const srcEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.src?.id));
+    const trgEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.trg?.id));
 
     const srcPoint = computed(() => calculateConnectionPoint(srcEntity.value, relationship.src.border, relationship.src.position));
     const trgPoint = computed(() => calculateConnectionPoint(trgEntity.value, relationship.trg.border, relationship.trg.position));
@@ -32,10 +37,13 @@ export function useRelationship(relationship) {
         const mousePos = pt.matrixTransform(svg.getScreenCTM().inverse());
         const closest = findClosestPointOnPath(allPoints.value, mousePos);
         relationship.bendPoints.splice(closest.segmentIndex, 0, closest.point);
+
+        diagramStore.save();
     };
 
     const removeBendPoint = (index) => {
         relationship.bendPoints.splice(index, 1);
+        diagramStore.save();
     };
 
     const labelPos = computed(() => calculatePathCenter(allPoints.value));
@@ -57,15 +65,23 @@ export function useRelationship(relationship) {
         switch (relationship.type) {
             case Relationship.TYPES.INHERITANCE:
                 return 'url(#triangle)';
-            case Relationship.TYPES.ASSOCIATION:
             case Relationship.TYPES.DEPENDENCY:
                 return 'url(#arrowhead)';
+            case Relationship.TYPES.ASSOCIATION:
+                return null;
             default:
                 return null;
         }
     });
 
-    const strokeDasharray = computed(() => relationship.type === Relationship.TYPES.DEPENDENCY ? '5,5' : null);
+    const strokeDasharray = computed(() => {
+        switch (relationship.type) {
+            case Relationship.TYPES.DEPENDENCY:
+                return '5,5';
+            default:
+                return null;
+        }
+    });
 
     return {
         srcPoint,

@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useEntity } from '@/composables/useEntity.js';
 import Entity from "@/models/Entity.js";
 import { calculateBorderRelativePosition } from "@/utils/mathHelpers.js";
@@ -90,15 +90,17 @@ const props = defineProps({
         type: Object,
         required: true,
         validator: v => v instanceof Entity,
-    }
+    },
+    isSelected: {
+        type: Boolean,
+        default: false,
+    },
 });
 const emit = defineEmits(['entity-select', 'relationship-connect']);
 
 const entityRef = ref(null);
 const composable = useEntity(props.entity, entityRef);
 
-const selectedObj = inject("selectedObj", {value: null});
-const isSelected = computed(() => selectedObj.value && selectedObj.value?.id === props.entity.id);
 const isHovering = ref(false);
 
 const onMouseDown = (e) => {
