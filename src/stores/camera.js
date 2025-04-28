@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { calculateContainerCoordinates } from "@/utils/mathHelpers.js";
 
 export const useCameraStore = defineStore('camera', () => {
     const pan = ref({ x: 0, y: 0 });
@@ -34,6 +35,10 @@ export const useCameraStore = defineStore('camera', () => {
         }
     };
 
+    const getContainerCoordinates = (event) => {
+        return calculateContainerCoordinates(event, container.value, pan.value, zoom.value);
+    }
+
     return {
         pan,
         zoom,
@@ -42,5 +47,6 @@ export const useCameraStore = defineStore('camera', () => {
         setPan,
         setZoom,
         getViewportCenter,
+        getContainerCoordinates,
     };
 });

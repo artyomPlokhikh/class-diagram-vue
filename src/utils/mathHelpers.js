@@ -159,7 +159,7 @@ export function calculateBorderPreviewPoint(rect, border, mousePos) {
     return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
 
-export function getCanvasCoordinates(event, canvasRef, pan, zoom) {
+export function calculateContainerCoordinates(event, canvasRef, pan, zoom) {
     if (!canvasRef) return { x: 0, y: 0 };
 
     const rect = canvasRef.getBoundingClientRect();

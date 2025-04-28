@@ -2,14 +2,19 @@ import { computed, inject, ref } from 'vue';
 import {
     calculateConnectionPoint,
     calculateBorderRelativePosition,
-    getCanvasCoordinates,
     calculateOrthogonalPosition
 } from '@/utils/mathHelpers.js';
 import Relationship from '@/models/Relationship.js';
 import { useFollowCursor } from '@/composables/shared/useFollowCursor';
+import { useDiagramStore } from "@/stores/diagram.js";
+import { useCameraStore } from "@/stores/camera.js";
 
-export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
+export function useRelationshipCreator() {
+    const diagramStore = useDiagramStore();
+    const cameraStore = useCameraStore();
+
     const shiftPressed = inject('shiftPressed', ref(false));
+
     const pending = ref(null);
     const startPoint = ref({ x: 0, y: 0 });
     const endPoint = ref({ x: 0, y: 0 });
@@ -19,8 +24,8 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
 
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
-            if (!pending.value || !canvasRef.value) return;
-            const raw = getCanvasCoordinates(e, canvasRef.value, pan.value, zoomVal.value);
+            if (!pending.value) return;
+            const raw = cameraStore.getContainerCoordinates(e);
             const lastFixed = pending.value.bendPoints.length
                 ? pending.value.bendPoints.slice(-1)[0]
                 : startPoint.value;
@@ -35,7 +40,7 @@ export function useRelationshipCreator(diagramStore, canvasRef, pan, zoomVal) {
             if (!clickedOnEntity && !clickedOnConnectionPoint) {
                 const newPoint = shiftPressed.value
                     ? { ...endPoint.value }
-                    : getCanvasCoordinates(e, canvasRef.value, pan.value, zoomVal.value);
+                    : cameraStore.getContainerCoordinates(e);
                 pending.value.bendPoints.push(newPoint);
             }
         },

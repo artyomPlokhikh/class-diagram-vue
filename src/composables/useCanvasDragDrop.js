@@ -1,10 +1,14 @@
 import Entity from '@/models/Entity.js';
 import ANNOTATION from '@/models/Annotation.js';
 import { nextTick } from 'vue';
-import { getCanvasCoordinates } from "@/utils/mathHelpers.js";
+import { useDiagramStore } from "@/stores/diagram.js";
+import { useCameraStore } from "@/stores/camera.js";
 
 
-export function useCanvasDragDrop(store, canvasRef, pan, zoom) {
+export function useCanvasDragDrop() {
+    const diagramStore = useDiagramStore();
+    const cameraStore = useCameraStore();
+
     const typeConfig = {
         empty: { name: 'New Entity', annotation: '' },
         interface: { name: 'New Interface', annotation: ANNOTATION.INTERFACE.name },
@@ -30,20 +34,20 @@ export function useCanvasDragDrop(store, canvasRef, pan, zoom) {
         const config = typeConfig[payload.type];
         if (!config) return;
 
-        const el = canvasRef.value;
+        const el = cameraStore.container;
         if (!el) return;
 
         nextTick(() => {
-            const {x, y} = getCanvasCoordinates(event, canvasRef.value, pan.value, zoom.value);
+            const { x, y } = cameraStore.getContainerCoordinates(event);
 
             const newEnt = new Entity({
                 ...config,
                 x,
                 y,
             });
-            store.addEntity(newEnt);
+            diagramStore.addEntity(newEnt);
         });
     };
 
     return { onDragOver, onDrop };
-};
+}

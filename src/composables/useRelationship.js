@@ -6,9 +6,11 @@ import {
     offsetMultiplicity
 } from '@/utils/mathHelpers.js';
 import Relationship from '@/models/Relationship.js';
+import { useDiagramStore } from "@/stores/diagram.js";
 
 export function useRelationship(relationship) {
-    const diagramStore = inject('diagramStore');
+    const diagramStore = useDiagramStore();
+
     const srcEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.src?.id));
     const trgEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.trg?.id));
 

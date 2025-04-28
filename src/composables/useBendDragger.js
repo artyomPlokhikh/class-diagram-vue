@@ -1,10 +1,16 @@
 import { inject, ref } from 'vue';
 import { useFollowCursor } from '@/composables/shared/useFollowCursor';
-import { calculateOrthogonalPosition, getCanvasCoordinates } from '@/utils/mathHelpers.js';
+import { calculateOrthogonalPosition } from '@/utils/mathHelpers.js';
+import { useDiagramStore } from "@/stores/diagram.js";
+import { useCameraStore } from "@/stores/camera.js";
 
-export function useBendDragger(diagramStore, canvasRef, pan, zoomVal) {
+export function useBendDragger() {
+    const diagramStore = useDiagramStore();
+    const cameraStore = useCameraStore();
+
     const shiftPressed = inject('shiftPressed', ref(false));
     const snapping = inject('snapping');
+
     const currentBend = ref(null);
     const initialBend = ref(null);
 
@@ -12,8 +18,8 @@ export function useBendDragger(diagramStore, canvasRef, pan, zoomVal) {
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
             const cb = currentBend.value;
-            if (!cb || !canvasRef.value) return;
-            const raw = getCanvasCoordinates(e, canvasRef.value, pan.value, zoomVal.value);
+            if (!cb || !cameraStore.container) return;
+            const raw = cameraStore.getContainerCoordinates(e);
 
             let proposed = raw;
             let axis = 'both';
@@ -50,7 +56,7 @@ export function useBendDragger(diagramStore, canvasRef, pan, zoomVal) {
         currentBend.value = { relationship, bendIndex };
         initialBend.value = relationship.bendPoints[bendIndex];
 
-        const rect = canvasRef.value.getBoundingClientRect();
+        const rect = cameraStore.container.getBoundingClientRect();
         snapping.start({
             left: rect.left,
             top: rect.top,

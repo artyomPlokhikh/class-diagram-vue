@@ -1,6 +1,6 @@
 import { ref, onUnmounted } from 'vue';
 
-export function useDrag({ onStart, onMove, onEnd }) {
+export function useDrag({ onStart, onMove, onEnd, onCancel }) {
     const isDragging = ref(false);
     let startEvent, rafId;
     const start = (e) => {
@@ -9,6 +9,7 @@ export function useDrag({ onStart, onMove, onEnd }) {
         onStart?.(e);
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('keyup', handleKeyUp);
     };
     const handleMouseMove = (e) => {
         if (!isDragging.value) return;
@@ -23,6 +24,16 @@ export function useDrag({ onStart, onMove, onEnd }) {
         document.removeEventListener('mouseup', handleMouseUp);
         onEnd?.(e);
     };
+    const handleKeyUp = (e) => {
+        if (e.key === 'Escape') {
+            isDragging.value = false;
+            cancelAnimationFrame(rafId);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('keyup', handleKeyUp);
+            onCancel?.(e);
+        }
+    }
     onUnmounted(() => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);

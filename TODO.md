@@ -7,7 +7,7 @@
 - ~~Undo/Redo~~
 - ~~Snapping~~
 - Left panel with predefined entities (e.g. class, interface, enum, etc.)
-    - Drag-and-drop to canvas
+    - ~~Drag-and-drop to canvas~~
 - Help component (w/ gifs)
 - Offline mode
 

@@ -24,11 +24,11 @@
 <script setup>
 import EntityModel from '@/models/Entity.js';
 import ANNOTATION from '@/models/Annotation.js';
-import { inject } from "vue";
 import { useCameraStore } from '@/stores/camera.js';
+import { useDiagramStore } from "@/stores/diagram.js";
 
 const cameraStore = useCameraStore();
-const diagramStore = inject('diagramStore');
+const diagramStore = useDiagramStore();
 
 const rawTypes = [
     { key: 'empty', name: 'Entity', annotation: '' },

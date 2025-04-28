@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, provide, inject } from 'vue';
+import { ref, provide } from 'vue';
 
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
@@ -76,29 +76,21 @@ import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js'
 import { useBendDragger } from '@/composables/useBendDragger';
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
 import { useCanvasDragDrop } from "@/composables/useCanvasDragDrop.js";
+import { useDiagramStore } from "@/stores/diagram.js";
 
 
 // Canvas and camera setup
 const canvas = ref(null);
 provide('canvas', canvas);
-const {
-    pan,
-    zoom,
-    canvasStyle,
-    handleCanvasMouseDown,
-    handleWheel,
-} = useCamera(canvas);
-provide('pan', pan);
-provide('zoom', zoom);
-
+const { canvasStyle, handleCanvasMouseDown, handleWheel } = useCamera(canvas);
 
 // Data store
-const diagramStore = inject('diagramStore');
+const diagramStore = useDiagramStore();
 
 
 // Composables
-const relationshipCreator = useRelationshipCreator(diagramStore, canvas, pan, zoom);
-const bendDragger = useBendDragger(diagramStore, canvas, pan, zoom);
+const relationshipCreator = useRelationshipCreator();
+const bendDragger = useBendDragger();
 const { previewPoint } = useHoverPreview();
-const { onDragOver, onDrop } = useCanvasDragDrop(diagramStore, canvas, pan, zoom);
+const { onDragOver, onDrop } = useCanvasDragDrop();
 </script>

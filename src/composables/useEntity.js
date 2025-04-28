@@ -3,12 +3,16 @@ import { calculateOrthogonalPosition } from '@/utils/mathHelpers.js';
 import { useDrag } from '@/composables/shared/useDrag';
 import { measureIntrinsicSize } from '@/utils/domHelpers.js';
 import { useResizeObserver } from '@/composables/shared/useResizeObserver';
+import { useDiagramStore } from "@/stores/diagram.js";
+import { useCameraStore } from "@/stores/camera.js";
 
 export function useEntity(entity, elRef) {
-    const diagramStore = inject('diagramStore');
+    const diagramStore = useDiagramStore();
+    const cameraStore = useCameraStore();
+
     const shiftPressed = inject('shiftPressed', ref(false));
-    const zoom = inject('zoom', ref(1));
     const snapping = inject('snapping');
+
     const isResized = ref(false);
 
 
@@ -24,8 +28,8 @@ export function useEntity(entity, elRef) {
             });
         },
         onMove: (e, s) => {
-            const dx = (e.clientX - s.clientX) / zoom.value;
-            const dy = (e.clientY - s.clientY) / zoom.value;
+            const dx = (e.clientX - s.clientX) / cameraStore.zoom;
+            const dy = (e.clientY - s.clientY) / cameraStore.zoom;
             let raw = { x: initial.x + dx, y: initial.y + dy };
             let axis = 'both';
 
@@ -45,7 +49,12 @@ export function useEntity(entity, elRef) {
         onEnd: () => {
             snapping.stop();
             diagramStore.save();
-        }
+        },
+        onCancel: () => {
+            entity.x = initial.x;
+            entity.y = initial.y;
+            snapping.stop();
+        },
     });
 
 
@@ -66,8 +75,8 @@ export function useEntity(entity, elRef) {
             });
         },
         onMove: e => {
-            const dx = (e.clientX - sz0.x) / zoom.value;
-            const dy = (e.clientY - sz0.y) / zoom.value;
+            const dx = (e.clientX - sz0.x) / cameraStore.zoom;
+            const dy = (e.clientY - sz0.y) / cameraStore.zoom;
 
             let newW = Math.max(initSz.width + dx, frozen.width);
             let newH = Math.max(initSz.height + dy, frozen.height);
@@ -83,6 +92,17 @@ export function useEntity(entity, elRef) {
         onEnd: () => {
             snapping.stop();
             diagramStore.save();
+        },
+        onCancel: () => {
+            entity.width = initSz.width;
+            entity.height = initSz.height;
+            isResized.value = false;
+            if (elRef.value) {
+                const nat = measureIntrinsicSize(elRef.value);
+                entity.width = Math.max(entity.width, nat.width);
+                entity.height = Math.max(entity.height, nat.height);
+            }
+            snapping.stop();
         }
     });
 

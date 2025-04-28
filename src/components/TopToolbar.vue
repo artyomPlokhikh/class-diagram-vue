@@ -1,14 +1,14 @@
 <template>
     <div class="toolbar">
-        <button @click="store.save">Save</button>
-        <button @click="store.undo">Undo</button>
-        <button @click="store.redo">Redo</button>
-        <button @click="store.clearDiagram">Clear</button>
+        <button @click="diagramStore.save">Save</button>
+        <button @click="diagramStore.undo">Undo</button>
+        <button @click="diagramStore.redo">Redo</button>
+        <button @click="diagramStore.clearDiagram">Clear</button>
     </div>
 </template>
 
 <script setup>
-import { inject } from "vue";
+import { useDiagramStore } from "@/stores/diagram.js";
 
-const store = inject("diagramStore");
+const diagramStore = useDiagramStore();
 </script>

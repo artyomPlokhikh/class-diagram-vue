@@ -12,31 +12,32 @@
         <h4>Attributes</h4>
         <AttributeList
             :attributes="entity.attributes"
-            @add-attribute="store.addAttribute(entity.id)"
-            @remove-attribute="(id) => store.removeAttribute(entity.id, id)"
+            @add-attribute="diagramStore.addAttribute(entity.id)"
+            @remove-attribute="(id) => diagramStore.removeAttribute(entity.id, id)"
         />
         <h4>Methods</h4>
         <MethodList
             :methods="entity.methods"
-            @add-method="store.addMethod(entity.id)"
-            @remove-method="(id) => store.removeMethod(entity.id, id)"
+            @add-method="diagramStore.addMethod(entity.id)"
+            @remove-method="(id) => diagramStore.removeMethod(entity.id, id)"
         />
     </div>
 </template>
 
 <script setup>
-import { computed, inject, watch } from 'vue';
+import { computed, watch } from 'vue';
 import AttributeList from '@/components/editor/AttributeList.vue';
 import MethodList from '@/components/editor/MethodList.vue';
 import { debounce } from "@/utils/debounce.js";
 import AnnotationList from "@/components/editor/AnnotationList.vue";
+import { useDiagramStore } from "@/stores/diagram.js";
 
-const store = inject("diagramStore");
-const entity = computed(() => store.selected);
+const diagramStore = useDiagramStore();
+const entity = computed(() => diagramStore.selected);
 
 const saveEntity = debounce(() => {
     if (entity.value) {
-        store.save();
+        diagramStore.save();
     }
 }, 2000);
 
