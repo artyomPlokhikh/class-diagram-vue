@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { useHoverPreview } from '@/composables/useHoverPreview.js';
 import { calculateBorderRelativePosition } from '@/utils/mathHelpers.js';
 
-export function useConnectable(model, elRef, emit, connectEvent, type) {
+export function useConnectableRect(model, elRef, emit, connectEvent, type) {
     const isHovering = ref(false);
     const { handleEntityBorderHover, clearPreview } = useHoverPreview();
 
@@ -17,9 +17,6 @@ export function useConnectable(model, elRef, emit, connectEvent, type) {
     }
 
     function onBorderClick(e, side) {
-        // always select first
-        emit(type + '-select');
-
         const rect = elRef.value.getBoundingClientRect();
         const pos = calculateBorderRelativePosition(
             rect,
@@ -28,14 +25,21 @@ export function useConnectable(model, elRef, emit, connectEvent, type) {
         );
 
         emit(connectEvent, {
-            type,
             id: model.id,
+            type,
             border: side,
             position: pos
         });
     }
 
+
+    function handlePointerDown (e) {
+        emit(connectEvent);
+    }
+
     return {
+        handlePointerDown,
+
         isHovering,
         onBorderHover,
         onBorderLeave,

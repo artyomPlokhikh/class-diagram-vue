@@ -3,7 +3,7 @@
         ref="entityRef"
         class="entity"
         :style="[positionStyle, sizeStyle]"
-        @mousedown.left="handleMouseDown"
+        @mousedown.left="handlePointerDown"
         @click.stop
     >
         <div class="entity-header">
@@ -38,19 +38,19 @@
         <div
             v-show="isSelected"
             class="resize-handle"
-            @mousedown.left.stop.prevent="mr.startResizing($event)"
-            @dblclick.stop.prevent="mr.resetSize($event)"
+            @mousedown.left.stop.prevent="startResizing($event)"
+            @dblclick.stop.prevent="resetSize($event)"
         ></div>
 
         <div
             v-for="side in ['top', 'right', 'bottom', 'left']"
             :key="side"
             class="entity-border"
-            :class="[side + '-border', { 'highlight-border': sc.isHovering }]"
-            @mouseenter="sc.isHovering = true"
-            @mouseleave="sc.onBorderLeave"
-            @mousemove="sc.onBorderHover($event, side)"
-            @click.stop="sc.onBorderClick($event, side)"
+            :class="[side + '-border', { 'highlight-border': isHovering }]"
+            @mouseenter="isHovering = true"
+            @mouseleave="onBorderLeave"
+            @mousemove="onBorderHover($event, side)"
+            @click.stop="onBorderClick($event, side)"
             @mousedown.stop
         ></div>
     </div>
@@ -59,8 +59,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import Entity from '@/models/Entity.js';
-import { useMovableResizable } from '@/composables/shared/useMovableResizable.js';
-import { useSelectableConnectable } from '@/composables/shared/useSelectableConnectable.js';
+import { useEntity } from "@/composables/useEntity.js";
 
 const props = defineProps({
     entity: { type: Object, required: true, validator: v => v instanceof Entity },
@@ -69,31 +68,33 @@ const props = defineProps({
 const emit = defineEmits(['entity-select', 'relationship-connect']);
 
 const entityRef = ref(null);
-const mr = useMovableResizable(props.entity, entityRef, { measureIntrinsic: true });
-const sc = useSelectableConnectable(
-    props.entity,
-    entityRef,
-    props.isSelected,
-    emit,
-    { selectEvent: 'entity-select', connectEvent: 'relationship-connect', type: 'entity' }
-);
 
-const handleMouseDown = e => {
-    sc.onPointerDown(e);
-    mr.startDragging(e);
-};
+const {
+    handlePointerDown,
+    isHovering,
+    onBorderHover,
+    onBorderLeave,
+    onBorderClick,
+    isDragging,
+    isResizing,
+    startResizing,
+    resetSize,
+    isManuallyResized,
+} = useEntity(props.entity, entityRef, props.isSelected, emit);
+
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
-    transition: mr.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4,0,0.2,1)'
+    transition: isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4,0,0.2,1)'
 }));
 
 const sizeStyle = computed(() => {
-    if (mr.isResizing.value || mr.isManuallyResized.value) {
+    if (isResizing.value || isManuallyResized.value) {
         return { width: props.entity.width + 'px', height: props.entity.height + 'px' };
     }
     return { minWidth: props.entity.width + 'px', minHeight: props.entity.height + 'px' };
 });
+
 </script>
 
 
