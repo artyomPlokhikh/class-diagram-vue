@@ -5,23 +5,32 @@ import Attribute from '@/models/Attribute';
 import Method from '@/models/Method';
 import Relationship from '@/models/Relationship';
 import HistoryManager from '@/utils/HistoryManager';
+import Note from "@/models/Note.js";
 
 export const useDiagramStore = defineStore('diagram', () => {
     const entities = ref([]);
     const relationships = ref([]);
+    const notes = ref([]);
+
     const selectedId = ref(null);
     const selectedType = ref(null);
-    const history = ref(null);
 
     const selected = computed(() => {
-        if (!selectedId.value) {
-            return null;
+        if (!selectedId.value || !selectedType.value) return null;
+
+        switch (selectedType.value) {
+            case 'entity':
+                return entities.value.find(e => e.id === selectedId.value) || null;
+            case 'relationship':
+                return relationships.value.find(r => r.id === selectedId.value) || null;
+            case 'note':
+                return notes.value.find(n => n.id === selectedId.value) || null;
+            default:
+                return null;
         }
-        const arr = selectedType.value === 'entity'
-            ? entities.value
-            : relationships.value;
-        return arr.find(i => i.id === selectedId.value) || null;
     });
+
+    const history = ref(null);
 
     const init = () => {
         history.value = markRaw(new HistoryManager({
@@ -38,7 +47,8 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const _snapshot = () => JSON.stringify({
         entities: entities.value.map(e => e.toJSON()),
-        relationships: relationships.value.map(r => r.toJSON())
+        relationships: relationships.value.map(r => r.toJSON()),
+        notes: notes.value.map(n => n.toJSON())
     });
 
     const _restore = snapshot => {
@@ -96,6 +106,22 @@ export const useDiagramStore = defineStore('diagram', () => {
             }
         });
         relationships.value = newRels;
+
+        const newNotes = [];
+        notes.value = s.notes.map(nd => {
+            const note = notes.value.find(n => n.id === nd.id);
+            if (note) {
+                note.content = nd.content;
+                note.x = nd.x;
+                note.y = nd.y;
+                note.width = nd.width;
+                note.height = nd.height;
+                newNotes.push(note);
+            } else {
+                newNotes.push(new Note(nd));
+            }
+        });
+        notes.value = newNotes;
     };
 
     const _pushHistory = () => {
@@ -127,18 +153,24 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const setSelected = item => {
         if (!item) {
-            selectedId.value = null;
-            selectedType.value = null;
+            selectedId.value = selectedType.value = null;
             return;
         }
         selectedId.value = item.id;
-        if (item instanceof Entity) {
-            selectedType.value = 'entity';
-        } else if (item instanceof Relationship) {
-            selectedType.value = 'relationship';
-        } else {
-            selectedType.value = null;
-        }
+        if (item instanceof Entity) selectedType.value = 'entity';
+        else if (item instanceof Relationship) selectedType.value = 'relationship';
+        else if (item instanceof Note) selectedType.value = 'note';
+        else selectedType.value = null;
+    };
+
+    const findDiagramElement = (id, type) => {
+        const collections = {
+            'entity': entities.value,
+            'relationship': relationships.value,
+            'note': notes.value
+        };
+
+        return collections[type]?.find(item => item.id === id) || null;
     };
 
     const addEntity = entity => {
@@ -228,9 +260,25 @@ export const useDiagramStore = defineStore('diagram', () => {
         _pushHistory();
     };
 
+    const addNote = (options = {}) => {
+        const n = new Note(options);
+        notes.value.push(n);
+        setSelected(n);
+        _pushHistory();
+    };
+
+    const deleteNote = (id) => {
+        notes.value = notes.value.filter(n => n.id !== id);
+        if (selectedType.value === 'note' && selectedId.value === id) {
+            setSelected(null);
+        }
+        _pushHistory();
+    };
+
     const clearDiagram = () => {
         entities.value = [];
         relationships.value = [];
+        notes.value = [];
         setSelected(null);
         clearHistory();
     };
@@ -238,6 +286,7 @@ export const useDiagramStore = defineStore('diagram', () => {
     return {
         entities,
         relationships,
+        notes,
         selectedId,
         selectedType,
         history,
@@ -248,6 +297,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         clearHistory,
         save,
         setSelected,
+        findDiagramElement,
         addEntity,
         deleteEntity,
         addAttribute,
@@ -255,6 +305,8 @@ export const useDiagramStore = defineStore('diagram', () => {
         addMethod,
         removeMethod,
         addRelationship,
+        addNote,
+        deleteNote,
         updateRelationship,
         deleteRelationship,
         clearDiagram,

@@ -22,6 +22,15 @@ export function useRelationshipCreator() {
     const currentHandleType = ref(null);
 
 
+    const cancelPending = () => {
+        pending.value = null;
+        originalRelationship.value = null;
+        currentHandleType.value = null;
+        startPoint.value = { x: 0, y: 0 };
+        endPoint.value = { x: 0, y: 0 };
+        followStop();
+    };
+    
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
             if (!pending.value) return;
@@ -35,14 +44,10 @@ export function useRelationshipCreator() {
         },
         onMouseDown: (e) => {
             if (e.button !== 0 || !pending.value) return;
-            const clickedOnEntity = e.target.closest('.entity') !== null;
-            const clickedOnConnectionPoint = e.target.closest('.connection-point') !== null;
-            if (!clickedOnEntity && !clickedOnConnectionPoint) {
-                const newPoint = shiftPressed.value
-                    ? { ...endPoint.value }
-                    : cameraStore.getContainerCoordinates(e);
-                pending.value.bendPoints.push(newPoint);
-            }
+            const newPoint = shiftPressed.value
+                ? { ...endPoint.value }
+                : cameraStore.getContainerCoordinates(e);
+            pending.value.bendPoints.push(newPoint);
         },
         onContextMenu: (e) => {
             if (!pending.value) return;
@@ -50,37 +55,26 @@ export function useRelationshipCreator() {
             if (pending.value.bendPoints.length > 0) {
                 pending.value.bendPoints.pop();
             } else {
-                pending.value = null;
-                originalRelationship.value = null;
-                currentHandleType.value = null;
-                startPoint.value = { x: 0, y: 0 };
-                endPoint.value = { x: 0, y: 0 };
-                followStop();
+                cancelPending();
             }
         },
-        onEscape: () => {
-            if (!pending.value) return;
-            pending.value = null;
-            originalRelationship.value = null;
-            currentHandleType.value = null;
-            startPoint.value = { x: 0, y: 0 };
-            endPoint.value = { x: 0, y: 0 };
-            followStop();
-        }
+        onEscape: cancelPending
     });
 
-
     const handleRelationshipConnect = (connectionInfo) => {
+        const diagramElement = diagramStore.findDiagramElement(connectionInfo.id, connectionInfo.type);
+        if (!diagramElement) return;
+
         if (!pending.value) {
             pending.value = new Relationship({
                 src: {
-                    id: connectionInfo.entityId,
+                    id: connectionInfo.id,
+                    type: connectionInfo.type,
                     border: connectionInfo.border,
-                    position: connectionInfo.position
+                    position: connectionInfo.position,
                 }
             });
-            const srcEnt = diagramStore.entities.find(e => e.id === connectionInfo.entityId);
-            startPoint.value = calculateConnectionPoint(srcEnt, pending.value.src.border, pending.value.src.position);
+            startPoint.value = calculateConnectionPoint(diagramElement, pending.value.src.border, pending.value.src.position);
             endPoint.value = { ...startPoint.value };
             followStart();
         } else {
@@ -89,14 +83,13 @@ export function useRelationshipCreator() {
                     ? pending.value.bendPoints.slice(-1)[0]
                     : startPoint.value;
                 const orth = calculateOrthogonalPosition(endPoint.value, lastFixed);
-                const ent = diagramStore.entities.find(e => e.id === connectionInfo.entityId);
                 const rect = {
-                    left: ent.x,
-                    top: ent.y,
-                    right: ent.x + ent.width,
-                    bottom: ent.y + ent.height,
-                    width: ent.width,
-                    height: ent.height
+                    left: diagramElement.x,
+                    top: diagramElement.y,
+                    right: diagramElement.x + diagramElement.width,
+                    bottom: diagramElement.y + diagramElement.height,
+                    width: diagramElement.width,
+                    height: diagramElement.height
                 };
                 connectionInfo.position = calculateBorderRelativePosition(rect, connectionInfo.border, orth);
             }
@@ -106,18 +99,20 @@ export function useRelationshipCreator() {
                     ? [...pending.value.bendPoints, ...originalRelationship.value.bendPoints]
                     : [...originalRelationship.value.bendPoints, ...pending.value.bendPoints];
                 originalRelationship.value[h] = {
-                    id: connectionInfo.entityId,
+                    id: connectionInfo.id,
+                    type: connectionInfo.type,
                     border: connectionInfo.border,
                     position: connectionInfo.position,
                     mult: originalRelationship.value[h].mult
                 };
                 diagramStore.updateRelationship(originalRelationship.value);
             } else {
-                if (pending.value.src.id !== connectionInfo.entityId) {
+                if (pending.value.src.id !== connectionInfo.id) {
                     pending.value.trg = {
-                        id: connectionInfo.entityId,
+                        id: connectionInfo.id,
+                        type: connectionInfo.type,
                         border: connectionInfo.border,
-                        position: connectionInfo.position
+                        position: connectionInfo.position,
                     };
                     diagramStore.addRelationship(pending.value);
                 }
@@ -140,12 +135,12 @@ export function useRelationshipCreator() {
                 : relationship.bendPoints[relationship.bendPoints.length - 1];
         } else {
             const opp = handleType === 'src' ? 'trg' : 'src';
-            const ent = diagramStore.entities.find(e => e.id === relationship[opp].id);
-            startPoint.value = calculateConnectionPoint(ent, relationship[opp].border, relationship[opp].position);
+            const diagramElement = diagramStore.findDiagramElement(relationship[opp].id, relationship[opp].type);
+            startPoint.value = calculateConnectionPoint(diagramElement, relationship[opp].border, relationship[opp].position);
         }
         endPoint.value = { ...startPoint.value };
         diagramStore.setSelected(relationship);
-        followStart();
+        followStart();``
     };
 
 

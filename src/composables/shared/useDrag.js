@@ -26,6 +26,7 @@ export function useDrag({ onStart, onMove, onEnd, onCancel }) {
     };
     const handleKeyUp = (e) => {
         if (e.key === 'Escape') {
+            if (!isDragging.value) return;
             isDragging.value = false;
             cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', handleMouseMove);

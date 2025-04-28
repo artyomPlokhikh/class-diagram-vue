@@ -1,7 +1,7 @@
-export function calculateConnectionPoint(entity, border, position) {
-    if (!entity) return { x: 0, y: 0 };
+export function calculateConnectionPoint(diagramElement, border, position) {
+    if (!diagramElement) return { x: 0, y: 0 };
 
-    const { x, y, width, height } = entity;
+    const { x, y, width, height } = diagramElement;
 
     switch (border) {
         case 'top':

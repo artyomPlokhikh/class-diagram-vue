@@ -1,28 +1,30 @@
-import Entity from '@/models/Entity.js';
-import ANNOTATION from '@/models/Annotation.js';
 import { nextTick } from 'vue';
-import { useDiagramStore } from "@/stores/diagram.js";
-import { useCameraStore } from "@/stores/camera.js";
-
+import { useDiagramStore } from '@/stores/diagram.js';
+import { useCameraStore } from '@/stores/camera.js';
+import Entity from '@/models/Entity.js';
+import Note from '@/models/Note.js';
+import ANNOTATION from '@/models/Annotation.js';
 
 export function useCanvasDragDrop() {
     const diagramStore = useDiagramStore();
     const cameraStore = useCameraStore();
 
-    const typeConfig = {
+    const entityConfig = {
         empty: { name: 'New Entity', annotation: '' },
         interface: { name: 'New Interface', annotation: ANNOTATION.INTERFACE.name },
         enum: { name: 'New Enum', annotation: ANNOTATION.ENUM.name },
+        note: { content: 'New Note' },
     };
 
-    const onDragOver = (evt) => {
+    function onDragOver(evt) {
         evt.dataTransfer.dropEffect = 'copy';
         evt.preventDefault();
-    };
+    }
 
-    const onDrop = (event) => {
-        event.preventDefault();
-        const raw = event.dataTransfer.getData('application/vnd.uml-diagram-entity');
+    function onDrop(evt) {
+        evt.preventDefault();
+
+        const raw = evt.dataTransfer.getData('application/vnd.uml-diagram-item');
         if (!raw) return;
 
         let payload;
@@ -31,23 +33,22 @@ export function useCanvasDragDrop() {
         } catch {
             return;
         }
-        const config = typeConfig[payload.type];
-        if (!config) return;
-
-        const el = cameraStore.container;
-        if (!el) return;
 
         nextTick(() => {
-            const { x, y } = cameraStore.getContainerCoordinates(event);
+            const { x, y } = cameraStore.getContainerCoordinates(evt);
 
-            const newEnt = new Entity({
-                ...config,
-                x,
-                y,
-            });
-            diagramStore.addEntity(newEnt);
+            if (payload.objectType === 'entity') {
+                const cfg = entityConfig[payload.key];
+                if (!cfg) return;
+                const ent = new Entity({ ...cfg, x, y });
+                diagramStore.addEntity(ent);
+
+            } else if (payload.objectType === 'note') {
+                const note = new Note({ x, y });
+                diagramStore.addNote(note);
+            }
         });
-    };
+    }
 
     return { onDragOver, onDrop };
 }

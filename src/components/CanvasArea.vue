@@ -9,6 +9,18 @@
          @drop="onDrop"
     >
         <div class="canvas-inner" :style="canvasStyle">
+            <!-- Notes container -->
+            <div class="notes">
+                <Note
+                    v-for="note in diagramStore.notes"
+                    :key="note.id"
+                    :note="note"
+                    :isSelected="diagramStore.selected === note"
+                    @note-select="diagramStore.setSelected(note)"
+                    @relationship-connect="relationshipCreator.handleRelationshipConnect"
+                />
+            </div>
+
             <!-- Entities container -->
             <div class="entities">
                 <Entity
@@ -77,6 +89,7 @@ import { useBendDragger } from '@/composables/useBendDragger';
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
 import { useCanvasDragDrop } from "@/composables/useCanvasDragDrop.js";
 import { useDiagramStore } from "@/stores/diagram.js";
+import Note from "@/components/Note.vue";
 
 
 // Canvas and camera setup

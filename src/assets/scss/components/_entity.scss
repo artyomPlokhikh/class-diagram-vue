@@ -16,17 +16,21 @@
   user-select: none;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
+
 .entity:hover .entity-border {
   background-color: rgba(0, 255, 0, 0.2);
 }
+
 .entity.selected {
   border-color: $pink;
   box-shadow: 0 4px 16px rgba(255, 64, 129, 0.2);
 }
+
 .entity.dragging,
 .entity:active {
   cursor: grabbing;
 }
+
 .entity-header {
   display: flex;
   justify-content: space-between;
@@ -48,12 +52,14 @@
   width: 80%;
   outline: none;
 }
+
 .attributes-list,
 .methods-list {
   list-style: none;
   padding: 0;
   margin: 8px 0 0;
 }
+
 .attribute-item,
 .method-item {
   display: flex;
@@ -64,15 +70,18 @@
   padding: 4px 0;
   border-bottom: 1px solid #eee;
 }
+
 .attribute-name,
 .method-name {
   color: #333;
 }
+
 .attribute-type,
 .method-type {
   color: #666;
   font-size: 0.9em;
 }
+
 .resize-handle {
   position: absolute;
   bottom: 0;
@@ -85,37 +94,26 @@
   border-radius: 2px 0 2px 0;
   border: 2px solid $blue;
 }
+
 .entity-border {
   position: absolute;
   background-color: transparent;
   pointer-events: auto;
   z-index: ($z-entity + 1);
-}
-.entity-border.top-border {
-  top: -5px;
-  left: 0;
-  width: 100%;
-  height: 10px;
   cursor: crosshair;
-}
-.entity-border.right-border {
-  top: 0;
-  right: -5px;
-  width: 10px;
-  height: 100%;
-  cursor: crosshair;
-}
-.entity-border.bottom-border {
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  cursor: crosshair;
-}
-.entity-border.left-border {
-  top: 0;
-  left: -5px;
-  width: 10px;
-  height: 100%;
-  cursor: crosshair;
+
+  $borders: (
+          top: (top: -5px, left: 0, width: 100%, height: 10px),
+          right: (top: 0, right: -5px, width: 10px, height: 100%),
+          bottom: (bottom: -5px, left: 0, width: 100%, height: 10px),
+          left: (top: 0, left: -5px, width: 10px, height: 100%)
+  );
+
+  @each $direction, $props in $borders {
+    &.#{$direction}-border {
+      @each $prop, $value in $props {
+        #{$prop}: $value;
+      }
+    }
+  }
 }

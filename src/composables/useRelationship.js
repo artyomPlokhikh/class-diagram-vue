@@ -1,4 +1,4 @@
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import {
     calculateConnectionPoint,
     calculatePathCenter,
@@ -11,11 +11,14 @@ import { useDiagramStore } from "@/stores/diagram.js";
 export function useRelationship(relationship) {
     const diagramStore = useDiagramStore();
 
-    const srcEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.src?.id));
-    const trgEntity = computed(() => diagramStore.entities.find(e => e.id === relationship.trg?.id));
+    const srcEl = computed(() => diagramStore.findDiagramElement(relationship.src?.id, relationship.src?.type));
+    const trgEl = computed(() => diagramStore.findDiagramElement(relationship.trg?.id, relationship.trg?.type));
 
-    const srcPoint = computed(() => calculateConnectionPoint(srcEntity.value, relationship.src.border, relationship.src.position));
-    const trgPoint = computed(() => calculateConnectionPoint(trgEntity.value, relationship.trg.border, relationship.trg.position));
+    console.log(relationship.src);
+    console.log(relationship.trg);
+
+    const srcPoint = computed(() => calculateConnectionPoint(srcEl.value, relationship.src.border, relationship.src.position));
+    const trgPoint = computed(() => calculateConnectionPoint(trgEl.value, relationship.trg.border, relationship.trg.position));
     const allPoints = computed(() => [srcPoint.value, ...relationship.bendPoints, trgPoint.value]);
 
     const path = computed(() => {

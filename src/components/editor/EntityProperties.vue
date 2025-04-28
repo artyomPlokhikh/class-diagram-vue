@@ -5,10 +5,12 @@
             <label>Entity Name:</label>
             <input v-model="entity.name" class="entity-name-input"/>
         </div>
-        <h4>Annotation</h4>
-        <AnnotationList
-            v-model:annotation="entity.annotation"
-        />
+        <div class="form-group">
+            <label>Annotation:</label>
+            <AnnotationList
+                v-model:annotation="entity.annotation"
+            />
+        </div>
         <h4>Attributes</h4>
         <AttributeList
             :attributes="entity.attributes"

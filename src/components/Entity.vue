@@ -3,7 +3,7 @@
         ref="entityRef"
         class="entity"
         :style="[positionStyle, sizeStyle]"
-        @mousedown.left="onMouseDown"
+        @mousedown.left="handleMouseDown"
         @click.stop
     >
         <div class="entity-header">
@@ -38,119 +38,62 @@
         <div
             v-show="isSelected"
             class="resize-handle"
-            @mousedown.left.stop.prevent="composable.startResizing($event)"
-            @dblclick.stop.prevent="composable.resetSize($event)"
+            @mousedown.left.stop.prevent="mr.startResizing($event)"
+            @dblclick.stop.prevent="mr.resetSize($event)"
         ></div>
 
         <div
-            class="entity-border top-border"
-            :class="{ 'highlight-border': isHovering }"
-            @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false; clearPreview()"
-            @mousemove="handleBorderHover($event, 'top')"
-            @click.stop="handleBorderClick($event, 'top')"
-            @mousedown.stop
-        ></div>
-        <div
-            class="entity-border right-border"
-            :class="{ 'highlight-border': isHovering }"
-            @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false; clearPreview()"
-            @mousemove="handleBorderHover($event, 'right')"
-            @click.stop="handleBorderClick($event, 'right')"
-            @mousedown.stop
-        ></div>
-        <div
-            class="entity-border bottom-border"
-            :class="{ 'highlight-border': isHovering }"
-            @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false; clearPreview()"
-            @mousemove="handleBorderHover($event, 'bottom')"
-            @click.stop="handleBorderClick($event, 'bottom')"
-            @mousedown.stop
-        ></div>
-        <div
-            class="entity-border left-border"
-            :class="{ 'highlight-border': isHovering }"
-            @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false; clearPreview()"
-            @mousemove="handleBorderHover($event, 'left')"
-            @click.stop="handleBorderClick($event, 'left')"
+            v-for="side in ['top', 'right', 'bottom', 'left']"
+            :key="side"
+            class="entity-border"
+            :class="[side + '-border', { 'highlight-border': sc.isHovering }]"
+            @mouseenter="sc.isHovering = true"
+            @mouseleave="sc.onBorderLeave"
+            @mousemove="sc.onBorderHover($event, side)"
+            @click.stop="sc.onBorderClick($event, side)"
             @mousedown.stop
         ></div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { useEntity } from '@/composables/useEntity.js';
-import Entity from "@/models/Entity.js";
-import { calculateBorderRelativePosition } from "@/utils/mathHelpers.js";
-import { useHoverPreview } from '@/composables/useHoverPreview.js';
+import { ref, computed } from 'vue';
+import Entity from '@/models/Entity.js';
+import { useMovableResizable } from '@/composables/shared/useMovableResizable.js';
+import { useSelectableConnectable } from '@/composables/shared/useSelectableConnectable.js';
 
 const props = defineProps({
-    entity: {
-        type: Object,
-        required: true,
-        validator: v => v instanceof Entity,
-    },
-    isSelected: {
-        type: Boolean,
-        default: false,
-    },
+    entity: { type: Object, required: true, validator: v => v instanceof Entity },
+    isSelected: { type: Boolean, default: false },
 });
 const emit = defineEmits(['entity-select', 'relationship-connect']);
 
 const entityRef = ref(null);
-const composable = useEntity(props.entity, entityRef);
+const mr = useMovableResizable(props.entity, entityRef, { measureIntrinsic: true });
+const sc = useSelectableConnectable(
+    props.entity,
+    entityRef,
+    props.isSelected,
+    emit,
+    { selectEvent: 'entity-select', connectEvent: 'relationship-connect', type: 'entity' }
+);
 
-const isHovering = ref(false);
-
-const onMouseDown = (e) => {
-    emit('entity-select');
-    composable.startDragging(e);
-};
-
-const handleBorderClick = (event, borderSide) => {
-    emit('entity-select');
-
-    const position = calculateBorderRelativePosition(
-        entityRef.value.getBoundingClientRect(),
-        borderSide,
-        { x: event.clientX, y: event.clientY }
-    );
-
-    emit('relationship-connect', {
-        entityId: props.entity.id,
-        border: borderSide,
-        position,
-    });
+const handleMouseDown = e => {
+    sc.onPointerDown(e);
+    mr.startDragging(e);
 };
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,
-    transition: composable.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: mr.isDragging.value ? 'none' : 'transform 0.2s cubic-bezier(0.4,0,0.2,1)'
 }));
 
 const sizeStyle = computed(() => {
-    if (composable.isResizing.value || composable.isManuallyResized.value) {
-        return {
-            width: props.entity.width + 'px',
-            height: props.entity.height + 'px'
-        };
-    } else {
-        return {
-            minWidth: props.entity.width + 'px',
-            minHeight: props.entity.height + 'px'
-        };
+    if (mr.isResizing.value || mr.isManuallyResized.value) {
+        return { width: props.entity.width + 'px', height: props.entity.height + 'px' };
     }
+    return { minWidth: props.entity.width + 'px', minHeight: props.entity.height + 'px' };
 });
-
-const { handleEntityBorderHover, clearPreview } = useHoverPreview();
-
-const handleBorderHover = (event, border) => {
-    handleEntityBorderHover(event, entityRef.value, border);
-};
-
 </script>
+
 

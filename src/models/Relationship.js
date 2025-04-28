@@ -13,12 +13,14 @@ export default class Relationship {
         this.type = options.type || Relationship.TYPES.ASSOCIATION;
         this.src = {
             id: options.src?.id || null,
+            type: options.src?.type || null,
             border: options.src?.border || 'top',
             position: options.src?.position || 0.5,
             mult: options.src?.mult || '',
         };
         this.trg = {
             id: options.trg?.id || null,
+            type: options.trg?.type || null,
             border: options.trg?.border || 'top',
             position: options.trg?.position || 0.5,
             mult: options.trg?.mult || '',
