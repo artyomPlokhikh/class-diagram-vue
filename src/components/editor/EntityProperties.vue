@@ -11,18 +11,22 @@
                 v-model:annotation="entity.annotation"
             />
         </div>
-        <h4>Attributes</h4>
-        <AttributeList
-            :attributes="entity.attributes"
-            @add-attribute="diagramStore.addAttribute(entity.id)"
-            @remove-attribute="(id) => diagramStore.removeAttribute(entity.id, id)"
-        />
-        <h4>Methods</h4>
-        <MethodList
-            :methods="entity.methods"
-            @add-method="diagramStore.addMethod(entity.id)"
-            @remove-method="(id) => diagramStore.removeMethod(entity.id, id)"
-        />
+        <div class="form-group">
+            <label>Attributes:</label>
+            <AttributeList
+                :attributes="entity.attributes"
+                @add-attribute="diagramStore.addAttribute(entity.id)"
+                @remove-attribute="(id) => diagramStore.removeAttribute(entity.id, id)"
+            />
+        </div>
+        <div class="form-group">
+            <label>Methods:</label>
+            <MethodList
+                :methods="entity.methods"
+                @add-method="diagramStore.addMethod(entity.id)"
+                @remove-method="(id) => diagramStore.removeMethod(entity.id, id)"
+            />
+        </div>
     </div>
 </template>
 
@@ -38,9 +42,7 @@ const diagramStore = useDiagramStore();
 const entity = computed(() => diagramStore.selected);
 
 const saveEntity = debounce(() => {
-    if (entity.value) {
-        diagramStore.save();
-    }
+    if (entity.value) diagramStore.save();
 }, 2000);
 
 watch(() => entity.value?.name, saveEntity);

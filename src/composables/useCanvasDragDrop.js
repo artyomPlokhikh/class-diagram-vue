@@ -4,16 +4,17 @@ import { useCameraStore } from '@/stores/camera.js';
 import Entity from '@/models/Entity.js';
 import Note from '@/models/Note.js';
 import ANNOTATION from '@/models/Annotation.js';
+import Enumeration from "@/models/Enumeration.js";
 
 export function useCanvasDragDrop() {
     const diagramStore = useDiagramStore();
     const cameraStore = useCameraStore();
 
-    const entityConfig = {
+    const elementConfig = {
         empty: { name: 'New Entity', annotation: '' },
         interface: { name: 'New Interface', annotation: ANNOTATION.INTERFACE.name },
-        enum: { name: 'New Enum', annotation: ANNOTATION.ENUM.name },
         note: { content: 'New Note' },
+        enumeration: { name: 'New Enumeration', values: ['Value1', 'Value2', 'Value3'] },
     };
 
     function onDragOver(evt) {
@@ -38,7 +39,7 @@ export function useCanvasDragDrop() {
             const { x, y } = cameraStore.getContainerCoordinates(evt);
 
             if (payload.objectType === 'entity') {
-                const cfg = entityConfig[payload.key];
+                const cfg = elementConfig[payload.key];
                 if (!cfg) return;
                 const ent = new Entity({ ...cfg, x, y });
                 diagramStore.addEntity(ent);
@@ -46,6 +47,9 @@ export function useCanvasDragDrop() {
             } else if (payload.objectType === 'note') {
                 const note = new Note({ x, y });
                 diagramStore.addNote(note);
+            } else if (payload.objectType === 'enumeration') {
+                const en = new Enumeration({ x, y });
+                diagramStore.addEnumeration(en);
             }
         });
     }

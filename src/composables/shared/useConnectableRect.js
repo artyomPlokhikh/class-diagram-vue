@@ -1,19 +1,18 @@
-import { ref } from 'vue';
-import { useHoverPreview } from '@/composables/useHoverPreview.js';
+import { inject, ref } from 'vue';
 import { calculateBorderRelativePosition } from '@/utils/mathHelpers.js';
 
 export function useConnectableRect(model, elRef, emit, connectEvent, type) {
     const isHovering = ref(false);
-    const { handleEntityBorderHover, clearPreview } = useHoverPreview();
+    const hover = inject('hover');
 
     function onBorderHover(e, side) {
         isHovering.value = true;
-        handleEntityBorderHover(e, elRef.value, side);
+        hover.handleEntityBorderHover(e, elRef.value, side);
     }
 
     function onBorderLeave() {
         isHovering.value = false;
-        clearPreview();
+        hover.clearPreview();
     }
 
     function onBorderClick(e, side) {

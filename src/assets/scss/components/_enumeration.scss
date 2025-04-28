@@ -1,0 +1,68 @@
+@use '../base/variables' as *;
+
+.enumeration {
+    position: absolute;
+    z-index: $z-note;
+    background: #fffae6;
+    border: 2px solid #d4b106;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+    min-width: 100px;
+    min-height: 100px;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.enumeration__border {
+    position: absolute;
+    background-color: transparent;
+    pointer-events: auto;
+    z-index: ($z-enumeration + 1);
+    cursor: crosshair;
+    $borders: (
+            top: (top: -5px, left: 0, width: 100%, height: 10px),
+            right: (top: 0, right: -5px, width: 10px, height: 100%),
+            bottom: (bottom: -5px, left: 0, width: 100%, height: 10px),
+            left: (top: 0, left: -5px, width: 10px, height: 100%)
+    );
+
+    @each $direction, $props in $borders {
+        &.#{$direction}-border {
+            @each $prop, $value in $props {
+                #{$prop}: $value;
+            }
+        }
+    }
+}
+
+.enumeration:hover .enumeration__border:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+.enumeration.selected {
+    border-color: $pink;
+    box-shadow: 0 4px 16px rgba(255, 64, 129, 0.2);
+}
+
+.enumeration.dragging,
+.enumeration:active {
+    cursor: grabbing;
+}
+
+.enumeration__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
+}
+
+.enumeration__header__title {
+    font-size: 16px;
+    font-weight: bold;
+    color: $blue;
+}
+

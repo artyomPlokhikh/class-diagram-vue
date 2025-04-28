@@ -14,9 +14,6 @@ export function useRelationship(relationship) {
     const srcEl = computed(() => diagramStore.findDiagramElement(relationship.src?.id, relationship.src?.type));
     const trgEl = computed(() => diagramStore.findDiagramElement(relationship.trg?.id, relationship.trg?.type));
 
-    console.log(relationship.src);
-    console.log(relationship.trg);
-
     const srcPoint = computed(() => calculateConnectionPoint(srcEl.value, relationship.src.border, relationship.src.position));
     const trgPoint = computed(() => calculateConnectionPoint(trgEl.value, relationship.trg.border, relationship.trg.position));
     const allPoints = computed(() => [srcPoint.value, ...relationship.bendPoints, trgPoint.value]);

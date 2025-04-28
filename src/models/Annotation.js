@@ -8,9 +8,6 @@ const ANNOTATION = Object.freeze({
     SERVICE: {
         name: 'service'
     },
-    ENUM: {
-        name: 'enum'
-    },
 });
 
 export default ANNOTATION;

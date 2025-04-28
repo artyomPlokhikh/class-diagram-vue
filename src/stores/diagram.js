@@ -6,11 +6,13 @@ import Method from '@/models/Method';
 import Relationship from '@/models/Relationship';
 import HistoryManager from '@/utils/HistoryManager';
 import Note from "@/models/Note.js";
+import Enumeration from "@/models/Enumeration.js";
 
 export const useDiagramStore = defineStore('diagram', () => {
     const entities = ref([]);
     const relationships = ref([]);
     const notes = ref([]);
+    const enumerations = ref([]);
 
     const selectedId = ref(null);
     const selectedType = ref(null);
@@ -25,6 +27,8 @@ export const useDiagramStore = defineStore('diagram', () => {
                 return relationships.value.find(r => r.id === selectedId.value) || null;
             case 'note':
                 return notes.value.find(n => n.id === selectedId.value) || null;
+            case 'enumeration':
+                return enumerations.value.find(e => e.id === selectedId.value) || null;
             default:
                 return null;
         }
@@ -48,7 +52,8 @@ export const useDiagramStore = defineStore('diagram', () => {
     const _snapshot = () => JSON.stringify({
         entities: entities.value.map(e => e.toJSON()),
         relationships: relationships.value.map(r => r.toJSON()),
-        notes: notes.value.map(n => n.toJSON())
+        notes: notes.value.map(n => n.toJSON()),
+        enumerations: enumerations.value.map(e => e.toJSON())
     });
 
     const _restore = snapshot => {
@@ -84,8 +89,8 @@ export const useDiagramStore = defineStore('diagram', () => {
                 newEntities.push(ent);
             } else {
                 const e = new Entity(ed);
-                e.attributes = ed.attributes.map(a => new Attribute(a));
-                e.methods = ed.methods.map(m => new Method(m));
+                e.attributes = ed.attributes?.map(a => new Attribute(a));
+                e.methods = ed.methods?.map(m => new Method(m));
                 newEntities.push(e);
             }
         });
@@ -122,6 +127,22 @@ export const useDiagramStore = defineStore('diagram', () => {
             }
         });
         notes.value = newNotes;
+
+        const newEnums = [];
+        enumerations.value = s.enumerations.map(ed => {
+            const en = enumerations.value.find(e => e.id === ed.id);
+            if (en) {
+                en.name = ed.name;
+                en.x = ed.x;
+                en.y = ed.y;
+                en.width = ed.width;
+                en.height = ed.height;
+                newEnums.push(en);
+            } else {
+                newEnums.push(new Enumeration(ed));
+            }
+        });
+        enumerations.value = newEnums;
     };
 
     const _pushHistory = () => {
@@ -160,6 +181,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         if (item instanceof Entity) selectedType.value = 'entity';
         else if (item instanceof Relationship) selectedType.value = 'relationship';
         else if (item instanceof Note) selectedType.value = 'note';
+        else if (item instanceof Enumeration) selectedType.value = 'enumeration';
         else selectedType.value = null;
     };
 
@@ -167,7 +189,8 @@ export const useDiagramStore = defineStore('diagram', () => {
         const collections = {
             'entity': entities.value,
             'relationship': relationships.value,
-            'note': notes.value
+            'note': notes.value,
+            'enumeration': enumerations.value,
         };
 
         return collections[type]?.find(item => item.id === id) || null;
@@ -251,12 +274,7 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const deleteRelationship = id => {
         relationships.value = relationships.value.filter(r => r.id !== id);
-        if (
-            selectedType.value === 'relationship' &&
-            selectedId.value === id
-        ) {
-            setSelected(null);
-        }
+        if (selectedId.value === id) setSelected(null);
         _pushHistory();
     };
 
@@ -269,16 +287,28 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const deleteNote = (id) => {
         notes.value = notes.value.filter(n => n.id !== id);
-        if (selectedType.value === 'note' && selectedId.value === id) {
-            setSelected(null);
-        }
+        if (selectedId.value === id) setSelected(null);
         _pushHistory();
     };
+
+    const addEnumeration = (options = {}) => {
+        const e = new Enumeration(options);
+        enumerations.value.push(e);
+        setSelected(e);
+        _pushHistory();
+    };
+
+    const deleteEnumeration = (id) => {
+        enumerations.value = enumerations.value.filter(e => e.id !== id);
+        if (selectedId.value === id) setSelected(null);
+        _pushHistory();
+    }
 
     const clearDiagram = () => {
         entities.value = [];
         relationships.value = [];
         notes.value = [];
+        enumerations.value = [];
         setSelected(null);
         clearHistory();
     };
@@ -287,6 +317,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         entities,
         relationships,
         notes,
+        enumerations,
         selectedId,
         selectedType,
         history,
@@ -309,6 +340,8 @@ export const useDiagramStore = defineStore('diagram', () => {
         deleteNote,
         updateRelationship,
         deleteRelationship,
+        addEnumeration,
+        deleteEnumeration,
         clearDiagram,
     };
 });

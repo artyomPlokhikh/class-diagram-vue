@@ -21,6 +21,17 @@
                 />
             </div>
 
+            <div class="enumerations">
+                <Enumeration
+                    v-for="enumeration in diagramStore.enumerations"
+                    :key="enumeration.id"
+                    :enumeration="enumeration"
+                    :isSelected="diagramStore.selected === enumeration"
+                    @enumeration-select="diagramStore.setSelected(enumeration)"
+                    @relationship-connect="relationshipCreator.handleRelationshipConnect"
+                />
+            </div>
+
             <!-- Entities container -->
             <div class="entities">
                 <Entity
@@ -60,9 +71,9 @@
             <svg id="handles-svg" class="handles-svg"></svg>
             <svg class="preview-overlay">
                 <circle
-                    v-if="previewPoint"
-                    :cx="previewPoint.x"
-                    :cy="previewPoint.y"
+                    v-if="hover.previewPoint.value"
+                    :cx="hover.previewPoint.value.x"
+                    :cy="hover.previewPoint.value.y"
                     r="5"
                     fill="rgba(0,255,0,0.3)"
                     stroke="green"
@@ -78,18 +89,19 @@
 <script setup>
 import { ref, provide } from 'vue';
 
+import Enumeration from "@/components/Enumeration.vue";
+import Note from "@/components/Note.vue";
 import Entity from '@/components/Entity.vue';
 import Relationship from '@/components/Relationship.vue';
+
 import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
 import SnapGuides from '@/components/SnapGuides.vue'
-
 import { useCamera } from '@/composables/useCamera.js';
 import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';
 import { useBendDragger } from '@/composables/useBendDragger';
 import { useHoverPreview } from "@/composables/useHoverPreview.js";
 import { useCanvasDragDrop } from "@/composables/useCanvasDragDrop.js";
 import { useDiagramStore } from "@/stores/diagram.js";
-import Note from "@/components/Note.vue";
 
 
 // Canvas and camera setup
@@ -104,6 +116,7 @@ const diagramStore = useDiagramStore();
 // Composables
 const relationshipCreator = useRelationshipCreator();
 const bendDragger = useBendDragger();
-const { previewPoint } = useHoverPreview();
+const hover = useHoverPreview();
+provide('hover', hover);
 const { onDragOver, onDrop } = useCanvasDragDrop();
 </script>

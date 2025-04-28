@@ -24,6 +24,7 @@
 <script setup>
 import EntityModel from '@/models/Entity.js';
 import NoteModel from '@/models/Note.js';
+import EnumerationModel from '@/models/Enumeration.js';
 import ANNOTATION from '@/models/Annotation.js';
 import { useCameraStore } from '@/stores/camera.js';
 import { useDiagramStore } from '@/stores/diagram.js';
@@ -34,8 +35,8 @@ const diagramStore = useDiagramStore();
 const paletteItems = [
     { objectType: 'entity', key: 'empty', name: 'Entity', annotation: '' },
     { objectType: 'entity', key: 'interface', name: 'Interface', annotation: ANNOTATION.INTERFACE.name },
-    { objectType: 'entity', key: 'enum', name: 'Enum', annotation: ANNOTATION.ENUM.name },
-    { objectType: 'note', key: 'note', name: 'Note' }
+    { objectType: 'note', key: 'note', name: 'Note' },
+    { objectType: 'enumeration', 'key': 'enumeration', name: 'Enumeration' },
 ];
 
 function onDragStart(evt, item) {
@@ -73,6 +74,9 @@ function onClick(item) {
     } else if (objectType === 'note') {
         const note = new NoteModel({ x, y });
         diagramStore.addNote(note);
+    } else if (objectType === 'enumeration') {
+        const enumeration = new EnumerationModel({ x, y });
+        diagramStore.addEnumeration(enumeration);
     }
 }
 </script>
@@ -80,6 +84,9 @@ function onClick(item) {
 <style scoped>
 .palette {
     margin-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
 
 .palette-item {
