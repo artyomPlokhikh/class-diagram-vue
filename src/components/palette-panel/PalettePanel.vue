@@ -1,5 +1,5 @@
 <template>
-    <div class="palette-panel">
+    <aside class="palette-panel">
         <div class="palette-panel__header">
             <h3 class="palette-panel__title">Palette</h3>
         </div>
@@ -18,7 +18,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </aside>
 </template>
 
 <script setup>

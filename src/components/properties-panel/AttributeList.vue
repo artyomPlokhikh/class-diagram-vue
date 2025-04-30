@@ -1,22 +1,50 @@
 <template>
-    <div class="attributes-list">
-        <div v-for="(attr) in attributes" :key="attr.id" class="attribute-item">
-            <input v-model="attr.name" placeholder="Attribute name" class="attribute-name-input"/>
-            <select v-model="attr.type" class="attribute-select">
-                <option v-for="option in filteredTypes" :key="option.name" :value="option">
+    <div class="prop-list">
+        <div
+            v-for="attr in attributes"
+            :key="attr.id"
+            class="prop-list__item"
+        >
+            <input
+                v-model="attr.name"
+                placeholder="Attribute name"
+                class="prop-list__input"
+            />
+            <select v-model="attr.type" class="prop-list__select">
+                <option
+                    v-for="option in filteredTypes"
+                    :key="option.name"
+                    :value="option"
+                >
                     {{ option.name }}
                 </option>
             </select>
-            <select v-model="attr.visibility" class="attribute-select">
-                <option v-for="option in Object.values(Visibility)" :key="option.name" :value="option">
+            <select v-model="attr.visibility" class="prop-list__select">
+                <option
+                    v-for="option in Object.values(Visibility)"
+                    :key="option.name"
+                    :value="option"
+                >
                     {{ capitalize(option.name) }}
                 </option>
             </select>
-            <button @click="$emit('remove-attribute', attr.id)" class="remove-btn">×</button>
+            <button
+                class="prop-list__remove"
+                @click="$emit('remove-attribute', attr.id)"
+            >
+                ×
+            </button>
         </div>
-        <button @click="$emit('add-attribute')" class="add-attribute-btn">+ Add Attribute</button>
+
+        <button
+            class="prop-list__add"
+            @click="$emit('add-attribute')"
+        >
+            + Add Attribute
+        </button>
     </div>
 </template>
+
 
 <script setup>
 import { computed, capitalize } from 'vue';

@@ -1,13 +1,13 @@
 <template>
-    <div class="properties-panel">
-        <h3>Note Properties</h3>
+    <div class="properties">
+        <h3 class="properties__title">Note Properties</h3>
 
-        <div class="form-group">
-            <label for="note-content">Content</label>
+        <div class="properties__group">
+            <label class="properties__label" for="note-content">Content</label>
             <textarea
                 id="note-content"
                 v-model="note.content"
-                class="note-content-input"
+                class="properties__input"
                 rows="4"
             ></textarea>
         </div>

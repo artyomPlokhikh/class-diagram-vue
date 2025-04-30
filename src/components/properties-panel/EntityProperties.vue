@@ -1,34 +1,37 @@
 <template>
-    <div class="properties-panel">
-        <h3>Entity Properties</h3>
-        <div class="form-group">
-            <label>Entity Name:</label>
-            <input v-model="entity.name" class="entity-name-input"/>
+    <div class="properties">
+        <h3 class="properties__title">Entity Properties</h3>
+
+        <div class="properties__group">
+            <label class="properties__label">Entity Name:</label>
+            <input v-model="entity.name" class="properties__input" />
         </div>
-        <div class="form-group">
-            <label>Annotation:</label>
-            <AnnotationList
-                v-model:annotation="entity.annotation"
-            />
+
+        <div class="properties__group">
+            <label class="properties__label">Annotation:</label>
+            <AnnotationList v-model:annotation="entity.annotation" />
         </div>
-        <div class="form-group">
-            <label>Attributes:</label>
+
+        <div class="properties__group">
+            <label class="properties__label">Attributes:</label>
             <AttributeList
                 :attributes="entity.attributes"
                 @add-attribute="diagramStore.addAttribute(entity.id)"
-                @remove-attribute="(id) => diagramStore.removeAttribute(entity.id, id)"
+                @remove-attribute="id => diagramStore.removeAttribute(entity.id, id)"
             />
         </div>
-        <div class="form-group">
-            <label>Methods:</label>
+
+        <div class="properties__group">
+            <label class="properties__label">Methods:</label>
             <MethodList
                 :methods="entity.methods"
                 @add-method="diagramStore.addMethod(entity.id)"
-                @remove-method="(id) => diagramStore.removeMethod(entity.id, id)"
+                @remove-method="id => diagramStore.removeMethod(entity.id, id)"
             />
         </div>
     </div>
 </template>
+
 
 <script setup>
 import { computed, watch } from 'vue';

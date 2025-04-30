@@ -1,5 +1,5 @@
 <template>
-    <div class="properties-panel">
+    <aside class="properties-panel">
         <EntityProperties
             v-if="selected instanceof Entity"
             class="properties-panel__content"
@@ -17,10 +17,10 @@
             class="properties-panel__content"
         />
 
-        <div v-else class="properties-panel__empty-state">
+        <div v-else class="properties-panel__empty-message">
             Select a canvas object to edit its properties
         </div>
-    </div>
+    </aside>
 </template>
 
 <script setup>

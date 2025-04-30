@@ -1,0 +1,102 @@
+@use '../../base/variables' as *;
+@use '../../mixins/responsive' as *;
+
+%form-control {
+  width: 100%;
+  padding: $spacing-unit * .5 $spacing-unit * .75;
+  font: inherit;
+  background: $white;
+  border: 1px solid c(border);
+  border-radius: 4px;
+
+  &:focus {
+    outline: 2px solid c(primary-600);
+    border-color: c(primary-600);
+  }
+}
+
+.properties {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-unit * 2;
+
+  &__title {
+    margin: 0 0 $spacing-unit;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: c(text-primary);
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit;
+  }
+
+  &__label {
+    font-size: .875rem;
+    font-weight: 500;
+    color: c(text-secondary);
+  }
+
+  &__input,
+  select {
+    @extend %form-control;
+  }
+
+  textarea.properties__input {
+    resize: vertical;
+  }
+}
+
+.prop-annotation {
+  &__select {
+    @extend %form-control;
+  }
+}
+
+.prop-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-unit * 1.5;
+
+  &__item {
+    display: flex;
+    gap: $spacing-unit;
+
+    @include respond(sm) {
+      flex-wrap: wrap;
+    }
+  }
+
+  &__input,
+  &__select {
+    @extend %form-control;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  &__remove {
+    flex: 0 0 auto;
+    padding: 0 $spacing-unit * .75;
+    font-size: 1.125rem;
+    line-height: 1;
+    background: transparent;
+    border: none;
+    color: $danger-color;
+    cursor: pointer;
+  }
+
+  &__add {
+    align-self: flex-start;
+    padding: $spacing-unit * .5 $spacing-unit;
+    background: $button-bg;
+    border: 1px solid c(border);
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background: $button-hover-bg;
+    }
+  }
+}

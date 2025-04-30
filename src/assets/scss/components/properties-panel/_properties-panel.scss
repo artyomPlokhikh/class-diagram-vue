@@ -1,25 +1,44 @@
 @use '../../base/variables' as *;
+@use '../../mixins/responsive' as *;
+
+$panel-width: 40 * $spacing-unit;
 
 .properties-panel {
-  grid-area: properties;
-  border-left: 1px solid $color-border;
+  display: flex;
+  flex-direction: column;
+  width: $panel-width;
+  min-width: $panel-width;
+  max-width: 100%;
+  height: 100%;
+  padding: $spacing-unit * 2;
   background: $panel-bg;
+  border-left: 1px solid c(border);
   overflow-y: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  transform: translateX(100%);
+  transition: transform .3s ease;
+  z-index: $z-handles;
 
-  &__empty-state {
-    padding: 1rem;
-    color: $muted-color;
-    text-align: center;
-    font-size: 0.875rem;
+  &--open {
+    transform: none;
   }
 
   &__content {
-    padding: 1rem;
+    flex: 1 0 auto;
   }
-}
 
-.note-content-input {
-  font-size: 14px;
-  padding: 4px 6px;
-  resize: vertical;
+  &__empty-message {
+    margin: auto;
+    color: c(text-subtle);
+    font-style: italic;
+    text-align: center;
+  }
+
+  @include respond(md) {
+    position: relative;
+    transform: none;
+    border-left: 1px solid c(border);
+  }
 }

@@ -1,43 +1,34 @@
 <template>
-    <div class="properties-panel">
-        <h3>Relationship Properties</h3>
+    <div class="properties">
+        <h3 class="properties__title">Relationship Properties</h3>
 
-        <div class="form-group">
-            <label>Name:</label>
-            <input v-model="relationship.name" placeholder="e.g. manages"/>
+        <div class="properties__group">
+            <label class="properties__label">Name:</label>
+            <input v-model="relationship.name" class="properties__input"/>
         </div>
 
-        <div class="form-group">
-            <label>Type:</label>
-            <select v-model="relationship.type">
-                <option v-for="val in Relationship.TYPES" :value="val">
-                    {{ capitalize(val) }}
-                </option>
+        <div class="properties__group">
+            <label class="properties__label">Type:</label>
+            <select v-model="relationship.type" class="properties__input">
+                <option v-for="val in Relationship.TYPES" :value="val">{{ capitalize(val) }}</option>
             </select>
         </div>
 
-        <div v-if="showMultiplicity" class="form-group">
-            <label>Source Multiplicity:</label>
-            <select v-model="relationship.src.mult">
-                <option v-for="val in multiplicityOptions" :value="val.value">
-                    {{ val.label }}
-                </option>
+        <div v-if="showMultiplicity" class="properties__group">
+            <label class="properties__label">Source Multiplicity:</label>
+            <select v-model="relationship.src.mult" class="properties__input">
+                <option v-for="val in multiplicityOptions" :value="val.value">{{ val.label }}</option>
             </select>
         </div>
 
-        <div v-if="showMultiplicity" class="form-group">
-            <label>Target Multiplicity:</label>
-            <select v-model="relationship.trg.mult">
-                <option v-for="val in multiplicityOptions" :value="val.value">
-                    {{ val.label }}
-                </option>
-
+        <div v-if="showMultiplicity" class="properties__group">
+            <label class="properties__label">Target Multiplicity:</label>
+            <select v-model="relationship.trg.mult" class="properties__input">
+                <option v-for="val in multiplicityOptions" :value="val.value">{{ val.label }}</option>
             </select>
         </div>
 
-        <button class="btn-danger" @click="deleteRelationship">
-            Delete Relationship
-        </button>
+        <button class="button button--danger" @click="deleteRelationship">Delete Relationship</button>
     </div>
 </template>
 

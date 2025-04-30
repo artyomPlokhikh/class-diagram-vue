@@ -1,22 +1,50 @@
 <template>
-    <div class="methods-list">
-        <div v-for="(method) in methods" :key="method.id" class="method-item">
-            <input v-model="method.name" placeholder="Method name" class="method-name-input"/>
-            <select v-model="method.type" class="method-select">
-                <option v-for="option in Object.values(Type)" :key="option.name" :value="option">
+    <div class="prop-list">
+        <div
+            v-for="method in methods"
+            :key="method.id"
+            class="prop-list__item"
+        >
+            <input
+                v-model="method.name"
+                placeholder="Method name"
+                class="prop-list__input"
+            />
+            <select v-model="method.type" class="prop-list__select">
+                <option
+                    v-for="option in Object.values(Type)"
+                    :key="option.name"
+                    :value="option"
+                >
                     {{ option.name }}
                 </option>
             </select>
-            <select v-model="method.visibility" class="method-select">
-                <option v-for="option in Object.values(Visibility)" :key="option.name" :value="option">
+            <select v-model="method.visibility" class="prop-list__select">
+                <option
+                    v-for="option in Object.values(Visibility)"
+                    :key="option.name"
+                    :value="option"
+                >
                     {{ capitalize(option.name) }}
                 </option>
             </select>
-            <button @click="$emit('remove-method', method.id)" class="remove-btn">×</button>
+            <button
+                class="prop-list__remove"
+                @click="$emit('remove-method', method.id)"
+            >
+                ×
+            </button>
         </div>
-        <button @click="$emit('add-method')" class="add-method-btn">+ Add Method</button>
+
+        <button
+            class="prop-list__add"
+            @click="$emit('add-method')"
+        >
+            + Add Method
+        </button>
     </div>
 </template>
+
 
 <script setup>
 import { capitalize } from 'vue';

@@ -1,15 +1,17 @@
 <template>
-    <div class="properties-panel">
-        <h3>Enum Properties</h3>
-        <div class="form-group">
-            <label>Enum Name:</label>
-            <input v-model="enumeration.name" class="enum-name-input"/>
+    <div class="properties">
+        <h3 class="properties__title">Enum Properties</h3>
+
+        <div class="properties__group">
+            <label class="properties__label">Enum Name:</label>
+            <input v-model="enumeration.name" class="properties__input"/>
         </div>
-        <div class="form-group">
-            <label>Values:</label>
-            <div class="values-list">
-                <div v-for="(val) in enumeration.values" class="value-item">
-                    <input v-model="val.name" class="value-name-input"/>
+
+        <div class="properties__group">
+            <label class="properties__label">Values:</label>
+            <div class="properties__list">
+                <div v-for="val in enumeration.values" class="properties__item">
+                    <input v-model="val.name" class="properties__input"/>
                 </div>
             </div>
         </div>

@@ -1,13 +1,21 @@
 <template>
-    <div class="annotation-list">
-        <select v-model="selectedAnnotation" class="annotation-select">
+    <div class="prop-annotation">
+        <select
+            v-model="selectedAnnotation"
+            class="prop-annotation__select"
+        >
             <option value="">None</option>
-            <option v-for="option in Object.values(ANNOTATION)" :key="option.name" :value="option.name">
+            <option
+                v-for="option in Object.values(ANNOTATION)"
+                :key="option.name"
+                :value="option.name"
+            >
                 {{ capitalize(option.name) }}
             </option>
         </select>
     </div>
 </template>
+
 
 <script setup>
 import { computed } from 'vue';
