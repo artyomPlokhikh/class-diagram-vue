@@ -2,24 +2,59 @@
 
 .diagram-rect {
   position: absolute;
-  display: inline-block;
-  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
   min-width: 100px;
   min-height: 100px;
-
+  box-sizing: border-box;
   background: c(panel-bg);
   border: 2px solid c(border);
-  border-radius: 0;
   padding: 12px;
+  border-radius: 0;
   box-shadow: 0 2px 8px 0 c(shadow);
-
   cursor: grab;
   user-select: none;
   transition: transform .2s, box-shadow .2s, border-color .2s;
 
+
+  &__section {
+    margin-top: 8px;
+    padding-top: 8px;
+
+    &--with-divider {
+      position: relative;
+      margin-top: 16px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: $muted-color;
+      }
+    }
+  }
+
+
   &--selected {
     border-color: c(primary-600);
     box-shadow: 0 4px 16px 0 rgba(c(primary-600), .25);
+  }
+
+  &--empty {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    > header {
+      margin-bottom: 0;
+
+      &::after {
+        display: none;
+      }
+    }
   }
 
   &--dragging,
@@ -80,4 +115,5 @@
     background: c(primary-600);
     cursor: se-resize;
   }
+
 }

@@ -2,7 +2,10 @@
     <div
         ref="entityRef"
         class="diagram-rect diagram-entity"
-        :class="{ 'diagram-entity--selected': isSelected, 'diagram-rect--selected': isSelected }"
+        :class="{
+            'diagram-rect--selected': isSelected,
+            'diagram-rect--empty': isEmpty
+        }"
         :style="[positionStyle, sizeStyle]"
         @mousedown.left="handlePointerDown"
         @click.stop
@@ -13,7 +16,7 @@
             </span>
             <span class="diagram-entity__name">{{ entity.name }}</span>
         </header>
-        <section class="diagram-entity__section diagram-entity__section--attributes">
+        <section class="diagram-rect__section">
             <ul class="diagram-entity__attribute-list">
                 <li
                     v-for="attr in entity.attributes"
@@ -27,8 +30,10 @@
             </ul>
         </section>
 
-        <hr>
-        <section class="diagram-entity__section diagram-entity__section--methods">
+        <section
+            class="diagram-rect__section"
+            :class="{ 'diagram-rect__section--with-divider': entity.attributes.length > 0 && entity.methods.length > 0 }"
+        >
             <ul class="diagram-entity__method-list">
                 <li
                     v-for="method in entity.methods"
@@ -36,7 +41,7 @@
                     class="diagram-entity__method-item"
                 >
                     <span class="diagram-entity__visibility">{{ method.visibility.literal }}</span>
-                    <span class="diagram-entity__item-name">{{ method.name }}(): </span>
+                    <span class="diagram-entity__item-name">{{ method.name }}() </span>
                     <span class="diagram-entity__item-type">{{ method.type.name }}</span>
                 </li>
             </ul>
@@ -64,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import Entity from '@/models/Entity.js';
 import { useEntity } from "@/composables/useEntity.js";
 
@@ -89,6 +94,12 @@ const {
     isManuallyResized,
 } = useEntity(props.entity, entityRef, props.isSelected, emit);
 
+
+const isEmpty = computed(() => {
+        if (!props.entity) return false;
+        return props.entity.attributes.length === 0 && props.entity.methods.length === 0;
+    }
+);
 
 const positionStyle = computed(() => ({
     transform: `translate(${props.entity.x}px, ${props.entity.y}px)`,

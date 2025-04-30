@@ -39,7 +39,14 @@
     transition: fill .15s, stroke .15s;
 
     &--interaction {
+      z-index: $z-handles;
       fill: transparent;
+
+      &:hover ~ .diagram-relationship__handle--bend {
+        fill: c(primary-50);
+        stroke: c(primary-600);
+        stroke-width: 2;
+      }
     }
 
     &--bend,

@@ -53,6 +53,8 @@
                 <circle
                     class="diagram-relationship__handle diagram-relationship__handle--interaction"
                     :cx="pt.x" :cy="pt.y" r="10"
+                    @contextmenu.prevent="removeBendPoint(idx)"
+                    @mousedown.stop.prevent="e => emit('bend-drag', relationship, idx, e)"
                 />
                 <circle
                     class="diagram-relationship__handle diagram-relationship__handle--bend"

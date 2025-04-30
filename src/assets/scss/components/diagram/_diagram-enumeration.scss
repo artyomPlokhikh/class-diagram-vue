@@ -2,23 +2,45 @@
 
 .diagram-enumeration {
   background: c(enumeration-fill);
-  z-index: $z-enumeration;
+  z-index: $z-diagram-rectangle;
   min-width: 180px;
   min-height: 100px;
-
-  &--selected {
-    outline: 2px solid c(primary-600);
-  }
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
 
   &__header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: stretch;
     margin-bottom: 8px;
+    position: relative;
+    min-width: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: #000;
+    }
+  }
+
+  &__annotation,
+  &__name {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
   }
 
   &__annotation {
-    font-size: 0.8125rem;
+    margin-bottom: 4px;
+    font-size: .875rem;
     font-style: italic;
     color: c(text-secondary);
   }
@@ -30,22 +52,24 @@
     background: transparent;
     border: none;
     outline: none;
-    width: 70%;
   }
 
   &__value-list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0
   }
 
   &__value-item {
-    padding: 4px 0;
-    font-size: 0.9375rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    font-size: .9375rem;
     color: c(text-primary);
-
-    &:not(:last-child) {
-      border-bottom: 1px solid lighten(c(border), 40%);
-    }
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

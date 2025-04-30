@@ -45,7 +45,7 @@ function onDragStart(evt, item) {
         'application/vnd.uml-diagram-item',
         JSON.stringify(item)
     );
-    const block = evt.currentTarget.querySelector('.palette-block');
+    const block = evt.currentTarget;
     const ghost = block.cloneNode(true);
     Object.assign(ghost.style, {
         opacity: '0.5',
