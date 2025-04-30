@@ -1,25 +1,16 @@
 <template>
-    <g
-        class="relationship"
-        @click.stop="emit('relationship-select')"
-    >
+    <g class="diagram-relationship" @click.stop="emit('relationship-select')">
         <polyline
-            class="hit-area"
+            class="diagram-relationship__hit-area"
             :points="path"
-            stroke="transparent"
-            fill="none"
-            stroke-width="25"
             @contextmenu.prevent="addBendPoint"
-            @mousemove="handleRelationshipHover($event, allPoints)"
+            @mousemove="hover.handleRelationshipHover($event, allPoints)"
             @mouseenter="isHovering = true"
-            @mouseleave="isHovering = false; clearPreview()"
+            @mouseleave="isHovering = false; hover.clearPreview()"
         />
         <polyline
-            class="main-line"
+            class="diagram-relationship__line"
             :points="path"
-            stroke="black"
-            fill="none"
-            stroke-width="2"
             :stroke-dasharray="strokeDasharray"
             :marker-start="markerStart"
             :marker-end="markerEnd"
@@ -29,7 +20,7 @@
             :x="labelPos.x"
             :y="labelPos.y - 5"
             text-anchor="middle"
-            class="relationship-label"
+            class="diagram-relationship__label"
         >
             {{ relationship.name }}
         </text>
@@ -37,7 +28,7 @@
             :x="srcMultPos.x"
             :y="srcMultPos.y"
             text-anchor="middle"
-            class="multiplicity-label"
+            class="diagram-relationship__multiplicity"
         >
             {{ relationship.src?.mult }}
         </text>
@@ -45,26 +36,26 @@
             :x="trgMultPos.x"
             :y="trgMultPos.y"
             text-anchor="middle"
-            class="multiplicity-label"
+            class="diagram-relationship__multiplicity"
         >
             {{ relationship.trg?.mult }}
         </text>
     </g>
 
-    <teleport to="#handles-svg">
+    <teleport to="#relationship-handles-svg">
         <g
             v-show="isSelected || isHovering"
-            class="handles"
+            class="diagram-relationship__handles"
             @mouseenter="isHovering = true"
             @mouseleave="isHovering = false"
         >
             <template v-for="(pt, idx) in relationship.bendPoints" :key="idx">
                 <circle
-                    class="interaction-handle"
+                    class="diagram-relationship__handle diagram-relationship__handle--interaction"
                     :cx="pt.x" :cy="pt.y" r="10"
                 />
                 <circle
-                    class="bend-handle"
+                    class="diagram-relationship__handle diagram-relationship__handle--bend"
                     :cx="pt.x" :cy="pt.y" r="5"
                     @contextmenu.prevent="removeBendPoint(idx)"
                     @mousedown.stop.prevent="e => emit('bend-drag', relationship, idx, e)"
@@ -72,23 +63,23 @@
             </template>
 
             <circle
-                class="interaction-handle"
+                class="diagram-relationship__handle diagram-relationship__handle--interaction"
                 :cx="srcPoint.x" :cy="srcPoint.y" r="12"
                 @mousedown.stop.prevent="emit('relationship-drag',{ relationship, handleType:'src' })"
             />
             <circle
-                class="relationship-handle"
+                class="diagram-relationship__handle diagram-relationship__handle--endpoint"
                 :cx="srcPoint.x" :cy="srcPoint.y" r="6"
                 @mousedown.stop.prevent="emit('relationship-drag',{ relationship, handleType:'src' })"
             />
 
             <circle
-                class="interaction-handle"
+                class="diagram-relationship__handle diagram-relationship__handle--interaction"
                 :cx="trgPoint.x" :cy="trgPoint.y" r="12"
                 @mousedown.stop.prevent="emit('relationship-drag',{ relationship, handleType:'trg' })"
             />
             <circle
-                class="relationship-handle"
+                class="diagram-relationship__handle diagram-relationship__handle--endpoint"
                 :cx="trgPoint.x" :cy="trgPoint.y" r="6"
                 @mousedown.stop.prevent="emit('relationship-drag',{ relationship, handleType:'trg' })"
             />
@@ -96,11 +87,11 @@
     </teleport>
 </template>
 
+
 <script setup>
 import { useRelationship } from '@/composables/useRelationship';
-import { useHoverPreview } from '@/composables/useHoverPreview.js';
 import Relationship from '@/models/Relationship.js';
-import { ref } from "vue";
+import { inject, ref } from "vue";
 
 const props = defineProps({
     relationship: {
@@ -116,6 +107,7 @@ const props = defineProps({
 const emit = defineEmits(['relationship-select', 'relationship-drag', 'bend-drag']);
 
 const isHovering = ref(false);
+const hover = inject('hover');
 
 const {
     path,
@@ -131,7 +123,5 @@ const {
     addBendPoint,
     removeBendPoint,
 } = useRelationship(props.relationship);
-
-const { handleRelationshipHover, clearPreview } = useHoverPreview();
 
 </script>

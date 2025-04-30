@@ -1,18 +1,19 @@
 <template>
     <div
         ref="noteRef"
-        class="note"
+        class="diagram-rect diagram-note"
+        :class="{ 'diagram-note--selected': isSelected, 'diagram-rect--selected': isSelected }"
         :style="[positionStyle, sizeStyle]"
         @mousedown.left="handlePointerDown"
         @click.stop
     >
-        <div class="note-content">
+        <div class="diagram-note__content">
             {{ note.content }}
         </div>
 
         <div
             v-show="isSelected"
-            class="resize-handle"
+            class="diagram-rect__resize-handle"
             @mousedown.left.stop.prevent="startResizing($event)"
             @dblclick.stop.prevent="resetSize($event)"
         ></div>
@@ -20,8 +21,8 @@
         <div
             v-for="side in ['top', 'right', 'bottom', 'left']"
             :key="side"
-            class="note-border"
-            :class="[side + '-border', { 'highlight-border': isHovering }]"
+            class="diagram-rect__border"
+            :class="[`diagram-rect__border--${side}`, { 'diagram-rect__border--highlighted': isHovering }]"
             @mouseenter="isHovering = true"
             @mouseleave="onBorderLeave"
             @mousemove="onBorderHover($event, side)"

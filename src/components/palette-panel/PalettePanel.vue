@@ -1,19 +1,19 @@
 <template>
-    <div class="left-panel-content">
-        <div class="panel-header">
-            <h3>Palette</h3>
+    <div class="palette-panel">
+        <div class="palette-panel__header">
+            <h3 class="palette-panel__title">Palette</h3>
         </div>
 
-        <div class="palette">
+        <div class="palette-panel__list">
             <div
                 v-for="item in paletteItems"
                 :key="item.objectType + ':' + item.key"
-                class="palette-item"
+                class="palette-panel__item"
                 draggable="true"
                 @dragstart="onDragStart($event, item)"
                 @click="onClick(item)"
             >
-                <div class="palette-block">
+                <div class="palette-panel__block">
                     {{ item.name }}
                 </div>
             </div>
@@ -81,24 +81,3 @@ function onClick(item) {
 }
 </script>
 
-<style scoped>
-.palette {
-    margin-top: 8px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.palette-item {
-    cursor: pointer;
-    margin-bottom: 4px;
-}
-
-.palette-block {
-    padding: 6px 10px;
-    background: #eee;
-    border-radius: 4px;
-    text-align: center;
-    user-select: none;
-}
-</style>

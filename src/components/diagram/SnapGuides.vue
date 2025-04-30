@@ -1,7 +1,7 @@
 <template>
     <svg
         v-if="snappingGuides.length"
-        class="relationship-svg"
+        class="diagram__guides"
     >
         <g class="relationship">
             <line

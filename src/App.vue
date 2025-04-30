@@ -1,11 +1,11 @@
 <template>
-    <div class="app-container">
-        <TopToolbar/>
+    <div class="app">
+        <TopToolbar class="app__toolbar"/>
 
-        <div class="main-layout">
-            <LeftPanel class="left-panel"/>
-            <CanvasArea class="canvas-area"/>
-            <RightPanel class="right-panel"/>
+        <div class="app__main">
+            <PalettePanel class="palette-panel"/>
+            <DiagramCanvas class="diagram"/>
+            <PropertiesPanel class="properties-panel"/>
         </div>
     </div>
 </template>
@@ -13,10 +13,10 @@
 <script setup>
 import { onMounted, provide } from 'vue';
 import { useDiagramStore } from '@/stores/diagram';
-import TopToolbar from '@/components/TopToolbar.vue';
-import LeftPanel from '@/components/LeftPanel.vue';
-import RightPanel from '@/components/RightPanel.vue';
-import CanvasArea from '@/components/CanvasArea.vue';
+import TopToolbar from '@/components/top-toolbar/TopToolbar.vue';
+import PalettePanel from '@/components/palette-panel/PalettePanel.vue';
+import PropertiesPanel from '@/components/properties-panel/PropertiesPanel.vue';
+import DiagramCanvas from '@/components/diagram/DiagramCanvas.vue';
 import { useKeyboard } from '@/composables/useKeyboard.js';
 import { useSnapping } from "@/composables/useSnapping.js";
 

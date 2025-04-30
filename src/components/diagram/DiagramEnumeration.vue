@@ -1,29 +1,31 @@
 <template>
     <div
         ref="enumerationRef"
-        class="enumeration"
+        class="diagram-rect diagram-enumeration"
+        :class="{ 'diagram-enumeration--selected': isSelected, 'diagram-rect--selected': isSelected }"
         :style="[positionStyle, sizeStyle]"
         @mousedown.left="handlePointerDown"
         @click.stop
     >
-        <div class="enumeration__header">
-            <span class="enumeration__annotation">
+        <div class="diagram-enumeration__header">
+            <span class="diagram-enumeration__annotation">
                 «enumeration»
             </span>
-            <span class="enumeration__name">{{ enumeration.name }}</span>
+            <span class="diagram-enumeration__name">{{ enumeration.name }}</span>
         </div>
-        <ul class="enumeration__list">
+        <ul class="diagram-enumeration__value-list">
             <li
                 v-for="value in enumeration.values"
                 :key="value.id"
-                class="enumeration__item"
+                class="diagram-enumeration__value-item"
             >
                 <span class="">{{ value.name }}</span>
             </li>
         </ul>
+
         <div
             v-show="isSelected"
-            class="resize-handle"
+            class="diagram-rect__resize-handle"
             @mousedown.left.stop.prevent="startResizing($event)"
             @dblclick.stop.prevent="resetSize($event)"
         ></div>
@@ -31,8 +33,8 @@
         <div
             v-for="side in ['top', 'right', 'bottom', 'left']"
             :key="side"
-            class="enumeration__border"
-            :class="[side + '-border', { 'highlight-border': isHovering }]"
+            class="diagram-rect__border"
+            :class="[`diagram-rect__border--${side}`, { 'diagram-rect__border--highlighted': isHovering }]"
             @mouseenter="isHovering = true"
             @mouseleave="onBorderLeave"
             @mousemove="onBorderHover($event, side)"

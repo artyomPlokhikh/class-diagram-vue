@@ -1,43 +1,50 @@
 <template>
     <div
         ref="entityRef"
-        class="entity"
+        class="diagram-rect diagram-entity"
+        :class="{ 'diagram-entity--selected': isSelected, 'diagram-rect--selected': isSelected }"
         :style="[positionStyle, sizeStyle]"
         @mousedown.left="handlePointerDown"
         @click.stop
     >
-        <div class="entity-header">
-            <span v-if="entity.annotation" class="entity-annotation">
+        <header class="diagram-entity__header">
+            <span v-if="entity.annotation" class="diagram-entity__annotation">
                 «{{ entity.annotation }}»
             </span>
-            <span class="entity-name">{{ entity.name }}</span>
-        </div>
-        <ul class="attributes-list">
-            <li
-                v-for="attr in entity.attributes"
-                :key="attr.id"
-                class="attribute-item"
-            >
-                <span class="attribute-visibility">{{ attr.visibility.literal }}</span>
-                <span class="attribute-name">{{ attr.name }}</span>
-                <span class="attribute-type">{{ attr.type.name }}</span>
-            </li>
-        </ul>
+            <span class="diagram-entity__name">{{ entity.name }}</span>
+        </header>
+        <section class="diagram-entity__section diagram-entity__section--attributes">
+            <ul class="diagram-entity__attribute-list">
+                <li
+                    v-for="attr in entity.attributes"
+                    :key="attr.id"
+                    class="diagram-entity__attribute-item"
+                >
+                    <span class="diagram-entity__visibility">{{ attr.visibility.literal }}</span>
+                    <span class="diagram-entity__item-name">{{ attr.name }}</span>
+                    <span class="diagram-entity__item-type">{{ attr.type.name }}</span>
+                </li>
+            </ul>
+        </section>
+
         <hr>
-        <ul class="methods-list">
-            <li
-                v-for="method in entity.methods"
-                :key="method.id"
-                class="method-item"
-            >
-                <span class="method-visibility">{{ method.visibility.literal }}</span>
-                <span class="method-name">{{ method.name }}(): </span>
-                <span class="method-type">{{ method.type.name }}</span>
-            </li>
-        </ul>
+        <section class="diagram-entity__section diagram-entity__section--methods">
+            <ul class="diagram-entity__method-list">
+                <li
+                    v-for="method in entity.methods"
+                    :key="method.id"
+                    class="diagram-entity__method-item"
+                >
+                    <span class="diagram-entity__visibility">{{ method.visibility.literal }}</span>
+                    <span class="diagram-entity__item-name">{{ method.name }}(): </span>
+                    <span class="diagram-entity__item-type">{{ method.type.name }}</span>
+                </li>
+            </ul>
+        </section>
+
         <div
             v-show="isSelected"
-            class="resize-handle"
+            class="diagram-rect__resize-handle"
             @mousedown.left.stop.prevent="startResizing($event)"
             @dblclick.stop.prevent="resetSize($event)"
         ></div>
@@ -45,8 +52,8 @@
         <div
             v-for="side in ['top', 'right', 'bottom', 'left']"
             :key="side"
-            class="entity-border"
-            :class="[side + '-border', { 'highlight-border': isHovering }]"
+            class="diagram-rect__border"
+            :class="[`diagram-rect__border--${side}`, { 'diagram-rect__border--highlighted': isHovering }]"
             @mouseenter="isHovering = true"
             @mouseleave="onBorderLeave"
             @mousemove="onBorderHover($event, side)"
@@ -96,5 +103,3 @@ const sizeStyle = computed(() => {
 });
 
 </script>
-
-

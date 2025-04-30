@@ -1,15 +1,24 @@
-.app-container {
-  height: 100vh;
+@use '../base/variables' as *;
+
+.app {
   display: flex;
   flex-direction: column;
-  background: #f8f9fa;
-}
+  height: 100vh;
+  background: $color-canvas-bg;
 
-.main-layout {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  grid-template-rows: 1fr;
-  grid-template-areas: "left canvas right";
-  height: calc(100vh - 50px);
+  &__toolbar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: $toolbar-bg;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__main {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(200px, 20%) 1fr minmax(200px, 20%);
+    grid-template-areas: "palette diagram properties";
+    overflow: hidden;
+  }
 }

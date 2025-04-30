@@ -30,14 +30,3 @@ const saveNote = debounce(() => {
 
 watch(() => note.value?.content, saveNote);
 </script>
-
-<style scoped>
-.note-content-input {
-    font-size: 14px;
-    padding: 4px 6px;
-}
-
-.note-content-input {
-    resize: vertical;
-}
-</style>

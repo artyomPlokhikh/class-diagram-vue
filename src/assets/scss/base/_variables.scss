@@ -1,6 +1,73 @@
+$white: #ffffff;
 $blue: #2196f3;
 $pink: #ff4081;
+$text-color: #333333;
+$muted-color: #888888;
+
+$color-canvas-bg: #f8f9fa;
+$color-entity-bg: #ffffff;
+$color-note-bg: #fff7d6;
+$color-border: #cccccc;
+$color-primary: #4a90e2;
+$color-relationship: #555555;
+$panel-bg: $white;
+$toolbar-bg: #f0f2f5;
+$button-bg: #e9ecef;
+$button-hover-bg: darken($button-bg, 5%);
+$danger-color: #dc3545;
+
+
+$palette: (
+        canvas-bg: #f9fafb,
+        panel-bg: #ffffff,
+        border: #000000,
+        shadow: rgba(0, 0, 0, .15),
+        primary-50: #eef4ff,
+        primary-400: #5084ff,
+        primary-600: #2d63f2,
+        primary-700: #1f46c7,
+        accent-50: #fff7e6,
+        accent-400: #ffc857,
+        accent-600: #e0a103,
+        entity-fill: #eef2ff,
+        enumeration-fill: #e8ffe7,
+        note-fill: #fffaf2,
+        relationship-stroke: #607d8b,
+        relationship-hl: #2d63f2,
+        grid-line: #e9ecef,
+        selection-bg: rgba(45, 99, 242, .16),
+        selection-stroke: #2d63f2,
+        snap-guide: #ff6b6b,
+        success: #2f9e44,
+        warning: #e67700,
+        error: #d63939,
+        text-primary: #212529,
+        text-secondary: #495057,
+        text-subtle: #868e96,
+);
+
+@function c($key) {
+  @return map-get($palette, $key);
+}
+
+
 $z-entity: 10;
 $z-handles: 20;
 $z-note: 30;
 $z-enumeration: 10;
+$z-relationship: 5;
+$z-relationship-handle: 20;
+$z-guides: 5;
+
+
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+$font-base-size: 1rem;
+$spacing-unit: 8px;
+
+
+$breakpoints: (
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px
+);

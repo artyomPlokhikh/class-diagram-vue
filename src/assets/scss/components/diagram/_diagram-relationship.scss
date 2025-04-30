@@ -1,0 +1,58 @@
+@use '../../base/variables' as *;
+
+.diagram-relationship {
+
+  &__hit-area {
+    stroke: transparent;
+    stroke-width: 25;
+    fill: none;
+    pointer-events: stroke;
+    cursor: pointer;
+  }
+
+  &__line {
+    stroke: c(relationship-stroke);
+    stroke-width: 2;
+    fill: none;
+    pointer-events: none;
+  }
+
+  &__label {
+    font-size: 12px;
+    color: c(text-primary);
+    pointer-events: none;
+  }
+
+  &__multiplicity {
+    font-size: 12px;
+    color: c(text-subtle);
+    pointer-events: none;
+  }
+
+  &__handles {
+    pointer-events: none;
+  }
+
+  &__handle {
+    pointer-events: all;
+    cursor: grab;
+    transition: fill .15s, stroke .15s;
+
+    &--interaction {
+      fill: transparent;
+    }
+
+    &--bend,
+    &--endpoint {
+      fill: #fff;
+      stroke: c(border);
+      stroke-width: 1.5;
+
+      &:hover {
+        fill: c(primary-50);
+        stroke: c(primary-600);
+        stroke-width: 2;
+      }
+    }
+  }
+}

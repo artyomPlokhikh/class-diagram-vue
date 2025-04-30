@@ -125,7 +125,7 @@ function distance(a, b) {
 }
 
 export function calculateBorderPreviewPoint(rect, border, mousePos) {
-    const svg = document.querySelector('.relationship-svg');
+    const svg = document.querySelector('.diagram-canvas__preview-svg');
     const pt = svg.createSVGPoint();
     pt.x = mousePos.x;
     pt.y = mousePos.y;

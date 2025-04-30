@@ -1,0 +1,16 @@
+@use '../../base/variables' as *;
+
+.diagram-note {
+  background: c(note-fill);
+  z-index: $z-note;
+  min-width: 100px;
+  min-height: 100px;
+
+  &__content {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    overflow: auto;
+    color: c(text-primary);
+  }
+}

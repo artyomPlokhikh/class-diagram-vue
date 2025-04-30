@@ -1,0 +1,77 @@
+@use '../../base/variables' as *;
+
+.diagram-canvas {
+  position: relative;
+  height: 100vh;
+  grid-area: diagram;
+
+  &__container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: c(canvas-bg);
+  }
+
+  &__viewport {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+    transform-origin: 0 0;
+    pointer-events: auto;
+    overflow: visible;
+
+    --grid-step:      24px;
+    --grid-offset-x:  0px;
+    --grid-offset-y:  0px;
+
+    background-image:
+            radial-gradient(circle at 1px 1px, c(grid-line) 1px, transparent 0);
+    background-size:  var(--grid-step) var(--grid-step);
+    background-position: var(--grid-offset-x) var(--grid-offset-y);
+  }
+
+  &__layer,
+  &__svg,
+  &__guides,
+  &__relationships-svg,
+  &__handles-svg,
+  &__preview-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  &__relationships-svg {
+    z-index: $z-relationship;
+    pointer-events: stroke;
+  }
+
+  &__handles-svg {
+    z-index: $z-relationship-handle;
+    pointer-events: none;
+  }
+
+  &__preview-svg,
+  &__guides {
+    pointer-events: none;
+  }
+
+  &__preview-line {
+    fill: none;
+    stroke: c(relationship-stroke);
+    stroke-width: 2;
+    stroke-dasharray: 5 5;
+    opacity: .5;
+    pointer-events: none;
+  }
+
+  &__preview-dot {
+    fill: c(selection-bg);
+    stroke: c(primary-600);
+    pointer-events: none;
+  }
+}

@@ -1,0 +1,83 @@
+@use '../../base/variables' as *;
+
+.diagram-rect {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 100px;
+  min-height: 100px;
+
+  background: c(panel-bg);
+  border: 2px solid c(border);
+  border-radius: 0;
+  padding: 12px;
+  box-shadow: 0 2px 8px 0 c(shadow);
+
+  cursor: grab;
+  user-select: none;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+
+  &--selected {
+    border-color: c(primary-600);
+    box-shadow: 0 4px 16px 0 rgba(c(primary-600), .25);
+  }
+
+  &--dragging,
+  &:active {
+    cursor: grabbing;
+  }
+
+  &__border {
+    position: absolute;
+    background-color: transparent;
+    pointer-events: auto;
+    cursor: crosshair;
+
+    &--highlighted {
+      background-color: c(selection-bg);
+    }
+
+    &--top {
+      top: -5px;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      //border-radius: 10px 10px 0 0;
+    }
+
+    &--right {
+      top: 0;
+      right: -5px;
+      width: 5px;
+      height: 100%;
+      //border-radius: 0 10px 10px 0;
+    }
+
+    &--bottom {
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      //border-radius: 0 0 10px 10px;
+    }
+
+    &--left {
+      top: 0;
+      left: -5px;
+      width: 5px;
+      height: 100%;
+      //border-radius: 10px 0 0 10px;
+    }
+  }
+
+  &__resize-handle {
+    z-index: $z-handles;
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 15px;
+    height: 15px;
+    background: c(primary-600);
+    cursor: se-resize;
+  }
+}

@@ -7,6 +7,14 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
             lines.push(e.x);             sources.push(e.id);
             lines.push(e.x + e.width);   sources.push(e.id);
         });
+        diagramStore.notes.forEach(e => {
+            lines.push(e.x);             sources.push(e.id);
+            lines.push(e.x + e.width);   sources.push(e.id);
+        });
+        diagramStore.enumerations.forEach(e => {
+            lines.push(e.x);             sources.push(e.id);
+            lines.push(e.x + e.width);   sources.push(e.id);
+        });
         diagramStore.relationships.forEach(r =>
             r.bendPoints.forEach(p => {
                 lines.push(p.x); sources.push(r.id);
@@ -19,6 +27,14 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     const horizontalData = computed(() => {
         const lines = [], sources = [];
         diagramStore.entities.forEach(e => {
+            lines.push(e.y);              sources.push(e.id);
+            lines.push(e.y + e.height);   sources.push(e.id);
+        });
+        diagramStore.notes.forEach(e => {
+            lines.push(e.y);              sources.push(e.id);
+            lines.push(e.y + e.height);   sources.push(e.id);
+        });
+        diagramStore.enumerations.forEach(e => {
             lines.push(e.y);              sources.push(e.id);
             lines.push(e.y + e.height);   sources.push(e.id);
         });

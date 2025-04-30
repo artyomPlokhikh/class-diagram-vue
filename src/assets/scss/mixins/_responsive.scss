@@ -1,0 +1,10 @@
+@use '../base/variables' as *;
+
+@mixin respond($bp) {
+    $size: map-get($breakpoints, $bp);
+    @if $size {
+        @media (min-width: $size) { @content; }
+    } @else {
+        @warn "Unknown breakpoint `#{$bp}`.";
+    }
+}

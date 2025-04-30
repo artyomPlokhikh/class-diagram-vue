@@ -32,10 +32,10 @@
 
 <script setup>
 import { computed, watch } from 'vue';
-import AttributeList from '@/components/editor/AttributeList.vue';
-import MethodList from '@/components/editor/MethodList.vue';
+import AttributeList from '@/components/properties-panel/AttributeList.vue';
+import MethodList from '@/components/properties-panel/MethodList.vue';
 import { debounce } from "@/utils/debounce.js";
-import AnnotationList from "@/components/editor/AnnotationList.vue";
+import AnnotationList from "@/components/properties-panel/AnnotationList.vue";
 import { useDiagramStore } from "@/stores/diagram.js";
 
 const diagramStore = useDiagramStore();

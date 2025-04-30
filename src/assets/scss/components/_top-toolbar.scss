@@ -1,0 +1,21 @@
+@use '../base/variables' as *;
+
+.toolbar__button {
+  padding: 0.5rem 1rem;
+  background: $button-bg;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: $button-hover-bg; }
+
+  &--danger {
+    background: $danger-color;
+    color: #fff;
+    border-color: darken($danger-color, 10%);
+
+    &:hover { background: lighten($danger-color, 10%); }
+  }
+}

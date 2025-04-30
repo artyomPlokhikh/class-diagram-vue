@@ -1,0 +1,25 @@
+@use '../../base/variables' as *;
+
+.properties-panel {
+  grid-area: properties;
+  border-left: 1px solid $color-border;
+  background: $panel-bg;
+  overflow-y: auto;
+
+  &__empty-state {
+    padding: 1rem;
+    color: $muted-color;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  &__content {
+    padding: 1rem;
+  }
+}
+
+.note-content-input {
+  font-size: 14px;
+  padding: 4px 6px;
+  resize: vertical;
+}
