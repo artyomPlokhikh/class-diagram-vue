@@ -1,21 +1,19 @@
-export default class Note {
+import DiagramRectangle from "@/models/DiagramRectangle.js";
+
+export default class Note extends DiagramRectangle {
     constructor(options = {}) {
-        this.id = options.id || Date.now();
+        options.type = 'note';
+        if (!options.width) options.width = 200;
+        if (!options.height) options.height = 100;
+        
+        super(options);
         this.content = options.content || 'New Note';
-        this.x = options.x || 0;
-        this.y = options.y || 0;
-        this.width = options.width || 200;
-        this.height = options.height || 100;
     }
 
     toJSON() {
         return {
-            id: this.id,
-            content: this.content,
-            x: this.x,
-            y: this.y,
-            width: this.width,
-            height: this.height
+            ...super.toJSON(),
+            content: this.content
         };
     }
 }

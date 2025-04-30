@@ -3,21 +3,16 @@ import { computed, reactive } from 'vue';
 export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     const verticalData = computed(() => {
         const lines = [], sources = [];
-        diagramStore.entities.forEach(e => {
-            lines.push(e.x);             sources.push(e.id);
-            lines.push(e.x + e.width);   sources.push(e.id);
-        });
-        diagramStore.notes.forEach(e => {
-            lines.push(e.x);             sources.push(e.id);
-            lines.push(e.x + e.width);   sources.push(e.id);
-        });
-        diagramStore.enumerations.forEach(e => {
-            lines.push(e.x);             sources.push(e.id);
-            lines.push(e.x + e.width);   sources.push(e.id);
+        diagramStore.rectangles.forEach(r => {
+            lines.push(r.x);
+            sources.push(r.id);
+            lines.push(r.x + r.width);
+            sources.push(r.id);
         });
         diagramStore.relationships.forEach(r =>
             r.bendPoints.forEach(p => {
-                lines.push(p.x); sources.push(r.id);
+                lines.push(p.x);
+                sources.push(r.id);
             })
         );
         return { lines, sources };
@@ -26,21 +21,16 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
 
     const horizontalData = computed(() => {
         const lines = [], sources = [];
-        diagramStore.entities.forEach(e => {
-            lines.push(e.y);              sources.push(e.id);
-            lines.push(e.y + e.height);   sources.push(e.id);
-        });
-        diagramStore.notes.forEach(e => {
-            lines.push(e.y);              sources.push(e.id);
-            lines.push(e.y + e.height);   sources.push(e.id);
-        });
-        diagramStore.enumerations.forEach(e => {
-            lines.push(e.y);              sources.push(e.id);
-            lines.push(e.y + e.height);   sources.push(e.id);
+        diagramStore.rectangles.forEach(r => {
+            lines.push(r.y);
+            sources.push(r.id);
+            lines.push(r.y + r.height);
+            sources.push(r.id);
         });
         diagramStore.relationships.forEach(r =>
             r.bendPoints.forEach(p => {
-                lines.push(p.y); sources.push(r.id);
+                lines.push(p.y);
+                sources.push(r.id);
             })
         );
         return { lines, sources };
@@ -55,14 +45,15 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     function start(box) {
         active = true;
         bbox = {
-            left:   box.left,
-            top:    box.top,
-            width:  box.width,
+            left: box.left,
+            top: box.top,
+            width: box.width,
             height: box.height,
-            right:  box.left + box.width,
-            bottom: box.top  + box.height
+            right: box.left + box.width,
+            bottom: box.top + box.height
         };
     }
+
     function stop() {
         active = false;
         guides.segments.length = 0;
@@ -91,11 +82,11 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
                 if (bypassId && sources[i] === bypassId) continue;
                 const v = lines[i];
                 if (Math.abs(v - ox) < threshold) {
-                    guides.segments.push({ x1: v, y1: bbox.top,    x2: v, y2: bbox.bottom });
+                    guides.segments.push({ x1: v, y1: bbox.top, x2: v, y2: bbox.bottom });
                     candidates.push({ snapX: v, dist: Math.abs(v - ox) });
                 }
                 if (Math.abs(v - rawR) < threshold) {
-                    guides.segments.push({ x1: v, y1: bbox.top,    x2: v, y2: bbox.bottom });
+                    guides.segments.push({ x1: v, y1: bbox.top, x2: v, y2: bbox.bottom });
                     candidates.push({ snapX: v - bbox.width, dist: Math.abs(v - rawR) });
                 }
             }

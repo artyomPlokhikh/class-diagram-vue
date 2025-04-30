@@ -9,6 +9,14 @@ import Note from "@/models/Note.js";
 import Enumeration from "@/models/Enumeration.js";
 
 export const useDiagramStore = defineStore('diagram', () => {
+    const rectangles = computed(() => {
+        return [
+            ...entities.value,
+            ...notes.value,
+            ...enumerations.value
+        ];
+    })
+
     const entities = ref([]);
     const relationships = ref([]);
     const notes = ref([]);
@@ -314,6 +322,7 @@ export const useDiagramStore = defineStore('diagram', () => {
     };
 
     return {
+        rectangles,
         entities,
         relationships,
         notes,
