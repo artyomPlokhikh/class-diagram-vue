@@ -1,6 +1,15 @@
 <template>
     <div class="properties">
-        <h3 class="properties__title">Relationship Properties</h3>
+        <header class="properties__header">
+            <h3 class="properties__title">Relationship Properties</h3>
+            <button
+                class="properties__delete-btn"
+                @click="diagramStore.deleteEntity(relationship.id)"
+                title="Delete Relationship"
+            >
+                Delete
+            </button>
+        </header>
 
         <div class="properties__group">
             <label class="properties__label">Name:</label>
@@ -27,8 +36,6 @@
                 <option v-for="val in multiplicityOptions" :value="val.value">{{ val.label }}</option>
             </select>
         </div>
-
-        <button class="button button--danger" @click="deleteRelationship">Delete Relationship</button>
     </div>
 </template>
 
@@ -38,11 +45,11 @@ import { useDiagramStore } from '@/stores/diagram';
 import Relationship from '@/models/Relationship';
 import { debounce } from "@/utils/debounce.js";
 
-const store = useDiagramStore();
-const relationship = computed(() => store.selected);
+const diagramStore = useDiagramStore();
+const relationship = computed(() => diagramStore.selected);
 
 const deleteRelationship = () => {
-    store.deleteRelationship(relationship.value.id);
+    diagramStore.deleteRelationship(relationship.value.id);
 };
 
 const multiplicityOptions = [
@@ -63,7 +70,7 @@ const showMultiplicity = (relationship) => {
 
 const saveRelationship = debounce(() => {
     if (relationship.value) {
-        store.save();
+        diagramStore.save();
     }
 }, 1000);
 
