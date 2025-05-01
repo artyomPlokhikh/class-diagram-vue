@@ -7,22 +7,45 @@ $panel-width: 40 * $spacing-unit;
   display: flex;
   flex-direction: column;
   width: $panel-width;
-  min-width: $panel-width;
-  max-width: 100%;
+  min-width: 200px;
+  max-width: 500px;
   height: 100%;
   padding: $spacing-unit * 2;
   background: $panel-bg;
   border-left: 1px solid c(border);
   overflow-y: auto;
-  position: fixed;
-  top: 0;
-  right: 0;
-  transform: translateX(100%);
+  position: relative;
   transition: transform .3s ease;
-  z-index: $z-handles;
 
-  &--open {
-    transform: none;
+  &--closed {
+    transform: translateX(100%);
+  }
+
+  &__resize-handle {
+    position: absolute;
+    top: 0;
+    left: -5px;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+  }
+
+  &__toggle {
+    position: absolute;
+    top: 10px;
+    left: -30px;
+    width: 30px;
+    height: 30px;
+    background: $panel-bg;
+    border: 1px solid $color-border;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
   }
 
   &__content {
@@ -36,9 +59,10 @@ $panel-width: 40 * $spacing-unit;
     text-align: center;
   }
 
-  @include respond(md) {
-    position: relative;
-    transform: none;
-    border-left: 1px solid c(border);
+  @include respond(sm) {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 100;
   }
 }

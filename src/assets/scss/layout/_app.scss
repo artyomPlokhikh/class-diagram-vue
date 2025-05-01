@@ -7,6 +7,7 @@
   background: $color-canvas-bg;
 
   &__toolbar {
+    z-index: 1;
     display: flex;
     gap: 0.5rem;
     padding: 0.75rem;
@@ -15,10 +16,14 @@
   }
 
   &__main {
-    display: grid;
+    display: flex;
     flex: 1;
-    grid-template-columns: minmax(200px, 20%) 1fr minmax(200px, 20%);
-    grid-template-areas: "palette diagram properties";
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__diagram {
+    flex: 1;
     overflow: hidden;
   }
 }

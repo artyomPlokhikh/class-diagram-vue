@@ -1,19 +1,17 @@
 <template>
-    <div class="prop-annotation">
-        <select
-            v-model="selectedAnnotation"
-            class="prop-annotation__select"
+    <select
+        v-model="selectedAnnotation"
+        class="properties__select"
+    >
+        <option value="">None</option>
+        <option
+            v-for="option in Object.values(ANNOTATION)"
+            :key="option.name"
+            :value="option.name"
         >
-            <option value="">None</option>
-            <option
-                v-for="option in Object.values(ANNOTATION)"
-                :key="option.name"
-                :value="option.name"
-            >
-                {{ capitalize(option.name) }}
-            </option>
-        </select>
-    </div>
+            {{ capitalize(option.name) }}
+        </option>
+    </select>
 </template>
 
 

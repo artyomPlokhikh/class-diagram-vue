@@ -46,7 +46,7 @@ const entity = computed(() => diagramStore.selected);
 
 const saveEntity = debounce(() => {
     if (entity.value) diagramStore.save();
-}, 2000);
+}, 1000);
 
 watch(() => entity.value?.name, saveEntity);
 

@@ -26,7 +26,7 @@ const saveNote = debounce(() => {
     if (note.value) {
         diagramStore.save();
     }
-}, 2000);
+}, 1000);
 
 watch(() => note.value?.content, saveNote);
 </script>

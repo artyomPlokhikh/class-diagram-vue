@@ -65,7 +65,7 @@ const saveRelationship = debounce(() => {
     if (relationship.value) {
         store.save();
     }
-}, 2000);
+}, 1000);
 
 watch(() => relationship.value?.name, saveRelationship);
 watch(() => relationship.value?.type, saveRelationship);

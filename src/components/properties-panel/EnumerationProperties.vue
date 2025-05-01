@@ -9,10 +9,20 @@
 
         <div class="properties__group">
             <label class="properties__label">Values:</label>
-            <div class="properties__list">
-                <div v-for="val in enumeration.values" class="properties__item">
-                    <input v-model="val.name" class="properties__input"/>
+            <div class="properties-list">
+                <div v-for="(val, index) in enumeration.values" :key="index" class="properties-list__item">
+                    <input v-model="enumeration.values[index]" class="properties-list__input"/>
+                    <button
+                        class="properties-list__remove"
+                        @click="removeValue(index)"
+                    >
+                        ×
+                    </button>
                 </div>
+
+                <button class="properties-list__add" @click="addValue">
+                    + Add Value
+                </button>
             </div>
         </div>
     </div>
@@ -28,8 +38,18 @@ const enumeration = computed(() => diagramStore.selected);
 
 const saveEnumeration = debounce(() => {
     if (enumeration.value) diagramStore.save();
-}, 2000);
+}, 1000);
+
+function removeValue(index) {
+    enumeration.value.values.splice(index, 1);
+    saveEnumeration();
+}
+
+function addValue() {
+    enumeration.value.values.push("");
+    saveEnumeration();
+}
 
 watch(() => enumeration.value?.name, saveEnumeration);
-
+watch(() => enumeration.value?.values, saveEnumeration, { deep: true });
 </script>

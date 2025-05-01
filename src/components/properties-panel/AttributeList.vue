@@ -1,16 +1,16 @@
 <template>
-    <div class="prop-list">
+    <div class="properties-list">
         <div
             v-for="attr in attributes"
             :key="attr.id"
-            class="prop-list__item"
+            class="properties-list__item"
         >
             <input
                 v-model="attr.name"
                 placeholder="Attribute name"
-                class="prop-list__input"
+                class="properties-list__input"
             />
-            <select v-model="attr.type" class="prop-list__select">
+            <select v-model="attr.type" class="properties-list__select">
                 <option
                     v-for="option in filteredTypes"
                     :key="option.name"
@@ -19,7 +19,7 @@
                     {{ option.name }}
                 </option>
             </select>
-            <select v-model="attr.visibility" class="prop-list__select">
+            <select v-model="attr.visibility" class="properties-list__select">
                 <option
                     v-for="option in Object.values(Visibility)"
                     :key="option.name"
@@ -29,7 +29,7 @@
                 </option>
             </select>
             <button
-                class="prop-list__remove"
+                class="properties-list__remove"
                 @click="$emit('remove-attribute', attr.id)"
             >
                 ×
@@ -37,7 +37,7 @@
         </div>
 
         <button
-            class="prop-list__add"
+            class="properties-list__add"
             @click="$emit('add-attribute')"
         >
             + Add Attribute

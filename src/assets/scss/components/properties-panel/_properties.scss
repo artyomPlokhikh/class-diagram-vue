@@ -3,7 +3,7 @@
 
 %form-control {
   width: 100%;
-  padding: $spacing-unit * .5 $spacing-unit * .75;
+  padding: 0.5rem;
   font: inherit;
   background: $white;
   border: 1px solid c(border);
@@ -44,18 +44,25 @@
     @extend %form-control;
   }
 
+  &__item {
+    display: flex;
+    gap: $spacing-unit;
+
+    @include respond(sm) {
+      flex-wrap: wrap;
+
+      .properties__input {
+        margin-bottom: $spacing-unit;
+      }
+    }
+  }
+
   textarea.properties__input {
     resize: vertical;
   }
 }
 
-.prop-annotation {
-  &__select {
-    @extend %form-control;
-  }
-}
-
-.prop-list {
+.properties-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-unit * 1.5;
@@ -74,6 +81,7 @@
     @extend %form-control;
     flex: 1 1 0;
     min-width: 0;
+    margin-top: 0 !important;
   }
 
   &__remove {
@@ -88,12 +96,11 @@
   }
 
   &__add {
-    align-self: flex-start;
-    padding: $spacing-unit * .5 $spacing-unit;
     background: $button-bg;
     border: 1px solid c(border);
     border-radius: 4px;
     cursor: pointer;
+    padding: 0.5rem;
 
     &:hover {
       background: $button-hover-bg;
