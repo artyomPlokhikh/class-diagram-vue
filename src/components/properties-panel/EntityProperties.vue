@@ -1,15 +1,24 @@
 <template>
     <div class="properties">
-        <h3 class="properties__title">Entity Properties</h3>
+        <header class="properties__header">
+            <h3 class="properties__title">Entity Properties</h3>
+            <button
+                class="properties__delete-btn"
+                @click="diagramStore.deleteEntity(entity.id)"
+                title="Delete Entity"
+            >
+                Delete
+            </button>
+        </header>
 
         <div class="properties__group">
             <label class="properties__label">Entity Name:</label>
-            <input v-model="entity.name" class="properties__input" />
+            <input v-model="entity.name" class="properties__input"/>
         </div>
 
         <div class="properties__group">
             <label class="properties__label">Annotation:</label>
-            <AnnotationList v-model:annotation="entity.annotation" />
+            <AnnotationList v-model:annotation="entity.annotation"/>
         </div>
 
         <div class="properties__group">

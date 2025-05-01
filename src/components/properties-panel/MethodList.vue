@@ -35,14 +35,13 @@
                 ×
             </button>
         </div>
-
-        <button
-            class="button properties-list__add"
-            @click="$emit('add-method')"
-        >
-            + Add Method
-        </button>
     </div>
+    <button
+        class="button properties-list__add"
+        @click="$emit('add-method')"
+    >
+        + Add Method
+    </button>
 </template>
 
 

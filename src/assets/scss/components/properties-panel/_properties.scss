@@ -20,8 +20,29 @@
   flex-direction: column;
   gap: $spacing-unit * 2;
 
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-unit;
+  }
+
+  &__delete-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    color: $white;
+    background-color: $danger-color;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($danger-color, 10%);
+    }
+  }
+
   &__title {
-    margin: 0 0 $spacing-unit;
+    margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
     color: c(text-primary);
@@ -47,6 +68,7 @@
   &__item {
     display: flex;
     gap: $spacing-unit;
+    align-items: center;
 
     @include respond(sm) {
       flex-wrap: wrap;
@@ -63,6 +85,10 @@
 }
 
 .properties-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+
   display: flex;
   flex-direction: column;
   gap: $spacing-unit * 1.5;
@@ -76,7 +102,13 @@
     }
   }
 
-  &__input,
+  &__input {
+    @extend %form-control;
+    flex: 2 1 0;
+    min-width: 0;
+    margin-top: 0 !important;
+  }
+
   &__select {
     @extend %form-control;
     flex: 1 1 0;
@@ -105,5 +137,18 @@
     &:hover {
       background: $button-hover-bg;
     }
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.05);
   }
 }

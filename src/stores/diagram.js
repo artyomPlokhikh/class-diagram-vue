@@ -295,6 +295,9 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const deleteNote = (id) => {
         notes.value = notes.value.filter(n => n.id !== id);
+        relationships.value = relationships.value.filter(
+            r => r.src.id !== id && r.trg.id !== id
+        );
         if (selectedId.value === id) setSelected(null);
         _pushHistory();
     };
@@ -308,6 +311,9 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const deleteEnumeration = (id) => {
         enumerations.value = enumerations.value.filter(e => e.id !== id);
+        relationships.value = relationships.value.filter(
+            r => r.src.id !== id && r.trg.id !== id
+        );
         if (selectedId.value === id) setSelected(null);
         _pushHistory();
     }

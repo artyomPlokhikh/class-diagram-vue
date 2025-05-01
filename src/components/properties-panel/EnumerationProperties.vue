@@ -1,6 +1,15 @@
 <template>
     <div class="properties">
-        <h3 class="properties__title">Enum Properties</h3>
+        <header class="properties__header">
+            <h3 class="properties__title">Enum Properties</h3>
+            <button
+                class="properties__delete-btn"
+                @click="diagramStore.deleteEnumeration(enumeration.id)"
+                title="Delete Enum"
+            >
+                Delete
+            </button>
+        </header>
 
         <div class="properties__group">
             <label class="properties__label">Enum Name:</label>
@@ -19,11 +28,10 @@
                         ×
                     </button>
                 </div>
-
-                <button class="properties-list__add" @click="addValue">
-                    + Add Value
-                </button>
             </div>
+            <button class="properties-list__add" @click="addValue">
+                + Add Value
+            </button>
         </div>
     </div>
 </template>
@@ -46,7 +54,7 @@ function removeValue(index) {
 }
 
 function addValue() {
-    enumeration.value.values.push("");
+    enumeration.value.values.push("New Value");
     saveEnumeration();
 }
 

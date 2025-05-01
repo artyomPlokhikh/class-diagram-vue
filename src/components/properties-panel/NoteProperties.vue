@@ -1,7 +1,15 @@
 <template>
     <div class="properties">
-        <h3 class="properties__title">Note Properties</h3>
-
+        <header class="properties__header">
+            <h3 class="properties__title">Note Properties</h3>
+            <button
+                class="properties__delete-btn"
+                @click="diagramStore.deleteNote(note.id)"
+                title="Delete Note"
+            >
+                Delete
+            </button>
+        </header>
         <div class="properties__group">
             <label class="properties__label" for="note-content">Content</label>
             <textarea

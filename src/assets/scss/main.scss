@@ -1,24 +1,22 @@
 @use 'base/reset';
 @use 'base/variables';
 
-@use 'components/diagram/diagram-canvas';
-@use 'components/diagram/diagram-entity';
+@use 'components/general/button';
+
+@use 'components/top-toolbar';
+
+@use 'components/palette-panel/palette-panel';
 
 @use 'components/properties-panel/properties-panel';
 @use 'components/properties-panel/properties';
 
+@use 'components/diagram/diagram-canvas';
 @use 'components/diagram/diagram-rect';
-
+@use 'components/diagram/diagram-entity';
 @use 'components/diagram/diagram-enumeration';
 @use 'components/diagram/diagram-note';
-
-@use 'components/palette-panel/palette-panel';
-
 @use 'components/diagram/diagram-relationship';
-@use 'components/top-toolbar';
 
 @use 'layout/app';
-@use 'layout/panels';
 
-@use 'components/general/button';
 @use 'mixins/responsive';

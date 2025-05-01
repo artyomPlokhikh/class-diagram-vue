@@ -35,14 +35,13 @@
                 ×
             </button>
         </div>
-
-        <button
-            class="properties-list__add"
-            @click="$emit('add-attribute')"
-        >
-            + Add Attribute
-        </button>
     </div>
+    <button
+        class="properties-list__add"
+        @click="$emit('add-attribute')"
+    >
+        + Add Attribute
+    </button>
 </template>
 
 

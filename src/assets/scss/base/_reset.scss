@@ -18,4 +18,12 @@ html, body {
 *::before,
 *::after {
   box-sizing: border-box;
+  user-select: none;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  user-select: text;
 }
