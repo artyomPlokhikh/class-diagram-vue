@@ -68,6 +68,46 @@ export function useCamera(canvas) {
         zoom.value = newZoom;
     };
 
+    let touchMoveHandler = null;
+    let touchEndHandler = null;
+
+    const handleCanvasTouchStart = (e) => {
+        if (e.touches.length === 1) {
+            e.preventDefault();
+
+            const touch = e.touches[0];
+            const startX = touch.clientX;
+            const startY = touch.clientY;
+
+            let lastX = startX;
+            let lastY = startY;
+
+            touchMoveHandler = (e) => {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - lastX;
+                    const deltaY = touch.clientY - lastY;
+
+                    pan.value.x += deltaX;
+                    pan.value.y += deltaY;
+
+                    lastX = touch.clientX;
+                    lastY = touch.clientY;
+                }
+            };
+
+            touchEndHandler = () => {
+                document.removeEventListener('touchmove', touchMoveHandler, { passive: false });
+                document.removeEventListener('touchend', touchEndHandler);
+                touchMoveHandler = null;
+                touchEndHandler = null;
+            };
+
+            document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+            document.addEventListener('touchend', touchEndHandler);
+        }
+    };
+
     onMounted(() => cam.setContainer(canvas.value));
     watch(pan,  p => cam.setPan(p.x, p.y), { deep: true });
     watch(zoom, z => cam.setZoom(z));
@@ -75,8 +115,24 @@ export function useCamera(canvas) {
     onUnmounted(() => {
         document.removeEventListener('mousemove', handlePanMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
+
+        if (touchMoveHandler) {
+            document.removeEventListener('touchmove', touchMoveHandler, { passive: false });
+        }
+        if (touchEndHandler) {
+            document.removeEventListener('touchend', touchEndHandler);
+        }
+
         cancelAnimationFrame(rafId);
     });
 
-    return { pan, zoom, canvasStyle, handleCanvasMouseDown, handleWheel, isCanvasPanning };
+    return {
+        pan,
+        zoom,
+        canvasStyle,
+        handleCanvasMouseDown,
+        handleWheel,
+        isCanvasPanning,
+        handleCanvasTouchStart
+    };
 }

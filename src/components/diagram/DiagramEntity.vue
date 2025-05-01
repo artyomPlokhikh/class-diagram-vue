@@ -8,6 +8,7 @@
         }"
         :style="[positionStyle, sizeStyle]"
         @mousedown.left="handlePointerDown"
+        @touchend.prevent="handlePointerDown"
         @click.stop
     >
         <header class="diagram-entity__header">

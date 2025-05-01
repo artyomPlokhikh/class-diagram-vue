@@ -36,7 +36,20 @@ import { useCameraStore } from '@/stores/camera.js';
 import { useDiagramStore } from '@/stores/diagram.js';
 
 
-const isOpen = ref(true);
+const isOpen = ref(window.innerWidth >= 992);
+
+onMounted(() => {
+    const handleResize = () => {
+        if (window.innerWidth < 992 && isOpen.value) {
+            isOpen.value = false;
+        }
+    };
+    window.addEventListener('resize', handleResize);
+    onUnmounted(() => {
+        window.removeEventListener('resize', handleResize);
+    });
+});
+
 const startResize = (e) => {
     e.preventDefault();
 

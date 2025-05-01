@@ -1,6 +1,6 @@
 <template>
     <aside class="properties-panel" :class="{ 'properties-panel--closed': !isOpen }">
-    <EntityProperties
+        <EntityProperties
             v-if="selected instanceof Entity"
             class="properties-panel__content"
         />
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useDiagramStore } from '@/stores/diagram';
 
 import EntityProperties from '@/components/properties-panel/EntityProperties.vue';
@@ -42,7 +42,20 @@ import Relationship from "@/models/Relationship.js";
 import Note from "@/models/Note.js";
 import Enumeration from "@/models/Enumeration.js";
 
-const isOpen = ref(true);
+const isOpen = ref(window.innerWidth >= 992);
+
+onMounted(() => {
+    const handleResize = () => {
+        if (window.innerWidth < 992 && isOpen.value) {
+            isOpen.value = false;
+        }
+    };
+    window.addEventListener('resize', handleResize);
+    onUnmounted(() => {
+        window.removeEventListener('resize', handleResize);
+    });
+});
+
 const startResize = (e) => {
     e.preventDefault();
 

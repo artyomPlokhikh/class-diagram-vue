@@ -1,9 +1,11 @@
 @use '../../base/variables' as *;
+@use '../../mixins/responsive' as *;
 
 .diagram-canvas {
   position: relative;
   height: 100vh;
   grid-area: diagram;
+  touch-action: none;
 
   &__container {
     position: absolute;
@@ -88,5 +90,15 @@
     fill: c(selection-bg);
     stroke: c(primary-600);
     pointer-events: none;
+  }
+
+  @media (max-width: map-get($breakpoints, lg) - 1) {
+    height: calc(100vh - 50px);
+    overflow: hidden;
+    z-index: 1;
+
+    &__container {
+      touch-action: none;
+    }
   }
 }

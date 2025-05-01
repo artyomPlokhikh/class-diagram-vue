@@ -2,7 +2,9 @@
     <div class="diagram-canvas">
         <div class="diagram-canvas__container"
              @mousedown.middle="handleCanvasMouseDown"
+             @touchstart="handleCanvasTouchStart"
              @click="diagramStore.setSelected(null)"
+             @touchend.passive="diagramStore.setSelected(null)"
              @wheel.prevent="handleWheel"
              @contextmenu.prevent
              ref="canvas"
@@ -103,11 +105,10 @@ import { useDiagramStore } from "@/stores/diagram.js";
 // Canvas and camera setup
 const canvas = ref(null);
 provide('canvas', canvas);
-const { canvasStyle, handleCanvasMouseDown, handleWheel } = useCamera(canvas);
+const { canvasStyle, handleCanvasMouseDown, handleWheel, handleCanvasTouchStart } = useCamera(canvas);
 
 // Data store
 const diagramStore = useDiagramStore();
-
 
 // Composables
 const relationshipCreator = useRelationshipCreator();
@@ -115,4 +116,5 @@ const bendDragger = useBendDragger();
 const hover = useHoverPreview();
 provide('hover', hover);
 const { onDragOver, onDrop } = useCanvasDragDrop();
+
 </script>
