@@ -2,14 +2,12 @@
 @use '../../mixins/responsive' as *;
 
 .palette-panel {
-  grid-area: palette;
   border-right: 1px solid $color-border;
   background: $panel-bg;
   width: 280px;
   min-width: 200px;
   max-width: 361px;
   height: 100%;
-  overflow-y: auto;
   position: relative;
   transition: transform 0.3s ease;
 
@@ -29,7 +27,7 @@
 
   &__toggle {
     position: absolute;
-    top: 10px;
+    top: 8px;
     right: -30px;
     width: 30px;
     height: 30px;
@@ -41,7 +39,12 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 5;
+    z-index: 100;
+  }
+
+  &--closed &__toggle {
+    transform: translateX(100%);
+    right: 0;
   }
 
   @include respond(sm) {

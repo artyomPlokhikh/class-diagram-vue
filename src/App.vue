@@ -4,8 +4,8 @@
 
         <div class="app__main">
             <PalettePanel class="palette-panel"/>
-            <DiagramCanvas class="diagram"/>
             <PropertiesPanel class="properties-panel"/>
+            <DiagramCanvas class="diagram"/>
         </div>
     </div>
 </template>

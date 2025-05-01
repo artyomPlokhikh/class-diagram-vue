@@ -13,7 +13,6 @@ $panel-width: 40 * $spacing-unit;
   padding: $spacing-unit * 2;
   background: $panel-bg;
   border-left: 1px solid c(border);
-  overflow-y: auto;
   position: relative;
   transition: transform .3s ease;
 
@@ -45,7 +44,11 @@ $panel-width: 40 * $spacing-unit;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 5;
+  }
+
+  &--closed &__toggle {
+    transform: translateX(-100%);
+    left: 0;
   }
 
   &__content {
@@ -62,7 +65,6 @@ $panel-width: 40 * $spacing-unit;
   @include respond(sm) {
     position: fixed;
     right: 0;
-    top: 0;
     z-index: 100;
   }
 }

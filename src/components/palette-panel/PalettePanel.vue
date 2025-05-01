@@ -1,5 +1,5 @@
 <template>
-    <aside class="palette-panel">
+    <aside class="palette-panel" :class="{ 'palette-panel--closed': !isOpen }">
         <div class="palette-panel__header">
             <h3 class="palette-panel__title">Palette</h3>
         </div>
@@ -18,16 +18,45 @@
                 </div>
             </div>
         </div>
+
+        <div class="palette-panel__resize-handle" @mousedown="startResize"></div>
+        <button class="palette-panel__toggle" @click="isOpen = !isOpen">
+            {{ isOpen ? '◀' : '▶' }}
+        </button>
     </aside>
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import EntityModel from '@/models/Entity.js';
 import NoteModel from '@/models/Note.js';
 import EnumerationModel from '@/models/Enumeration.js';
 import ANNOTATION from '@/models/Annotation.js';
 import { useCameraStore } from '@/stores/camera.js';
 import { useDiagramStore } from '@/stores/diagram.js';
+
+
+const isOpen = ref(true);
+const startResize = (e) => {
+    e.preventDefault();
+
+    const onMouseMove = (e) => {
+        const newWidth = e.clientX;
+        if (newWidth >= 200 && newWidth <= 369) {
+            document.querySelector('.palette-panel').style.width = `${newWidth}px`;
+        }
+    };
+
+    const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+};
+
+
 
 const cameraStore = useCameraStore();
 const diagramStore = useDiagramStore();
