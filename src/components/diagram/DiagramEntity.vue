@@ -17,7 +17,7 @@
             </span>
             <span class="diagram-entity__name">{{ entity.name }}</span>
         </header>
-        <section class="diagram-rect__section">
+        <div class="diagram-rect__section">
             <ul class="diagram-entity__attribute-list">
                 <li
                     v-for="attr in entity.attributes"
@@ -29,9 +29,9 @@
                     <span class="diagram-entity__item-type">{{ attr.type.name }}</span>
                 </li>
             </ul>
-        </section>
+        </div>
 
-        <section
+        <div
             class="diagram-rect__section"
             :class="{ 'diagram-rect__section--with-divider': entity.attributes.length > 0 && entity.methods.length > 0 }"
         >
@@ -46,7 +46,7 @@
                     <span class="diagram-entity__item-type">{{ method.type.name }}</span>
                 </li>
             </ul>
-        </section>
+        </div>
 
         <div
             v-show="isSelected"

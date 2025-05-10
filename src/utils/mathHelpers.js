@@ -177,3 +177,26 @@ export function calculateOrthogonalPosition(rawPos, fixedPoint) {
         ? { x: rawPos.x, y: fixedPoint.y }
         : { x: fixedPoint.x, y: rawPos.y };
 }
+
+export const calculateDiagramBounds = (elements) => {
+    if (!elements || elements.length === 0) return { x: 0, y: 0, width: 800, height: 600 };
+
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    elements.forEach(element => {
+        minX = Math.min(minX, element.x);
+        minY = Math.min(minY, element.y);
+        maxX = Math.max(maxX, element.x + element.width);
+        maxY = Math.max(maxY, element.y + element.height);
+    });
+
+    return {
+        x: minX - 50,
+        y: minY - 50,
+        width: maxX - minX + 100,
+        height: maxY - minY + 100
+    };
+};

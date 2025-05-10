@@ -54,6 +54,8 @@ const props = defineProps({
     attributes: { type: Array, required: false }
 });
 
+const emit = defineEmits(['add-attribute', 'remove-attribute']);
+
 const filteredTypes = computed(() =>
     Object.values(TYPE).filter((type) => type.name !== 'void')
 );

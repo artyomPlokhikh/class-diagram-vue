@@ -17,7 +17,7 @@
             <span class="diagram-enumeration__name">{{ enumeration.name }}</span>
         </header>
 
-        <section class="diagram-rect__section">
+        <div class="diagram-rect__section">
             <ul class="diagram-enumeration__value-list">
                 <li
                     v-for="value in enumeration.values"
@@ -27,7 +27,7 @@
                     <span class="">{{ value }}</span>
                 </li>
             </ul>
-        </section>
+        </div>
 
         <div
             v-show="isSelected"

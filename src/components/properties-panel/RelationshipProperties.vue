@@ -4,7 +4,7 @@
             <h3 class="properties__title">Relationship Properties</h3>
             <button
                 class="properties__delete-btn"
-                @click="diagramStore.deleteEntity(relationship.id)"
+                @click="diagramStore.deleteRelationship(relationship.id)"
                 title="Delete Relationship"
             >
                 Delete
@@ -47,10 +47,6 @@ import { debounce } from "@/utils/debounce.js";
 
 const diagramStore = useDiagramStore();
 const relationship = computed(() => diagramStore.selected);
-
-const deleteRelationship = () => {
-    diagramStore.deleteRelationship(relationship.value.id);
-};
 
 const multiplicityOptions = [
     { value: '', label: 'None' },

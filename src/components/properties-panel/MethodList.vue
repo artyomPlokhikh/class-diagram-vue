@@ -54,4 +54,6 @@ const props = defineProps({
     methods: { type: Array, required: false }
 });
 
+const emit = defineEmits(['add-method', 'remove-method']);
+
 </script>
