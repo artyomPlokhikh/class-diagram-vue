@@ -1,3 +1,8 @@
+/**
+ * Note Element Behavior Manager
+ *
+ * This follows the same composition pattern used for other rectangle-based elements.
+ */
 import { useConnectableRect } from "@/composables/shared/useConnectableRect.js";
 import { useMovableRect } from "@/composables/shared/useMovableRect.js";
 import { useResizableRect } from "@/composables/shared/useResizableRect.js";

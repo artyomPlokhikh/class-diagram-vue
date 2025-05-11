@@ -1,3 +1,12 @@
+/**
+ * Generic Drag Behavior
+ *
+ * This composable provides a reusable drag behavior implementation that can be
+ * used for various draggable elements in the diagram.
+ *
+ * This is a lower-level utility used by more specific drag implementations
+ * like useMovableRect and useResizableRect.
+ */
 import { ref, onUnmounted } from 'vue';
 
 export function useDrag({ onStart, onMove, onEnd, onCancel }) {
@@ -11,6 +20,7 @@ export function useDrag({ onStart, onMove, onEnd, onCancel }) {
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('keyup', handleKeyUp);
     };
+
     const handleMouseMove = (e) => {
         if (!isDragging.value) return;
         cancelAnimationFrame(rafId);

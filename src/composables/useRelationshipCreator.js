@@ -1,3 +1,18 @@
+/**
+ * Relationship Creator
+ *
+ * This composable handles the interactive creation and modification of relationships
+ * between diagram elements. It provides functionality for:
+ *
+ * - Starting new relationships from connection points
+ * - Creating multi-segment paths with bend points
+ * - Modifying existing relationships by dragging their endpoints
+ * - Enforcing orthogonal connections when shift key is pressed
+ * - Canceling in-progress relationships
+ *
+ * The relationship creator implements a state machine that tracks the relationship
+ * drawing process from start to completion, providing visual feedback throughout.
+ */
 import { computed, inject, ref } from 'vue';
 import {
     calculateConnectionPoint,
@@ -31,6 +46,10 @@ export function useRelationshipCreator() {
         followStop();
     };
     
+    /**
+     * Sets up cursor tracking for interactive relationship creation
+     * Handles various mouse events during the relationship drawing process
+     */
     const { start: followStart, stop: followStop } = useFollowCursor({
         onMove: (e) => {
             if (!pending.value) return;
@@ -61,11 +80,20 @@ export function useRelationshipCreator() {
         onEscape: cancelPending
     });
 
+    /**
+     * Handles connection to an entity or other diagram element
+     * This is a core function with dual behavior:
+     * 1. When called first: Starts a new relationship from the connection point
+     * 2. When called again: Completes the relationship to the target element
+     *
+     * @param {Object} connectionInfo - Information about where to connect
+     */
     const handleRelationshipConnect = (connectionInfo) => {
         const diagramElement = diagramStore.findDiagramElement(connectionInfo.id, connectionInfo.type);
         if (!diagramElement) return;
 
         if (!pending.value) {
+            // Starting a new relationship
             pending.value = new Relationship({
                 src: {
                     id: connectionInfo.id,
@@ -78,7 +106,9 @@ export function useRelationshipCreator() {
             endPoint.value = { ...startPoint.value };
             followStart();
         } else {
+            // Completing a relationship
             if (shiftPressed.value) {
+                // Ensure final segment is orthogonal when shift is pressed
                 const lastFixed = pending.value.bendPoints.length > 0
                     ? pending.value.bendPoints.slice(-1)[0]
                     : startPoint.value;
@@ -94,6 +124,7 @@ export function useRelationshipCreator() {
                 connectionInfo.position = calculateBorderRelativePosition(rect, connectionInfo.border, orth);
             }
             if (originalRelationship.value) {
+                // Updating an existing relationship
                 const h = currentHandleType.value;
                 originalRelationship.value.bendPoints = h === 'src'
                     ? [...pending.value.bendPoints, ...originalRelationship.value.bendPoints]
@@ -107,6 +138,7 @@ export function useRelationshipCreator() {
                 };
                 diagramStore.updateRelationship(originalRelationship.value);
             } else {
+                // Adding a new relationship
                 if (pending.value.src.id !== connectionInfo.id) {
                     pending.value.trg = {
                         id: connectionInfo.id,
@@ -125,6 +157,12 @@ export function useRelationshipCreator() {
     };
 
 
+    /**
+     * Handles dragging an existing relationship endpoint to modify it
+     * Sets up state for modifying either the source or target connection point
+     *
+     * @param {Object} options - Contains the relationship to modify and which end to change
+     */
     const handleRelationshipDrag = ({ relationship, handleType }) => {
         originalRelationship.value = relationship;
         currentHandleType.value = handleType;

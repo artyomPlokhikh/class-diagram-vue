@@ -1,3 +1,10 @@
+/**
+ * Connectable Rectangle Behavior
+ *
+ * This composable makes rectangle-based elements (entities, notes, enumerations)
+ * connectable with relationships. It enables border detection for relationship connections
+ * and provides visual feedback during hover interactions.
+ */
 import { inject, ref } from 'vue';
 import { calculateBorderRelativePosition } from '@/utils/mathHelpers.js';
 

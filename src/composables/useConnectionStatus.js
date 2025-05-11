@@ -1,3 +1,8 @@
+/**
+ * Network Connection Status Monitor
+ *
+ * Used for showing connectivity status and enabling/disabling network-dependent features.
+ */
 import { ref, onMounted, onUnmounted } from 'vue';
 
 export function useConnectionStatus() {

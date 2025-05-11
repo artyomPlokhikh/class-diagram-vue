@@ -1,3 +1,16 @@
+/**
+ * Canvas Drag and Drop Handler
+ *
+ * This composable implements the drag-and-drop functionality for adding new elements
+ * to the diagram. It processes drop events when users drag element templates from
+ * the sidebar onto the canvas and creates the appropriate diagram elements.
+ *
+ * Features:
+ * - Support for multiple element types (entities, notes, enumerations)
+ * - Proper coordinate conversion from screen to diagram space
+ * - Element configuration presets
+ * - JSON payload parsing for complex element initialization
+ */
 import { nextTick } from 'vue';
 import { useDiagramStore } from '@/stores/diagram.js';
 import { useCameraStore } from '@/stores/camera.js';

@@ -1,3 +1,10 @@
+/**
+ * Cursor Following Utility
+ *
+ * This composable provides a simple way to track cursor movements and handle related events.
+ * It's used primarily for relationship drawing, where an element needs to follow the cursor
+ * until the operation is completed or canceled.
+ */
 import { onUnmounted } from 'vue';
 
 export function useFollowCursor({ onMove, onMouseDown, onMouseUp, onContextMenu, onEscape }) {

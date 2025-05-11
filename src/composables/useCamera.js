@@ -1,3 +1,18 @@
+/**
+ * Camera Control System
+ *
+ * This composable provides the core viewpoint control for the diagram canvas.
+ * It implements pan and zoom functionality for navigating and viewing the diagram,
+ * supporting both mouse and touch interactions.
+ *
+ * Features:
+ * - Pan controls for moving around the canvas
+ * - Zoom controls with pointer-centered zooming
+ * - Touch support for mobile devices
+ * - Synchronization with central camera store
+ * - Request Animation Frame for smooth panning
+ * - CSS transform-based rendering for performance
+ */
 import { ref, computed, onUnmounted, onMounted, watch } from 'vue';
 import { useCameraStore } from "@/stores/camera.js";
 
@@ -86,6 +101,12 @@ export function useCamera(canvas) {
     let touchMoveHandler = null;
     let touchEndHandler = null;
 
+    /**
+     * Handles touch interactions for mobile device support
+     * Sets up touch move and end handlers for panning
+     *
+     * @param {TouchEvent} e - The touch start event
+     */
     const handleCanvasTouchStart = (e) => {
         if (e.touches.length === 1) {
             e.preventDefault();
@@ -135,6 +156,8 @@ export function useCamera(canvas) {
             zoom.value = cam.zoom;
         }
     });
+
+    // Two-way binding between local state and camera store
     watch(pan, p => cam.setPan(p.x, p.y), { deep: true });
     watch(zoom, z => cam.setZoom(z));
 

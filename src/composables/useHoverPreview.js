@@ -1,3 +1,13 @@
+/**
+ * Hover Preview System
+ *
+ * This composable provides visual feedback when hovering over diagram elements.
+ * It handles:
+ * - Displaying connection points when hovering over entity borders
+ * - Showing potential bend point locations when hovering over relationship lines
+ * - Converting between screen and SVG coordinate systems
+ * - Managing preview point state for the diagram renderer
+ */
 import { ref } from 'vue'
 import { calculateBorderPreviewPoint, findClosestPointOnPath } from '@/utils/mathHelpers.js'
 
@@ -10,6 +20,13 @@ export function useHoverPreview() {
         previewType.value = null
     }
 
+    /**
+     * Handles hover events on relationship lines
+     * Calculates the closest point on the path to show where a bend point could be added
+     *
+     * @param {MouseEvent} event - The mouse event
+     * @param {Array} allPoints - Array of points defining the relationship path
+     */
     function handleRelationshipHover(event, allPoints) {
         const svg = event.target.ownerSVGElement
         const pt = svg.createSVGPoint()
@@ -26,6 +43,14 @@ export function useHoverPreview() {
         }
     }
 
+    /**
+     * Handles hover events on entity borders
+     * Shows where a relationship connection would attach
+     *
+     * @param {MouseEvent} event - The mouse event
+     * @param {HTMLElement} entityEl - The entity element being hovered
+     * @param {string} border - Which border is being hovered ('top', 'right', 'bottom', 'left')
+     */
     function handleEntityBorderHover(event, entityEl, border) {
         const rect = entityEl.getBoundingClientRect()
         previewPoint.value = calculateBorderPreviewPoint(

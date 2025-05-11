@@ -1,6 +1,21 @@
+/**
+ * Element Snapping System
+ *
+ * This composable provides snapping functionality for diagram elements. It:
+ * - Identifies potential snap lines from all existing diagram elements
+ * - Computes both vertical and horizontal alignment guides
+ * - Provides visual guides during element movement
+ * - Snaps elements to each other's edges within a configurable threshold
+ * - Supports bypassing snapping with modifier keys
+ */
 import { computed, reactive } from 'vue';
 
 export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
+    /**
+     * Generates vertical snap lines from all diagram elements
+     * Collects both left (x) and right (x+width) edges of all rectangles
+     * and x-coordinates of relationship bend points
+     */
     const verticalData = computed(() => {
         const lines = [], sources = [];
         diagramStore.rectangles.forEach(r => {
@@ -19,6 +34,11 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     });
 
 
+    /**
+     * Generates horizontal snap lines from all diagram elements
+     * Collects both top (y) and bottom (y+height) edges of all rectangles
+     * and y-coordinates of relationship bend points
+     */
     const horizontalData = computed(() => {
         const lines = [], sources = [];
         diagramStore.rectangles.forEach(r => {
@@ -42,6 +62,12 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     let bbox = { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 };
 
 
+    /**
+     * Starts the snapping system for a specific element
+     * Captures the element's bounding box for snap calculations
+     *
+     * @param {Object} box - The bounding box of the element being moved
+     */
     function start(box) {
         active = true;
         bbox = {
@@ -60,6 +86,20 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
     }
 
 
+    /**
+     * Core snapping function that adjusts coordinates based on nearby snap lines
+     *
+     * This function:
+     * 1. Checks if snapping is active and not bypassed with Ctrl key
+     * 2. Compares element edges with potential snap lines
+     * 3. Creates visual guide lines for active snaps
+     * 4. Returns adjusted coordinates for the best snap match
+     *
+     * @param {Object} raw - Raw {x,y} coordinates before snapping
+     * @param {string|null} bypassId - ID of an element to ignore in snapping (prevents self-snapping)
+     * @param {string} axis - Which axis to snap ('both', 'x', or 'y')
+     * @returns {Object} Adjusted {x,y} coordinates after snapping
+     */
     function snapPoint(raw, bypassId = null, axis = 'both') {
         if (!active || ctrlPressed.value) {
             guides.segments.length = 0;
@@ -78,6 +118,7 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
             const candidates = [];
             const rawR = ox + bbox.width;
 
+            // Check for snap candidates on both left and right edges
             for (let i = 0; i < lines.length; i++) {
                 if (bypassId && sources[i] === bypassId) continue;
                 const v = lines[i];
@@ -91,6 +132,7 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
                 }
             }
 
+            // Apply the best snap match if any
             if (candidates.length) {
                 const best = candidates.reduce((a, b) => a.dist < b.dist ? a : b);
                 x = best.snapX;
@@ -102,6 +144,7 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
             const candidates = [];
             const rawB = oy + bbox.height;
 
+            // Check for snap candidates on both top and bottom edges
             for (let i = 0; i < lines.length; i++) {
                 if (bypassId && sources[i] === bypassId) continue;
                 const h = lines[i];
@@ -115,6 +158,7 @@ export function useSnapping(diagramStore, ctrlPressed, threshold = 8) {
                 }
             }
 
+            // Apply the best snap match if any
             if (candidates.length) {
                 const best = candidates.reduce((a, b) => a.dist < b.dist ? a : b);
                 y = best.snapY;

@@ -88,6 +88,15 @@ export const exportAsJPG = async (container, diagramStore, cameraStore, options 
     return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
 
+/**
+ * Export diagram as JSON file for saving and future loading
+ *
+ * @param {Object} diagramStore - The diagram store instance
+ * @param {Object} options - Export options
+ * @param {string} options.filename - Output filename (default: 'diagram.json')
+ * @param {boolean} options.download - Whether to trigger download (default: true)
+ * @returns {null|string} - Returns null on error, otherwise undefined
+ */
 export const exportAsJson = async (diagramStore, options) => {
     if (isExporting.value) return;
     isExporting.value = true;
@@ -113,6 +122,12 @@ export const exportAsJson = async (diagramStore, options) => {
 
 /**
  * Common function to handle diagram exports in different formats
+ * This core function handles:
+ * - Deselecting elements temporarily for clean export
+ * - Adjusting viewport for optimal capture
+ * - Converting DOM to image using dom-to-image
+ * - Triggering file download
+ *
  * @param {HTMLElement} container - The diagram container element
  * @param {Object} diagramStore - The diagram store instance
  * @param {Object} cameraStore - The camera store instance
@@ -167,6 +182,13 @@ const exportDiagram = async (container, diagramStore, cameraStore, options) => {
     }
 };
 
+/**
+ * Helper function to trigger file download
+ * Creates a temporary anchor element to download a data URL
+ *
+ * @param {string} dataUrl - The data URL containing file content
+ * @param {string} fileName - Name for the downloaded file
+ */
 const _downloadFile = (dataUrl, fileName) => {
     const link = document.createElement('a');
     link.download = fileName;

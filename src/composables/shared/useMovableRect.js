@@ -1,3 +1,9 @@
+/**
+ * Movable Rectangle Behavior
+ *
+ * This composable enables rectangle elements (entities, notes, enumerations)
+ * to be moved around the diagram.
+ */
 import { inject, ref } from 'vue';
 import { useDrag } from '@/composables/shared/useDrag.js';
 import { useDiagramStore } from '@/stores/diagram.js';
@@ -23,6 +29,14 @@ export function useMovableRect(model) {
                 height: model.height
             });
         },
+
+        /**
+         * Handle element movement during drag
+         * Applies zoom scaling, shift constraints, and snapping
+         *
+         * @param {MouseEvent} e - Current mouse position
+         * @param {MouseEvent} state - Initial mouse position when drag started
+         */
         onMove(e, state) {
             const dx = (e.clientX - state.clientX) / cameraStore.zoom;
             const dy = (e.clientY - state.clientY) / cameraStore.zoom;

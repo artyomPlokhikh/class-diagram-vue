@@ -1,3 +1,18 @@
+/**
+ * Relationship Rendering and Management
+ *
+ * This composable handles the display and interaction of relationship connections
+ * between diagram elements. It provides functionality for:
+ *
+ * - Calculating connection points where relationship lines meet elements
+ * - Rendering multi-segment paths with bend points
+ * - Managing visual appearance (line styles, arrowheads, etc.)
+ * - Editing relationship paths interactively
+ * - Positioning labels and multiplicity indicators
+ *
+ * This composable is used by relationship components to render the complete
+ * visual representation of entity relationships on the diagram.
+ */
 import { computed } from 'vue';
 import {
     calculateConnectionPoint,

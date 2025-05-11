@@ -1,3 +1,8 @@
+/**
+ * Keyboard Shortcut Manager
+ *
+ * The keyboard state is exposed as reactive references for use in other components.
+ */
 import { ref, onMounted, onUnmounted } from 'vue';
 
 export function useKeyboard(diagramStore) {

@@ -1,3 +1,9 @@
+/**
+ * Entity Element Behavior Manager
+ *
+ * This composable implements the complete functionality of entity elements in the diagram.
+ * It uses a composition pattern to combine multiple behaviors into a single interface.
+ */
 import { useConnectableRect } from "@/composables/shared/useConnectableRect.js";
 import { useMovableRect } from "@/composables/shared/useMovableRect.js";
 import { useResizableRect } from "@/composables/shared/useResizableRect.js";

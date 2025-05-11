@@ -1,3 +1,9 @@
+/**
+ * Resizable Rectangle Behavior
+ *
+ * This composable enables rectangle elements to be resized by the user.
+ *
+ */
 import { inject, ref } from 'vue';
 import { useDrag } from '@/composables/shared/useDrag.js';
 import { useDiagramStore } from '@/stores/diagram.js';
@@ -21,8 +27,10 @@ export function useResizableRect(model, elRef) {
             resizeStart = { x: e.clientX, y: e.clientY };
             initSize = { width: model.width, height: model.height };
 
+            // Calculate minimum size based on content
             minSize = measureIntrinsicSize(elRef.value);
 
+            // Initialize snapping with current element dimensions
             snapping.start({
                 left: model.x,
                 top: model.y,
@@ -30,6 +38,13 @@ export function useResizableRect(model, elRef) {
                 height: model.height
             });
         },
+
+        /**
+         * Handle size changes during resize operation
+         * Applies minimum size constraints and snapping
+         *
+         * @param {MouseEvent} e - Current mouse position
+         */
         onMove(e) {
             const dx = (e.clientX - resizeStart.x) / cameraStore.zoom;
             const dy = (e.clientY - resizeStart.y) / cameraStore.zoom;
@@ -52,6 +67,7 @@ export function useResizableRect(model, elRef) {
             model.height = initSize.height;
             isResized.value = false;
 
+            // Ensure minimum size constraints are still met
             const nat = measureIntrinsicSize(elRef.value);
             model.width = Math.max(model.width, nat.width);
             model.height = Math.max(model.height, nat.height);
@@ -60,6 +76,10 @@ export function useResizableRect(model, elRef) {
         }
     });
 
+    /**
+     * Resets element size to its natural content size
+     * Used for the "auto-size" feature in the UI
+     */
     function resetSize() {
         const nat = measureIntrinsicSize(elRef.value);
         model.width = nat.width;
@@ -67,6 +87,10 @@ export function useResizableRect(model, elRef) {
         isResized.value = false;
     }
 
+    /**
+     * Set up automatic content-based sizing using ResizeObserver
+     * Auto-adjusts element size when content changes (if not manually resized)
+     */
     useResizeObserver(elRef, ([entry]) => {
         if (!isResizing.value && !isResized.value) {
             const nat = measureIntrinsicSize(entry.target);

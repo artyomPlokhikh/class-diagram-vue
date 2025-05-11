@@ -1,9 +1,29 @@
+/**
+ * History Manager for Undo/Redo Functionality
+ *
+ * This class implements a history stack that stores diagram states and provides
+ * methods to navigate through them (undo/redo). It supports:
+ * - Configurable history size limit
+ * - Local storage persistence
+ * - State snapshot management
+ * - JSON import/export
+ *
+ * The class uses private fields (#) to prevent direct external manipulation
+ * of the history stack and internal properties.
+ */
 export default class HistoryManager {
-    #maxSize;
-    #key;
-    #stack = [];
-    #ptr = -1;
+    #maxSize;      // Maximum number of history entries to keep
+    #key;          // LocalStorage key for persistence
+    #stack = [];   // The history stack containing diagram snapshots
+    #ptr = -1;     // Pointer to current position in history stack
 
+    /**
+     * Creates a new HistoryManager instance
+     *
+     * @param {Object} options - Configuration options
+     * @param {number} options.maxSize - Maximum number of history entries (default: 50)
+     * @param {string} options.persistenceKey - LocalStorage key for persistence (optional)
+     */
     constructor({ maxSize = 50, persistenceKey = null } = {}) {
         this.#maxSize = maxSize;
         this.#key = persistenceKey;
@@ -32,6 +52,13 @@ export default class HistoryManager {
         return this.#ptr < this.#stack.length - 1;
     }
 
+    /**
+     * Adds a new state to the history stack
+     * Discards any future states if we're not at the end of the stack
+     * Enforces maximum stack size by removing oldest entries
+     *
+     * @param {*} snapshot - The state to save
+     */
     push(snapshot) {
         if (this.#stack[this.#ptr] === snapshot) return;
 
@@ -66,6 +93,10 @@ export default class HistoryManager {
         this.#persist();
     }
 
+    /**
+     * Persists the history stack to localStorage if a key was provided
+     * Uses a private method to indicate it's for internal use only
+     */
     #persist() {
         if (!this.#key) return;
         try {
@@ -74,6 +105,13 @@ export default class HistoryManager {
         }
     }
 
+    /**
+     * Imports a JSON string as the current diagram state
+     * Replaces the entire history stack with just this imported state
+     *
+     * @param {string} json - JSON string to import
+     * @returns {boolean} Success or failure
+     */
     importJSON(json) {
         try {
             JSON.parse(json);

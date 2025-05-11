@@ -1,3 +1,16 @@
+/**
+ * Entity-Relationship Diagram Store
+ *
+ * This Pinia store manages the complete state of the ER diagram editor including:
+ * - Entities, attributes and methods
+ * - Relationships between entities
+ * - Notes and enumerations
+ * - Selection state
+ * - Undo/redo history management
+ *
+ * The store provides a comprehensive API for manipulating the diagram elements
+ * and maintains the history stack for proper undo/redo operations.
+ */
 import { defineStore } from 'pinia';
 import { ref, computed, markRaw } from 'vue';
 import Entity from '@/models/Entity';
@@ -45,6 +58,8 @@ export const useDiagramStore = defineStore('diagram', () => {
     const history = ref(null);
 
     const init = () => {
+        // Using markRaw to prevent Vue from making the history manager reactive
+        // This avoids circular references and performance issues
         history.value = markRaw(new HistoryManager({
             maxSize: 30,
             persistenceKey: 'erDiagramHistory'
@@ -57,6 +72,10 @@ export const useDiagramStore = defineStore('diagram', () => {
         }
     };
 
+    /**
+     * Creates a JSON snapshot of the current diagram state
+     * This serializes all diagram elements for history management
+     */
     const _snapshot = () => JSON.stringify({
         entities: entities.value.map(e => e.toJSON()),
         relationships: relationships.value.map(r => r.toJSON()),
@@ -64,6 +83,11 @@ export const useDiagramStore = defineStore('diagram', () => {
         enumerations: enumerations.value.map(e => e.toJSON())
     });
 
+    /**
+     * Restores diagram state from a JSON snapshot
+     * This complex method handles both updating existing elements and creating new ones
+     * It preserves object references where possible to maintain Vue's reactivity
+     */
     const _restore = snapshot => {
         const s = JSON.parse(snapshot);
         const newEntities = [];
@@ -361,6 +385,10 @@ export const useDiagramStore = defineStore('diagram', () => {
         _pushHistory();
     }
 
+    /**
+     * Temporarily deselects the current element, executes a callback, then restores selection
+     * Used for diagram export
+     */
     const temporarilyDeselect = async (callback) => {
         const currentSelectedId = selectedId.value;
         const currentSelectedType = selectedType.value;
@@ -368,6 +396,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         setSelected(null);
 
         try {
+            // Small delay to ensure the UI updates before executing the callback
             await new Promise(resolve => setTimeout(resolve, 50));
 
             return await callback();
@@ -381,6 +410,10 @@ export const useDiagramStore = defineStore('diagram', () => {
         }
     };
 
+    /**
+     * Returns all objects that have a position on the diagram
+     * Used for calculating diagram boundaries
+     */
     const getPositionedObjects = () => {
         return [
             ...rectangles.value,
