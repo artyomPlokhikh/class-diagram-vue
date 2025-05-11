@@ -137,7 +137,7 @@ watch(
     }
 )
 
-const getVideoUrl = name => `/videos/${name}.mp4`
+const getVideoUrl = name => `${import.meta.env.BASE_URL}videos/${name}.mp4`;
 </script>
 
 <style scoped>

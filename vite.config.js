@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
                     ]
                 },
                 workbox: {
-                    globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                    globPatterns: ['**/*.{js,css,html,ico,png,svg,mp4}'],
                     runtimeCaching: [{
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
                         handler: 'CacheFirst',
