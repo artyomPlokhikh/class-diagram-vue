@@ -20,6 +20,10 @@
             </button>
         </div>
 
+        <div class="toolbar__group toolbar__group--center">
+            <InternetStatusIndicator/>
+        </div>
+
         <div class="toolbar__group toolbar__group--right">
             <div class="toolbar__group">
                 <button
@@ -75,6 +79,7 @@ import ExportIcon from "@/components/icons/ExportIcon.vue";
 import ClearIcon from "@/components/icons/ClearIcon.vue";
 import HelpIcon from "@/components/icons/HelpIcon.vue";
 import HelpModal from "@/components/modals/HelpModal.vue";
+import InternetStatusIndicator from "@/components/top-toolbar/InternetStatusIndicator.vue";
 
 const diagramStore = useDiagramStore();
 const showExportModal = ref(false);

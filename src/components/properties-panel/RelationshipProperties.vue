@@ -12,14 +12,31 @@
         </header>
 
         <div class="properties__group">
-            <label class="properties__label">Name:</label>
-            <input v-model="relationship.name" class="properties__input"/>
+            <label class="properties__label" for="rel-name">Name:</label>
+            <input
+                id="rel-name"
+                v-model.trim="relationship.name"
+                class="properties__input"
+                placeholder="e.g., owns"
+                autofocus
+            />
         </div>
 
         <div class="properties__group">
-            <label class="properties__label">Type:</label>
-            <select v-model="relationship.type" class="properties__input">
-                <option v-for="val in Relationship.TYPES" :value="val">{{ capitalize(val) }}</option>
+            <label class="properties__label" for="rel-type">Type:</label>
+            <select
+                id="rel-type"
+                v-model="relationship.type"
+                class="properties__input"
+            >
+                <option disabled value="">Select type</option>
+                <option
+                    v-for="val in Relationship.TYPES"
+                    :key="val"
+                    :value="val"
+                >
+                    {{ capitalize(val) }}
+                </option>
             </select>
         </div>
 
@@ -56,23 +73,21 @@ const multiplicityOptions = [
     { value: '1..*', label: '1..*' },
 ];
 
-const showMultiplicity = (relationship) => {
-    return [
+const showMultiplicity = computed(() =>
+    [
         Relationship.TYPES.ASSOCIATION,
         Relationship.TYPES.AGGREGATION,
         Relationship.TYPES.COMPOSITION
-    ].includes(relationship.type);
-};
+    ].includes(relationship.value?.type)
+)
 
 const saveRelationship = debounce(() => {
-    if (relationship.value) {
-        diagramStore.save();
-    }
-}, 1000);
+    if (relationship.value) diagramStore.save()
+}, 800)
 
-watch(() => relationship.value?.name, saveRelationship);
-watch(() => relationship.value?.type, saveRelationship);
-watch(() => relationship.value?.src?.mult, saveRelationship);
-watch(() => relationship.value?.trg?.mult, saveRelationship);
-
+watch(
+    () => relationship.value,
+    saveRelationship,
+    { deep: true }
+)
 </script>

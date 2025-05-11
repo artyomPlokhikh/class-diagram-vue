@@ -12,15 +12,30 @@
         </header>
 
         <div class="properties__group">
-            <label class="properties__label">Enum Name:</label>
-            <input v-model="enumeration.name" class="properties__input"/>
+            <label class="properties__label" for="enum-name">Enum Name:</label>
+            <input
+                id="enum-name"
+                v-model.trim="enumeration.name"
+                class="properties__input"
+                placeholder="e.g., Status"
+                autofocus
+            />
         </div>
 
         <div class="properties__group">
             <label class="properties__label">Values:</label>
+
             <div class="properties-list">
-                <div v-for="(val, index) in enumeration.values" :key="index" class="properties-list__item">
-                    <input v-model="enumeration.values[index]" class="properties-list__input"/>
+                <div
+                    v-for="(val, index) in enumeration.values"
+                    :key="index"
+                    class="properties-list__item"
+                >
+                    <input
+                        v-model.trim="enumeration.values[index]"
+                        class="properties-list__input"
+                        placeholder="New Value"
+                    />
                     <button
                         class="properties-list__remove"
                         @click="removeValue(index)"

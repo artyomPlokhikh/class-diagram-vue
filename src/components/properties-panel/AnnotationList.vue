@@ -1,5 +1,6 @@
 <template>
     <select
+        id="entity-annotation"
         v-model="selectedAnnotation"
         class="properties__select"
     >

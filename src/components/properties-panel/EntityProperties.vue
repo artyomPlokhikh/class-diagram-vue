@@ -12,12 +12,19 @@
         </header>
 
         <div class="properties__group">
-            <label class="properties__label">Entity Name:</label>
-            <input v-model="entity.name" class="properties__input"/>
+            <label class="properties__label" for="entity-name">Entity Name:</label>
+            <input
+                id="entity-name"
+                v-model.trim="entity.name"
+                class="properties__input"
+                placeholder="e.g., User"
+                type="text"
+                autofocus
+            />
         </div>
 
         <div class="properties__group">
-            <label class="properties__label">Annotation:</label>
+            <label for="entity-annotation" class="properties__label">Annotation:</label>
             <AnnotationList v-model:annotation="entity.annotation"/>
         </div>
 
