@@ -1,6 +1,28 @@
 @use '../base/variables' as *;
 
-.toolbar__button {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+.toolbar {
+
+  &__group {
+    display: flex;
+    gap: 0.5rem;
+
+    &--right {
+      margin-left: auto;
+    }
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    i {
+      font-size: 0.875rem;
+    }
+  }
+  &__icon-button {
+    padding: 0.5rem;
+    min-width: 2rem;
+    justify-content: center;
+  }
 }

@@ -5,7 +5,9 @@
         :closeOnOverlayClick="false"
         @close="hideModal"
     >
-        <p>This ERD tool is designed for optimal use on desktop devices. Some features may be limited on mobile.</p>
+        <template #content>
+            <p>This ERD tool is designed for optimal use on desktop devices. Some features may be limited on mobile.</p>
+        </template>
 
         <template #footer>
             <button class="button button--primary" @click="hideModal">I understand</button>

@@ -1,14 +1,14 @@
 <template>
     <div class="app">
-        <TopToolbar class="app__toolbar"/>
+        <TopToolbar/>
 
         <div class="app__main">
-            <PalettePanel class="palette-panel"/>
-            <PropertiesPanel class="properties-panel"/>
-            <DiagramCanvas class="diagram"/>
+            <PalettePanel/>
+            <PropertiesPanel/>
+            <DiagramCanvas/>
         </div>
 
-        <MobileWarningModal />
+        <MobileWarningModal/>
     </div>
 </template>
 

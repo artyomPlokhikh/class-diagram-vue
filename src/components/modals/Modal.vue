@@ -8,7 +8,7 @@
                     </button>
                 </header>
                 <div class="modal__content">
-                    <slot></slot>
+                    <slot name="content"></slot>
                 </div>
                 <div class="modal__footer">
                     <slot name="footer">

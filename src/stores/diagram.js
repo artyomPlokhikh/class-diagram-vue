@@ -151,10 +151,21 @@ export const useDiagramStore = defineStore('diagram', () => {
             }
         });
         enumerations.value = newEnums;
+
+        updateHistoryState();
     };
 
     const _pushHistory = () => {
         history.value.push(_snapshot());
+        updateHistoryState();
+    };
+
+    const canUndo = ref(false);
+    const canRedo = ref(false);
+
+    const updateHistoryState = () => {
+        canUndo.value = history.value?.canUndo || false;
+        canRedo.value = history.value?.canRedo || false;
     };
 
     const undo = () => {
@@ -178,6 +189,28 @@ export const useDiagramStore = defineStore('diagram', () => {
 
     const save = () => {
         _pushHistory();
+    };
+
+    const importJSON = json => {
+        if (!json) {
+            console.warn('No diagram data to import');
+            return null;
+        }
+        const parsed = JSON.parse(json);
+        if (parsed) {
+            _restore(json);
+            return true;
+        }
+        return false;
+    };
+
+    const exportJSON = () => {
+        const json = _snapshot();
+        if (!json) {
+            console.warn('No diagram data to export');
+            return null;
+        }
+        return json;
     };
 
     const setSelected = item => {
@@ -370,7 +403,11 @@ export const useDiagramStore = defineStore('diagram', () => {
         undo,
         redo,
         clearHistory,
+        canUndo,
+        canRedo,
         save,
+        importJSON,
+        exportJSON,
         setSelected,
         findDiagramElement,
         addEntity,

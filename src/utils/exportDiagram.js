@@ -23,7 +23,7 @@ export const exportAsSVG = async (container, diagramStore, cameraStore, options 
         domToImageFn: domtoimage.toSvg,
         ...options
     };
-    
+
     return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
 
@@ -41,18 +41,18 @@ export const exportAsSVG = async (container, diagramStore, cameraStore, options 
  */
 export const exportAsPNG = async (container, diagramStore, cameraStore, options = {}) => {
     const scale = options.scale ?? 2;
-    
+
     const exportOptions = {
         format: 'png',
         defaultFilename: 'diagram.png',
         defaultBackgroundColor: 'white',
-        formatOptions: { 
+        formatOptions: {
             pixelRatio: scale
         },
         domToImageFn: domtoimage.toPng,
         ...options
     };
-    
+
     return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
 
@@ -72,21 +72,44 @@ export const exportAsPNG = async (container, diagramStore, cameraStore, options 
 export const exportAsJPG = async (container, diagramStore, cameraStore, options = {}) => {
     const scale = options.scale ?? 2;
     const quality = options.quality ?? 0.95;
-    
+
     const exportOptions = {
         format: 'jpg',
         defaultFilename: 'diagram.jpg',
         defaultBackgroundColor: 'white',
-        formatOptions: { 
+        formatOptions: {
             quality,
             pixelRatio: scale
         },
         domToImageFn: domtoimage.toJpeg,
         ...options
     };
-    
+
     return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
+
+export const exportAsJson = async (diagramStore, options) => {
+    if (isExporting.value) return;
+    isExporting.value = true;
+    try {
+        const json = diagramStore.exportJSON();
+
+        if (!json) {
+            console.warn('No diagram data to export');
+            return null;
+        }
+
+        if (options.download !== false) {
+            const filename = options.filename || 'diagram.json';
+            const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(json)}`;
+            _downloadFile(dataUrl, filename);
+        }
+    } catch (error) {
+        console.error('Error exporting diagram as JSON:', error);
+    } finally {
+        isExporting.value = false;
+    }
+}
 
 /**
  * Common function to handle diagram exports in different formats
@@ -134,7 +157,7 @@ const exportDiagram = async (container, diagramStore, cameraStore, options) => {
                 },
                 { padding, safetyMargin }
             );
-            
+
             if (viewport && originalBackgroundImage !== null) {
                 viewport.style.backgroundImage = originalBackgroundImage;
             }

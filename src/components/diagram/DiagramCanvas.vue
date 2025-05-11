@@ -92,7 +92,7 @@ import DiagramEntity from '@/components/diagram/DiagramEntity.vue';
 import DiagramRelationship from '@/components/diagram/DiagramRelationship.vue';
 import SnapGuides from '@/components/diagram/SnapGuides.vue'
 
-import RelationshipMarkers from '@/components/markers/RelationshipMarkers.vue';
+import RelationshipMarkers from '@/components/icons/RelationshipMarkers.vue';
 
 import { useCamera } from '@/composables/useCamera.js';
 import { useRelationshipCreator } from '@/composables/useRelationshipCreator.js';

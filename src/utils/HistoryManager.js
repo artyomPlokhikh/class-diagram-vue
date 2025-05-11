@@ -73,4 +73,18 @@ export default class HistoryManager {
         } catch {
         }
     }
+
+    importJSON(json) {
+        try {
+            JSON.parse(json);
+
+            this.#stack = [json];
+            this.#ptr = 0;
+            this.#persist();
+            return true;
+        } catch (error) {
+            console.error('Error importing JSON:', error);
+            return false;
+        }
+    }
 }

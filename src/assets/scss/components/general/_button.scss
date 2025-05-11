@@ -9,14 +9,18 @@
   cursor: pointer;
   transition: background 0.2s;
 
-  &:hover { background: $button-hover-bg; }
+  &:hover {
+    background: $button-hover-bg;
+  }
 
   &--danger {
     background: $danger-color;
     color: #fff;
     border-color: darken($danger-color, 10%);
 
-    &:hover { background: lighten($danger-color, 10%); }
+    &:hover {
+      background: lighten($danger-color, 10%);
+    }
   }
 
   &--primary {
@@ -24,6 +28,17 @@
     color: #fff;
     border-color: darken($color-primary, 10%);
 
-    &:hover { background: lighten($color-primary, 10%); }
+    &:hover {
+      background: lighten($color-primary, 10%);
+    }
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: default;
+
+    &:hover {
+      background: $button-bg;
+    }
   }
 }
