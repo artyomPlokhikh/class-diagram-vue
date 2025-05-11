@@ -191,6 +191,15 @@ export const useDiagramStore = defineStore('diagram', () => {
         _pushHistory();
     };
 
+    const clearDiagram = () => {
+        entities.value = [];
+        relationships.value = [];
+        notes.value = [];
+        enumerations.value = [];
+        setSelected(null);
+        clearHistory();
+    };
+
     const importJSON = json => {
         if (!json) {
             console.warn('No diagram data to import');
@@ -198,6 +207,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         }
         const parsed = JSON.parse(json);
         if (parsed) {
+            clearDiagram();
             _restore(json);
             return true;
         }
@@ -350,15 +360,6 @@ export const useDiagramStore = defineStore('diagram', () => {
         if (selectedId.value === id) setSelected(null);
         _pushHistory();
     }
-
-    const clearDiagram = () => {
-        entities.value = [];
-        relationships.value = [];
-        notes.value = [];
-        enumerations.value = [];
-        setSelected(null);
-        clearHistory();
-    };
 
     const temporarilyDeselect = async (callback) => {
         const currentSelectedId = selectedId.value;

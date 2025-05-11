@@ -14,6 +14,10 @@
                 <ExportIcon/>
                 Export
             </button>
+            <button class="button toolbar__button" title="Show Help" @click="showHelpModal = true">
+                <HelpIcon/>
+                Help
+            </button>
         </div>
 
         <div class="toolbar__group toolbar__group--right">
@@ -47,6 +51,11 @@
         @close="showExportModal = false"
     />
 
+    <HelpModal
+        :isOpen="showHelpModal"
+        @close="showHelpModal = false"
+    />
+
     <ConfirmModal
         :isOpen="showConfirmClear"
         @close="showConfirmClear = false"
@@ -64,9 +73,12 @@ import UndoIcon from "@/components/icons/UndoIcon.vue";
 import RedoIcon from "@/components/icons/RedoIcon.vue";
 import ExportIcon from "@/components/icons/ExportIcon.vue";
 import ClearIcon from "@/components/icons/ClearIcon.vue";
+import HelpIcon from "@/components/icons/HelpIcon.vue";
+import HelpModal from "@/components/modals/HelpModal.vue";
 
 const diagramStore = useDiagramStore();
 const showExportModal = ref(false);
+const showHelpModal = ref(false);
 const showConfirmClear = ref(false);
 
 const loadFromFile = (event) => {

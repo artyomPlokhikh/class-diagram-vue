@@ -25,6 +25,13 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+
+    &--big {
+      width: 80vw;
+      max-width: 1200px;
+      height: 80vh;
+      max-height: 800px;
+    }
   }
 
   &__header {

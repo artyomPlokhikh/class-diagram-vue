@@ -29,7 +29,7 @@
                     </button>
                 </div>
             </div>
-            <button class="properties-list__add" @click="addValue">
+            <button class="button properties-list__add" @click="addValue">
                 + Add Value
             </button>
         </div>

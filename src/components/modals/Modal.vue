@@ -1,7 +1,11 @@
 <template>
     <Teleport to="body">
-        <div v-if="isOpen" class="modal__overlay" @click="closeOnOverlayClick && $emit('close')">
-            <div class="modal__container" @click.stop>
+        <div
+            v-if="isOpen"
+            class="modal__overlay"
+            @click="closeOnOverlayClick && $emit('close')"
+        >
+            <div class="modal__container" :class="containerClass" @click.stop>
                 <header class="modal__header">
                     <h3 class="modal__title">{{ title }}</h3>
                     <button class="modal__close-button" @click="$emit('close')" aria-label="Close modal">&times;
@@ -33,6 +37,10 @@ defineProps({
     closeOnOverlayClick: {
         type: Boolean,
         default: true
+    },
+    containerClass: {
+        type: String,
+        default: ''
     }
 });
 
