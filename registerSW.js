@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/class-diagram-vue/sw.js', { scope: '/class-diagram-vue/' })})}
