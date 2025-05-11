@@ -1,58 +1,144 @@
 import domtoimage from 'dom-to-image';
 import { ref } from "vue";
-import { calculateDiagramBounds } from "@/utils/mathHelpers.js";
 
 const isExporting = ref(false);
 
-export const exportAsSVG = async (container, diagramStore, cameraStore) => {
-    if (isExporting.value) return;
-    isExporting.value = true;
-
-    const originalZoom = cameraStore.zoom.value;
-    const originalPan = { x: cameraStore.pan.x, y: cameraStore.pan.y };
-
-    try {
-        const bounds = calculateDiagramBounds(diagramStore.rectangles);
-
-        const containerRect = container.getBoundingClientRect();
-        const scaleX = containerRect.width / bounds.width;
-        const scaleY = containerRect.height / bounds.height;
-        const newZoom = Math.min(scaleX, scaleY, 1) * 0.95;
-
-        cameraStore.setZoom(newZoom);
-        cameraStore.setPan(
-            containerRect.width / 2 - (bounds.x + bounds.width / 2) * newZoom,
-            containerRect.height / 2 - (bounds.y + bounds.height / 2) * newZoom
-        );
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        const dataUrl = await domtoimage.toSvg(container);
-        _downloadFile(dataUrl, 'diagram.svg');
-    } finally {
-        cameraStore.setZoom(originalZoom);
-        cameraStore.setPan(originalPan.x, originalPan.y);
-        isExporting.value = false;
-    }
+/**
+ * Export diagram as SVG with enhanced options
+ * @param {HTMLElement} container - The diagram container element
+ * @param {Object} diagramStore - The diagram store instance
+ * @param {Object} cameraStore - The camera store instance
+ * @param {Object} options - Export options
+ * @param {number} options.padding - Padding around diagram content (default: 20)
+ * @param {string} options.backgroundColor - Background color (default: 'transparent')
+ * @param {string} options.filename - Output filename (default: 'diagram.svg')
+ * @param {number} options.safetyMargin - Additional margin as percentage (default: 0.1)
+ */
+export const exportAsSVG = async (container, diagramStore, cameraStore, options = {}) => {
+    const exportOptions = {
+        format: 'svg',
+        defaultFilename: 'diagram.svg',
+        defaultBackgroundColor: 'transparent',
+        formatOptions: {},
+        domToImageFn: domtoimage.toSvg,
+        ...options
+    };
+    
+    return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
 
-export const exportAsPNG = async (canvas) => {
-    if (isExporting.value) return;
-    isExporting.value = true;
-    try {
-        const dataUrl = await domtoimage.toPng(canvas);
-        _downloadFile(dataUrl, 'diagram.png');
-    } finally {
-        isExporting.value = false;
-    }
+/**
+ * Export diagram as PNG with enhanced options
+ * @param {HTMLElement} container - The diagram canvas element
+ * @param {Object} diagramStore - The diagram store instance
+ * @param {Object} cameraStore - The camera store instance
+ * @param {Object} options - Export options
+ * @param {number} options.padding - Padding around diagram content (default: 20)
+ * @param {string} options.backgroundColor - Background color (default: 'white')
+ * @param {number} options.scale - Output scale factor (default: 2 for higher resolution)
+ * @param {string} options.filename - Output filename (default: 'diagram.png')
+ * @param {number} options.safetyMargin - Additional margin as percentage (default: 0.1)
+ */
+export const exportAsPNG = async (container, diagramStore, cameraStore, options = {}) => {
+    const scale = options.scale ?? 2;
+    
+    const exportOptions = {
+        format: 'png',
+        defaultFilename: 'diagram.png',
+        defaultBackgroundColor: 'white',
+        formatOptions: { 
+            pixelRatio: scale
+        },
+        domToImageFn: domtoimage.toPng,
+        ...options
+    };
+    
+    return exportDiagram(container, diagramStore, cameraStore, exportOptions);
 };
 
-export const exportAsJPG = async (canvas) => {
+/**
+ * Export diagram as JPG with enhanced options
+ * @param {HTMLElement} container - The diagram canvas element
+ * @param {Object} diagramStore - The diagram store instance
+ * @param {Object} cameraStore - The camera store instance
+ * @param {Object} options - Export options
+ * @param {number} options.padding - Padding around diagram content (default: 20)
+ * @param {string} options.backgroundColor - Background color (default: 'white')
+ * @param {number} options.quality - JPEG quality from 0 to 1 (default: 0.95)
+ * @param {number} options.scale - Output scale factor (default: 2 for higher resolution)
+ * @param {string} options.filename - Output filename (default: 'diagram.jpg')
+ * @param {number} options.safetyMargin - Additional margin as percentage (default: 0.1)
+ */
+export const exportAsJPG = async (container, diagramStore, cameraStore, options = {}) => {
+    const scale = options.scale ?? 2;
+    const quality = options.quality ?? 0.95;
+    
+    const exportOptions = {
+        format: 'jpg',
+        defaultFilename: 'diagram.jpg',
+        defaultBackgroundColor: 'white',
+        formatOptions: { 
+            quality,
+            pixelRatio: scale
+        },
+        domToImageFn: domtoimage.toJpeg,
+        ...options
+    };
+    
+    return exportDiagram(container, diagramStore, cameraStore, exportOptions);
+};
+
+/**
+ * Common function to handle diagram exports in different formats
+ * @param {HTMLElement} container - The diagram container element
+ * @param {Object} diagramStore - The diagram store instance
+ * @param {Object} cameraStore - The camera store instance
+ * @param {Object} options - Combined export options
+ */
+const exportDiagram = async (container, diagramStore, cameraStore, options) => {
     if (isExporting.value) return;
     isExporting.value = true;
+
+    const {
+        padding = 20,
+        backgroundColor = options.defaultBackgroundColor,
+        filename = options.defaultFilename,
+        safetyMargin = 0.1,
+        formatOptions = {},
+        dimensionsTransform = (dimensions, zoom) => ({
+            width: dimensions.width * zoom,
+            height: dimensions.height * zoom
+        }),
+        domToImageFn
+    } = options;
+
     try {
-        const dataUrl = await domtoimage.toJpeg(canvas, { quality: 0.95 });
-        _downloadFile(dataUrl, 'diagram.jpg');
+        await diagramStore.temporarilyDeselect(async () => {
+            const viewport = container.querySelector('.diagram-canvas__viewport');
+            const originalBackgroundImage = viewport ? viewport.style.backgroundImage : null;
+            if (viewport) viewport.style.backgroundImage = 'none';
+
+            await cameraStore.fitObjectsTemporarily(
+                diagramStore.getPositionedObjects(),
+                async (dimensions, zoom) => {
+                    const exportDimensions = dimensionsTransform(dimensions, zoom);
+
+                    const dataUrl = await domToImageFn(container, {
+                        bgcolor: backgroundColor,
+                        width: exportDimensions.width,
+                        height: exportDimensions.height,
+                        ...formatOptions
+                    });
+
+                    _downloadFile(dataUrl, filename);
+                },
+                { padding, safetyMargin }
+            );
+            
+            if (viewport && originalBackgroundImage !== null) {
+                viewport.style.backgroundImage = originalBackgroundImage;
+            }
+        });
     } finally {
         isExporting.value = false;
     }

@@ -327,6 +327,35 @@ export const useDiagramStore = defineStore('diagram', () => {
         clearHistory();
     };
 
+    const temporarilyDeselect = async (callback) => {
+        const currentSelectedId = selectedId.value;
+        const currentSelectedType = selectedType.value;
+
+        setSelected(null);
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            return await callback();
+        } finally {
+            if (currentSelectedId && currentSelectedType) {
+                const item = findDiagramElement(currentSelectedId, currentSelectedType);
+                if (item) {
+                    setSelected(item);
+                }
+            }
+        }
+    };
+
+    const getPositionedObjects = () => {
+        return [
+            ...rectangles.value,
+            ...relationships.value.flatMap(r =>
+                r.bendPoints.map(p => ({ x: p.x, y: p.y }))
+            )
+        ]
+    }
+
     return {
         rectangles,
         entities,
@@ -358,5 +387,7 @@ export const useDiagramStore = defineStore('diagram', () => {
         addEnumeration,
         deleteEnumeration,
         clearDiagram,
+        temporarilyDeselect,
+        getPositionedObjects,
     };
 });

@@ -18,4 +18,12 @@
 
     &:hover { background: lighten($danger-color, 10%); }
   }
+
+  &--primary {
+    background: $color-primary;
+    color: #fff;
+    border-color: darken($color-primary, 10%);
+
+    &:hover { background: lighten($color-primary, 10%); }
+  }
 }

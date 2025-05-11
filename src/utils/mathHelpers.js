@@ -185,18 +185,37 @@ export const calculateDiagramBounds = (elements) => {
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
+    let validElementFound = false;
 
     elements.forEach(element => {
-        minX = Math.min(minX, element.x);
-        minY = Math.min(minY, element.y);
-        maxX = Math.max(maxX, element.x + element.width);
-        maxY = Math.max(maxY, element.y + element.height);
-    });
+        if (element.x === undefined || element.y === undefined) return;
+        
+        validElementFound = true;
 
+        if (element.width !== undefined && element.height !== undefined) {
+            minX = Math.min(minX, element.x);
+            minY = Math.min(minY, element.y);
+            maxX = Math.max(maxX, element.x + element.width);
+            maxY = Math.max(maxY, element.y + element.height);
+        } else {
+            minX = Math.min(minX, element.x);
+            minY = Math.min(minY, element.y);
+            maxX = Math.max(maxX, element.x);
+            maxY = Math.max(maxY, element.y);
+        }
+    });
+    
+    if (!validElementFound || minX === Infinity || minY === Infinity) {
+        return { x: 0, y: 0, width: 800, height: 600 };
+    }
+
+    const width = Math.max(maxX - minX, 10);
+    const height = Math.max(maxY - minY, 10);
+    
     return {
-        x: minX - 50,
-        y: minY - 50,
-        width: maxX - minX + 100,
-        height: maxY - minY + 100
+        x: minX,
+        y: minY,
+        width: width,
+        height: height
     };
 };

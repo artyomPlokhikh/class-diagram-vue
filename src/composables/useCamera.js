@@ -12,8 +12,23 @@ export function useCamera(canvas) {
     let rafId = null;
 
     const canvasStyle = computed(() => ({
-        transform: `translate3d(${pan.value.x}px, ${pan.value.y}px, 0) scale(${zoom.value})`, transformOrigin: '0 0',
+        transform: `translate3d(${pan.value.x}px, ${pan.value.y}px, 0) scale(${zoom.value})`,
+        transformOrigin: '0 0',
     }));
+
+    const setPan = (x, y) => {
+        pan.value.x = x;
+        pan.value.y = y;
+    };
+
+    const setZoom = (z) => {
+        zoom.value = z;
+    };
+
+    const cameraInterface = {
+        setPan,
+        setZoom
+    };
 
     const handleCanvasMouseDown = (event) => {
         isCanvasPanning.value = true;
@@ -108,9 +123,33 @@ export function useCamera(canvas) {
         }
     };
 
-    onMounted(() => cam.setContainer(canvas.value));
-    watch(pan,  p => cam.setPan(p.x, p.y), { deep: true });
+    onMounted(() => {
+        cam.setContainer(canvas.value);
+        cam.setCameraInterface(cameraInterface);
+
+        if (cam.pan) {
+            pan.value.x = cam.pan.x;
+            pan.value.y = cam.pan.y;
+        }
+        if (cam.zoom) {
+            zoom.value = cam.zoom;
+        }
+    });
+    watch(pan, p => cam.setPan(p.x, p.y), { deep: true });
     watch(zoom, z => cam.setZoom(z));
+
+    watch(() => cam.pan, p => {
+        if (p && !isCanvasPanning.value) {
+            pan.value.x = p.x;
+            pan.value.y = p.y;
+        }
+    }, { deep: true });
+
+    watch(() => cam.zoom, z => {
+        if (z && !isCanvasPanning.value) {
+            zoom.value = z;
+        }
+    });
 
     onUnmounted(() => {
         document.removeEventListener('mousemove', handlePanMouseMove);
@@ -133,6 +172,8 @@ export function useCamera(canvas) {
         handleCanvasMouseDown,
         handleWheel,
         isCanvasPanning,
-        handleCanvasTouchStart
+        handleCanvasTouchStart,
+        setPan,
+        setZoom,
     };
 }
