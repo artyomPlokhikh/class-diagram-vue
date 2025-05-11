@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig(({ mode }) => {
@@ -10,6 +11,7 @@ export default defineConfig(({ mode }) => {
             : '/',
         plugins: [
             vue(),
+            vueDevTools(),
             VitePWA({
                 registerType: 'autoUpdate',
                 includeAssets: ['favicon.ico', 'videos/*'],
@@ -33,7 +35,7 @@ export default defineConfig(({ mode }) => {
                     ]
                 },
                 workbox: {
-                    globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                    globPatterns: ['**/*.{js,css,html,ico,png,svg,mp4}'],
                     runtimeCaching: [{
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
                         handler: 'CacheFirst',

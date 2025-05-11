@@ -5,6 +5,7 @@ export function useConnectionStatus() {
 
     const updateOnlineStatus = () => {
         isOnline.value = navigator.onLine;
+        console.log(navigator.onLine)
     };
 
     onMounted(() => {

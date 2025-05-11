@@ -12,35 +12,33 @@ import { useConnectionStatus } from '@/composables/useConnectionStatus.js';
 
 const { isOnline } = useConnectionStatus();
 const showIndicator = ref(false);
-const initialLoad = ref(true);
 let hideTimer = null;
 
-const clearHideTimer = () => {
+function clearHideTimer() {
     if (hideTimer) {
         clearTimeout(hideTimer);
         hideTimer = null;
     }
-};
+}
 
-watch(isOnline, (newStatus, oldStatus) => {
-    if (initialLoad.value) {
-        initialLoad.value = false;
-        if (newStatus === true) return;
-    }
+watch(
+    isOnline,
+    (newStatus, oldStatus) => {
+        if (oldStatus === undefined && newStatus) return;
 
-    clearHideTimer();
-    showIndicator.value = true;
+        clearHideTimer();
+        showIndicator.value = true;
 
-    if (newStatus === true) {
-        hideTimer = setTimeout(() => {
-            showIndicator.value = false;
-        }, 3000);
-    }
-});
+        if (newStatus) {
+            hideTimer = setTimeout(() => {
+                showIndicator.value = false;
+            }, 3000);
+        }
+    },
+    { immediate: true }
+);
 
-onBeforeUnmount(() => {
-    clearHideTimer();
-});
+onBeforeUnmount(clearHideTimer);
 </script>
 
 <style scoped>
@@ -49,11 +47,13 @@ onBeforeUnmount(() => {
     padding: 0.5rem;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.3s;
 }
 
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
 }
 </style>
